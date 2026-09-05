@@ -1,0 +1,677 @@
+{
+ "$schema_note": "한 번의 묵주기도 77단계 (PRD §1-3 · FR-10). 시작 기도 7 + 각 단 14 × 5. 마침 기도는 V1에 없다 (D-3). 조 기도는 내 몫 한 단의 14단계만 진행한다 (FR-40 — 시작 기도 포함 여부는 결정 큐 참조). prayer 는 prayers.ko.json 의 키, big 은 묵주 그림의 큰 알(주님의 기도).",
+ "total": 77,
+ "opening_steps": 7,
+ "steps_per_decade": 14,
+ "decades": 5,
+ "steps": [
+  {
+   "section": "opening",
+   "prayer": "sign",
+   "label": "시작 기도",
+   "bead": null,
+   "index": 0
+  },
+  {
+   "section": "opening",
+   "prayer": "creed",
+   "label": "시작 기도",
+   "bead": null,
+   "index": 1
+  },
+  {
+   "section": "opening",
+   "prayer": "our",
+   "label": "시작 기도",
+   "bead": null,
+   "big": true,
+   "index": 2
+  },
+  {
+   "section": "opening",
+   "prayer": "hail",
+   "label": "시작 기도",
+   "bead": 1,
+   "of": 3,
+   "index": 3
+  },
+  {
+   "section": "opening",
+   "prayer": "hail",
+   "label": "시작 기도",
+   "bead": 2,
+   "of": 3,
+   "index": 4
+  },
+  {
+   "section": "opening",
+   "prayer": "hail",
+   "label": "시작 기도",
+   "bead": 3,
+   "of": 3,
+   "index": 5
+  },
+  {
+   "section": "opening",
+   "prayer": "glory",
+   "label": "시작 기도",
+   "bead": null,
+   "index": 6
+  },
+  {
+   "section": "decade",
+   "decade": 1,
+   "prayer": "decl",
+   "label": "제1단 · 신비 선포",
+   "bead": null,
+   "index": 7
+  },
+  {
+   "section": "decade",
+   "decade": 1,
+   "prayer": "our",
+   "label": "제1단 · 주님의 기도",
+   "bead": null,
+   "big": true,
+   "index": 8
+  },
+  {
+   "section": "decade",
+   "decade": 1,
+   "prayer": "hail",
+   "label": "제1단 · 1번째 알",
+   "bead": 1,
+   "of": 10,
+   "index": 9
+  },
+  {
+   "section": "decade",
+   "decade": 1,
+   "prayer": "hail",
+   "label": "제1단 · 2번째 알",
+   "bead": 2,
+   "of": 10,
+   "index": 10
+  },
+  {
+   "section": "decade",
+   "decade": 1,
+   "prayer": "hail",
+   "label": "제1단 · 3번째 알",
+   "bead": 3,
+   "of": 10,
+   "index": 11
+  },
+  {
+   "section": "decade",
+   "decade": 1,
+   "prayer": "hail",
+   "label": "제1단 · 4번째 알",
+   "bead": 4,
+   "of": 10,
+   "index": 12
+  },
+  {
+   "section": "decade",
+   "decade": 1,
+   "prayer": "hail",
+   "label": "제1단 · 5번째 알",
+   "bead": 5,
+   "of": 10,
+   "index": 13
+  },
+  {
+   "section": "decade",
+   "decade": 1,
+   "prayer": "hail",
+   "label": "제1단 · 6번째 알",
+   "bead": 6,
+   "of": 10,
+   "index": 14
+  },
+  {
+   "section": "decade",
+   "decade": 1,
+   "prayer": "hail",
+   "label": "제1단 · 7번째 알",
+   "bead": 7,
+   "of": 10,
+   "index": 15
+  },
+  {
+   "section": "decade",
+   "decade": 1,
+   "prayer": "hail",
+   "label": "제1단 · 8번째 알",
+   "bead": 8,
+   "of": 10,
+   "index": 16
+  },
+  {
+   "section": "decade",
+   "decade": 1,
+   "prayer": "hail",
+   "label": "제1단 · 9번째 알",
+   "bead": 9,
+   "of": 10,
+   "index": 17
+  },
+  {
+   "section": "decade",
+   "decade": 1,
+   "prayer": "hail",
+   "label": "제1단 · 10번째 알",
+   "bead": 10,
+   "of": 10,
+   "index": 18
+  },
+  {
+   "section": "decade",
+   "decade": 1,
+   "prayer": "glory",
+   "label": "제1단 · 영광송",
+   "bead": null,
+   "index": 19
+  },
+  {
+   "section": "decade",
+   "decade": 1,
+   "prayer": "save",
+   "label": "제1단 · 구원을 비는 기도",
+   "bead": null,
+   "index": 20
+  },
+  {
+   "section": "decade",
+   "decade": 2,
+   "prayer": "decl",
+   "label": "제2단 · 신비 선포",
+   "bead": null,
+   "index": 21
+  },
+  {
+   "section": "decade",
+   "decade": 2,
+   "prayer": "our",
+   "label": "제2단 · 주님의 기도",
+   "bead": null,
+   "big": true,
+   "index": 22
+  },
+  {
+   "section": "decade",
+   "decade": 2,
+   "prayer": "hail",
+   "label": "제2단 · 1번째 알",
+   "bead": 1,
+   "of": 10,
+   "index": 23
+  },
+  {
+   "section": "decade",
+   "decade": 2,
+   "prayer": "hail",
+   "label": "제2단 · 2번째 알",
+   "bead": 2,
+   "of": 10,
+   "index": 24
+  },
+  {
+   "section": "decade",
+   "decade": 2,
+   "prayer": "hail",
+   "label": "제2단 · 3번째 알",
+   "bead": 3,
+   "of": 10,
+   "index": 25
+  },
+  {
+   "section": "decade",
+   "decade": 2,
+   "prayer": "hail",
+   "label": "제2단 · 4번째 알",
+   "bead": 4,
+   "of": 10,
+   "index": 26
+  },
+  {
+   "section": "decade",
+   "decade": 2,
+   "prayer": "hail",
+   "label": "제2단 · 5번째 알",
+   "bead": 5,
+   "of": 10,
+   "index": 27
+  },
+  {
+   "section": "decade",
+   "decade": 2,
+   "prayer": "hail",
+   "label": "제2단 · 6번째 알",
+   "bead": 6,
+   "of": 10,
+   "index": 28
+  },
+  {
+   "section": "decade",
+   "decade": 2,
+   "prayer": "hail",
+   "label": "제2단 · 7번째 알",
+   "bead": 7,
+   "of": 10,
+   "index": 29
+  },
+  {
+   "section": "decade",
+   "decade": 2,
+   "prayer": "hail",
+   "label": "제2단 · 8번째 알",
+   "bead": 8,
+   "of": 10,
+   "index": 30
+  },
+  {
+   "section": "decade",
+   "decade": 2,
+   "prayer": "hail",
+   "label": "제2단 · 9번째 알",
+   "bead": 9,
+   "of": 10,
+   "index": 31
+  },
+  {
+   "section": "decade",
+   "decade": 2,
+   "prayer": "hail",
+   "label": "제2단 · 10번째 알",
+   "bead": 10,
+   "of": 10,
+   "index": 32
+  },
+  {
+   "section": "decade",
+   "decade": 2,
+   "prayer": "glory",
+   "label": "제2단 · 영광송",
+   "bead": null,
+   "index": 33
+  },
+  {
+   "section": "decade",
+   "decade": 2,
+   "prayer": "save",
+   "label": "제2단 · 구원을 비는 기도",
+   "bead": null,
+   "index": 34
+  },
+  {
+   "section": "decade",
+   "decade": 3,
+   "prayer": "decl",
+   "label": "제3단 · 신비 선포",
+   "bead": null,
+   "index": 35
+  },
+  {
+   "section": "decade",
+   "decade": 3,
+   "prayer": "our",
+   "label": "제3단 · 주님의 기도",
+   "bead": null,
+   "big": true,
+   "index": 36
+  },
+  {
+   "section": "decade",
+   "decade": 3,
+   "prayer": "hail",
+   "label": "제3단 · 1번째 알",
+   "bead": 1,
+   "of": 10,
+   "index": 37
+  },
+  {
+   "section": "decade",
+   "decade": 3,
+   "prayer": "hail",
+   "label": "제3단 · 2번째 알",
+   "bead": 2,
+   "of": 10,
+   "index": 38
+  },
+  {
+   "section": "decade",
+   "decade": 3,
+   "prayer": "hail",
+   "label": "제3단 · 3번째 알",
+   "bead": 3,
+   "of": 10,
+   "index": 39
+  },
+  {
+   "section": "decade",
+   "decade": 3,
+   "prayer": "hail",
+   "label": "제3단 · 4번째 알",
+   "bead": 4,
+   "of": 10,
+   "index": 40
+  },
+  {
+   "section": "decade",
+   "decade": 3,
+   "prayer": "hail",
+   "label": "제3단 · 5번째 알",
+   "bead": 5,
+   "of": 10,
+   "index": 41
+  },
+  {
+   "section": "decade",
+   "decade": 3,
+   "prayer": "hail",
+   "label": "제3단 · 6번째 알",
+   "bead": 6,
+   "of": 10,
+   "index": 42
+  },
+  {
+   "section": "decade",
+   "decade": 3,
+   "prayer": "hail",
+   "label": "제3단 · 7번째 알",
+   "bead": 7,
+   "of": 10,
+   "index": 43
+  },
+  {
+   "section": "decade",
+   "decade": 3,
+   "prayer": "hail",
+   "label": "제3단 · 8번째 알",
+   "bead": 8,
+   "of": 10,
+   "index": 44
+  },
+  {
+   "section": "decade",
+   "decade": 3,
+   "prayer": "hail",
+   "label": "제3단 · 9번째 알",
+   "bead": 9,
+   "of": 10,
+   "index": 45
+  },
+  {
+   "section": "decade",
+   "decade": 3,
+   "prayer": "hail",
+   "label": "제3단 · 10번째 알",
+   "bead": 10,
+   "of": 10,
+   "index": 46
+  },
+  {
+   "section": "decade",
+   "decade": 3,
+   "prayer": "glory",
+   "label": "제3단 · 영광송",
+   "bead": null,
+   "index": 47
+  },
+  {
+   "section": "decade",
+   "decade": 3,
+   "prayer": "save",
+   "label": "제3단 · 구원을 비는 기도",
+   "bead": null,
+   "index": 48
+  },
+  {
+   "section": "decade",
+   "decade": 4,
+   "prayer": "decl",
+   "label": "제4단 · 신비 선포",
+   "bead": null,
+   "index": 49
+  },
+  {
+   "section": "decade",
+   "decade": 4,
+   "prayer": "our",
+   "label": "제4단 · 주님의 기도",
+   "bead": null,
+   "big": true,
+   "index": 50
+  },
+  {
+   "section": "decade",
+   "decade": 4,
+   "prayer": "hail",
+   "label": "제4단 · 1번째 알",
+   "bead": 1,
+   "of": 10,
+   "index": 51
+  },
+  {
+   "section": "decade",
+   "decade": 4,
+   "prayer": "hail",
+   "label": "제4단 · 2번째 알",
+   "bead": 2,
+   "of": 10,
+   "index": 52
+  },
+  {
+   "section": "decade",
+   "decade": 4,
+   "prayer": "hail",
+   "label": "제4단 · 3번째 알",
+   "bead": 3,
+   "of": 10,
+   "index": 53
+  },
+  {
+   "section": "decade",
+   "decade": 4,
+   "prayer": "hail",
+   "label": "제4단 · 4번째 알",
+   "bead": 4,
+   "of": 10,
+   "index": 54
+  },
+  {
+   "section": "decade",
+   "decade": 4,
+   "prayer": "hail",
+   "label": "제4단 · 5번째 알",
+   "bead": 5,
+   "of": 10,
+   "index": 55
+  },
+  {
+   "section": "decade",
+   "decade": 4,
+   "prayer": "hail",
+   "label": "제4단 · 6번째 알",
+   "bead": 6,
+   "of": 10,
+   "index": 56
+  },
+  {
+   "section": "decade",
+   "decade": 4,
+   "prayer": "hail",
+   "label": "제4단 · 7번째 알",
+   "bead": 7,
+   "of": 10,
+   "index": 57
+  },
+  {
+   "section": "decade",
+   "decade": 4,
+   "prayer": "hail",
+   "label": "제4단 · 8번째 알",
+   "bead": 8,
+   "of": 10,
+   "index": 58
+  },
+  {
+   "section": "decade",
+   "decade": 4,
+   "prayer": "hail",
+   "label": "제4단 · 9번째 알",
+   "bead": 9,
+   "of": 10,
+   "index": 59
+  },
+  {
+   "section": "decade",
+   "decade": 4,
+   "prayer": "hail",
+   "label": "제4단 · 10번째 알",
+   "bead": 10,
+   "of": 10,
+   "index": 60
+  },
+  {
+   "section": "decade",
+   "decade": 4,
+   "prayer": "glory",
+   "label": "제4단 · 영광송",
+   "bead": null,
+   "index": 61
+  },
+  {
+   "section": "decade",
+   "decade": 4,
+   "prayer": "save",
+   "label": "제4단 · 구원을 비는 기도",
+   "bead": null,
+   "index": 62
+  },
+  {
+   "section": "decade",
+   "decade": 5,
+   "prayer": "decl",
+   "label": "제5단 · 신비 선포",
+   "bead": null,
+   "index": 63
+  },
+  {
+   "section": "decade",
+   "decade": 5,
+   "prayer": "our",
+   "label": "제5단 · 주님의 기도",
+   "bead": null,
+   "big": true,
+   "index": 64
+  },
+  {
+   "section": "decade",
+   "decade": 5,
+   "prayer": "hail",
+   "label": "제5단 · 1번째 알",
+   "bead": 1,
+   "of": 10,
+   "index": 65
+  },
+  {
+   "section": "decade",
+   "decade": 5,
+   "prayer": "hail",
+   "label": "제5단 · 2번째 알",
+   "bead": 2,
+   "of": 10,
+   "index": 66
+  },
+  {
+   "section": "decade",
+   "decade": 5,
+   "prayer": "hail",
+   "label": "제5단 · 3번째 알",
+   "bead": 3,
+   "of": 10,
+   "index": 67
+  },
+  {
+   "section": "decade",
+   "decade": 5,
+   "prayer": "hail",
+   "label": "제5단 · 4번째 알",
+   "bead": 4,
+   "of": 10,
+   "index": 68
+  },
+  {
+   "section": "decade",
+   "decade": 5,
+   "prayer": "hail",
+   "label": "제5단 · 5번째 알",
+   "bead": 5,
+   "of": 10,
+   "index": 69
+  },
+  {
+   "section": "decade",
+   "decade": 5,
+   "prayer": "hail",
+   "label": "제5단 · 6번째 알",
+   "bead": 6,
+   "of": 10,
+   "index": 70
+  },
+  {
+   "section": "decade",
+   "decade": 5,
+   "prayer": "hail",
+   "label": "제5단 · 7번째 알",
+   "bead": 7,
+   "of": 10,
+   "index": 71
+  },
+  {
+   "section": "decade",
+   "decade": 5,
+   "prayer": "hail",
+   "label": "제5단 · 8번째 알",
+   "bead": 8,
+   "of": 10,
+   "index": 72
+  },
+  {
+   "section": "decade",
+   "decade": 5,
+   "prayer": "hail",
+   "label": "제5단 · 9번째 알",
+   "bead": 9,
+   "of": 10,
+   "index": 73
+  },
+  {
+   "section": "decade",
+   "decade": 5,
+   "prayer": "hail",
+   "label": "제5단 · 10번째 알",
+   "bead": 10,
+   "of": 10,
+   "index": 74
+  },
+  {
+   "section": "decade",
+   "decade": 5,
+   "prayer": "glory",
+   "label": "제5단 · 영광송",
+   "bead": null,
+   "index": 75
+  },
+  {
+   "section": "decade",
+   "decade": 5,
+   "prayer": "save",
+   "label": "제5단 · 구원을 비는 기도",
+   "bead": null,
+   "index": 76
+  }
+ ]
+}

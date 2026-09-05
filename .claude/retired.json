@@ -1,0 +1,12 @@
+{
+  "$comment": "이 저장소에서 다시 쓰지 않기로 결정된 것들. 형식과 동작은 창고 규칙 .claude/rules/past-decisions.md 가 정한다. 훅(.claude/hooks/retired-guard.py)이 여기 적힌 스킬 호출과 경로 쓰기를 차단하고, 세션 시작 훅이 이 목록을 세션에 실어 준다. 되살리려면 사람의 결정을 받아 해당 항목을 지운다.",
+  "decision_log": "decisions.md",
+  "skills": [
+    {
+      "name": "progress-dashboard",
+      "decision": "decisions.md 결정 큐 Q-11 (2026-09-05) — 이 저장소의 진행 현황판은 통합 현황판(integration-board, .integration/) 하나로 둔다. atelier 가 같은 이유로 2026-08-27 에 폐기한 체계이며, 현황판이 둘이 되는 사고를 미리 막는다",
+      "instead": "진행 현황은 decisions.md 의 결정 큐와 docs/plan/development-plan.md 의 마일스톤 표가 정본이고, 화면은 .integration/board.config.json 을 이 프로젝트용으로 채운 뒤 integration-board.yml 이 게시하는 통합 현황판 하나다"
+    }
+  ],
+  "paths": []
+}
