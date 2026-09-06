@@ -12,7 +12,7 @@
 |---|---|
 | 제품 요구사항(PRD 제3판, FR-01~45), 디자인 시스템, 서비스 설계, 화면 명세, 화면 지도 | `docs/product/06-*.md` — 원본은 atelier `idea/mobile-rosary/`, 이관 뒤 atelier 쪽은 freeze. 이관 경위는 `docs/product/README.md` |
 | 프로토타입 핸드오프 (한지 낮 벌, 화면 열 벌 HTML, 성화 목업 자산) | `docs/product/prototype/` — 성화 4장은 저작권 미확정 목업 |
-| **앱 화면 시안 (관문 2 산출물)** — 낮·밤 두 벌 마흔세 장 + 견줌 패널, 접근성 실측, 수용 기준 자가 점검표 | `docs/design/` — 브라우저로 `screens-day.html` · `screens-night.html`을 열면 실제 크기로 보인다. 값·규칙·판단 요청은 `docs/design/README.md` |
+| **앱 화면 시안 (관문 2 산출물)** — 낮·밤 두 벌 마흔세 장 + 견줌 패널, 접근성 실측, 수용 기준 자가 점검표 | `docs/design/` — 브라우저로 `prototype.html`을 열면 **눌러서 옮겨 다니는** 프로토타입이고, `screens-day.html` · `screens-night.html`은 화면을 나란히 늘어놓아 견주는 판이다. 값·규칙·판단 요청은 `docs/design/README.md` |
 | 기도 도메인 데이터 (77단계, 신비 4종, 54일 규칙, 기도문 임시 판본) | `spec/` — 프레임워크 무관 JSON·마크다운. PRD에 없는 것은 지어 넣지 않았다 |
 | 개발 계획 (컨펌용 기획안 → 컨펌 뒤 정본) | `docs/plan/development-plan.md` |
 | 결정 로그·결정 큐·컨펌 필요 항목 | `decisions.md` — **일을 시작하기 전에 주제어로 한 번 검색한다** |
