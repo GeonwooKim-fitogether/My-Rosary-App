@@ -31,7 +31,13 @@ export default defineConfig({
   expect: { timeout: 15_000 },
   fullyParallel: false,
   workers: 1,
-  reporter: process.env.CI ? 'line' : 'list',
+  /*
+   * CI 에서는 GitHub 리포터를 함께 켠다. 이 리포터는 실패를 GitHub 의 주석(annotation)
+   * 으로 올려 주는데, 그 주석은 API 로 읽을 수 있다 — 이 개발 환경에서는 Actions 의
+   * 로그 파일을 내려받는 통로가 막혀 있어(저장소 호스트가 프록시에 걸린다) 실패 이유를
+   * 볼 수 있는 유일한 창이 그 주석이다.
+   */
+  reporter: process.env.CI ? [['github'], ['line']] : 'list',
   use: {
     baseURL: `http://127.0.0.1:${PORT}`,
     viewport: { width: 390, height: 844 },
