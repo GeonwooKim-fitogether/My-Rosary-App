@@ -70,3 +70,12 @@ export function buildDayQueue(mystery: MysteryKey): RunStep[] {
 export function hailCount(queue: readonly RunStep[]): number {
   return queue.filter((s) => s.prayer === 'hail').length;
 }
+
+/**
+ * 하루에 바치는 성모송의 수 — 개인 기도의 하루(77단계)에 든 성모송이다.
+ *
+ * 시작 기도의 셋과 다섯 단의 쉰을 더해 쉰셋이다. v5 시안의 하루 완주 화면은 50 이라고
+ * 적었는데 그것은 시작 기도의 셋을 세지 않은 값이고, `decisions.md` Q-19 가 **실제로
+ * 센 값을 보인다**로 판정했다. 여정 상세의 누적 성모송도 같은 값을 쓴다.
+ */
+export const HAILS_PER_DAY = hailCount(buildDayQueue('sorrowful'));

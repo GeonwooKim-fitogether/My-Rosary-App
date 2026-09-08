@@ -8,25 +8,26 @@
  * 판정했기 때문이다. 그 줄이 차지하던 80px 만큼은 빈 자리로 남겨 아래 각주의 위치를
  * v5 와 같게 두었다.
  *
- * **단추는 M1 에서 기도 화면으로 들어간다. 아직 인증은 하지 않는다.** v5 시안의 배선이
- * 그렇다 — 시안에서도 `Google로 계속하기` 는 계정을 확인하지 않고 곧바로 앱 안으로
- * 들어간다. 실제 인증은 Supabase 를 붙이는 M3 의 일이다.
+ * **단추는 홈으로 들어간다. 아직 인증은 하지 않는다.** v5 시안의 배선이 그렇다 —
+ * 시안에서도 `Google로 계속하기` 는 계정을 확인하지 않고 곧바로 앱 안으로 들어간다.
+ * 실제 인증은 Supabase 를 붙이는 M3 의 일이다.
  *
- * 시안이 들어가는 곳은 홈 화면인데 홈은 M2 에서 만든다. 그래서 M1 동안만 **기도 화면**이
- * 그 자리를 대신한다. M2 에서 홈이 서면 이 두 줄의 목적지가 홈으로 바뀐다.
+ * M1 동안에는 홈이 없어 이 단추가 기도 화면으로 곧바로 들어갔다(`decisions.md` Q-17).
+ * M2 에서 홈이 서면서 그 임시 배선이 닫혔고, 목적지가 시안대로 홈이 됐다.
  */
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { artSession, SLOT_GEOMETRY } from '../src/art';
-import { colors, metrics, type } from '../src/theme';
+import { metrics, type, useThemedStyles, type Theme } from '../src/theme';
 
 export default function LoginScreen() {
   // 이번 세션의 로그인 띠에 걸 성화. 초점 좌표는 v5 가 렌더해 보고 정한 값이다.
   const plate = artSession.forKey('screen:login', ['login']);
+  const styles = useThemedStyles(loginStyles);
 
   return (
-    <View style={styles.screen}>
+    <View style={styles.screen} testID="login-screen">
       {plate ? (
         <Image
           source={plate.source}
@@ -78,55 +79,53 @@ export default function LoginScreen() {
   );
 }
 
-/**
- * 앱 안으로 들어간다. M1 에서 갈 수 있는 곳은 기도 화면 하나뿐이다.
- * M2 에서 홈이 서면 이 한 줄의 목적지가 홈으로 바뀐다.
- */
+/** 앱 안으로 들어간다. 시안대로 홈이다 (`decisions.md` Q-17 이 닫혔다). */
 function enter(): void {
-  router.push('/pray');
+  router.push('/home');
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    flexDirection: 'column',
-    paddingBottom: 26,
-    backgroundColor: colors.background,
-  },
-  art: {
-    height: SLOT_GEOMETRY.login.height, // 340
-    flexGrow: 0,
-    flexShrink: 0,
-    backgroundColor: colors.rule,
-  },
-  body: {
-    paddingTop: 34,
-    paddingHorizontal: metrics.screenPadding, // 24
-    flexDirection: 'column',
-    flex: 1,
-  },
-  label: { ...type.label, color: colors.inkMuted },
-  title: { ...type.title, color: colors.ink, marginTop: 16 },
-  intro: { ...type.body, color: colors.ink, marginTop: 16 },
-  spacer: { flex: 1 },
-  primaryButton: {
-    height: metrics.touchTargetHeight, // 80
-    backgroundColor: colors.ink,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: metrics.radius,
-  },
-  primaryButtonText: { ...type.button, color: colors.inverse },
-  secondaryButton: {
-    height: metrics.touchTargetHeight,
-    borderWidth: 1,
-    borderColor: colors.buttonBorder,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 12,
-    borderRadius: metrics.radius,
-  },
-  secondaryButtonText: { ...type.button, color: colors.ink },
-  removedRowGap: { height: metrics.touchTargetHeight },
-  footnote: { ...type.footnote, color: colors.inkMuted, textAlign: 'center' },
-});
+const loginStyles = ({ colors }: Theme) =>
+  StyleSheet.create({
+    screen: {
+      flex: 1,
+      flexDirection: 'column',
+      paddingBottom: 26,
+      backgroundColor: colors.background,
+    },
+    art: {
+      height: SLOT_GEOMETRY.login.height, // 340
+      flexGrow: 0,
+      flexShrink: 0,
+      backgroundColor: colors.rule,
+    },
+    body: {
+      paddingTop: 34,
+      paddingHorizontal: metrics.screenPadding, // 24
+      flexDirection: 'column',
+      flex: 1,
+    },
+    label: { ...type.label, color: colors.inkMuted },
+    title: { ...type.title, color: colors.ink, marginTop: 16 },
+    intro: { ...type.body, color: colors.ink, marginTop: 16 },
+    spacer: { flex: 1 },
+    primaryButton: {
+      height: metrics.touchTargetHeight, // 80
+      backgroundColor: colors.fill,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: metrics.radius,
+    },
+    primaryButtonText: { ...type.button, color: colors.onFill },
+    secondaryButton: {
+      height: metrics.touchTargetHeight,
+      borderWidth: 1,
+      borderColor: colors.buttonBorder,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 12,
+      borderRadius: metrics.radius,
+    },
+    secondaryButtonText: { ...type.button, color: colors.ink },
+    removedRowGap: { height: metrics.touchTargetHeight },
+    footnote: { ...type.footnote, color: colors.inkMuted, textAlign: 'center' },
+  });

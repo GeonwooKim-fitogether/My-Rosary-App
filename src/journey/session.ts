@@ -22,7 +22,7 @@
  * M2 의 화면이므로 그때 다시 확인한다.
  */
 import { mysteryForDay, phaseForFiftyfourDay, FIFTYFOUR_LENGTH } from '../domain/mysteries';
-import type { JourneyFormat, MysteryKey } from '../domain/types';
+import type { JourneyFormat, JourneyPhase, MysteryKey, RecitationMode } from '../domain/types';
 import { addDays } from './format';
 
 /** 54칸 하나하나의 상태. v5 의 `FILL` 표와 같은 낱말을 쓴다. */
@@ -35,8 +35,18 @@ export interface Journey {
   format: JourneyFormat;
   /** 여정의 첫날. 며칠째와 날짜를 잇는 기준이다. */
   startDate: Date;
-  /** 54칸. 배열의 자리 + 1 이 며칠째다. */
+  /** 날짜 칸. 배열의 자리 + 1 이 며칠째다. 54일이면 54칸, 9일이면 9칸이다. */
   days: DayState[];
+  /**
+   * 청원으로 시작하는가 감사로 시작하는가 (v5 새 기도의 구역 ②).
+   * 54일 기도에서만 뜻이 있고, 뜻을 푸는 곳은 `rules.ts` 의 `phaseOn` 이다.
+   */
+  kind: JourneyPhase;
+  /**
+   * 이 여정의 낭송 방식 (결정 1-2). 새 기도에서 고른 값이 그 여정의 값이 되고,
+   * 설정의 값은 **새로 만드는 여정의 기본값**으로만 쓰인다 (FR-34 의 판본 규칙과 같은 구조).
+   */
+  recitation: RecitationMode;
 }
 
 /** v5 의 `seedDays()` — 스무 칸을 바쳤고 두 칸을 걸렀으며 23번째 칸이 오늘이다. */
@@ -53,13 +63,26 @@ function seedDays(): DayState[] {
 /** 23일째가 2026년 9월 5일이 되도록 잡은 시작일. */
 const SEED_START_DATE = new Date(2026, 7, 14);
 
-/** 지금 앱이 들고 있는 여정. M2 에서 실제 저장소가 이 자리를 대신한다. */
+/**
+ * v5 가 그린 그 여정 한 벌.
+ *
+ * **M2 에서 이것은 더 이상 "앱이 들고 있는 여정"이 아니다.** 실제 여정은 기기에
+ * 저장되고(`src/storage/journeys.ts`) 앱은 저장된 것을 읽어 쓴다. 이 상수가 남아 있는
+ * 까닭은 둘이다. 첫째, v5 의 값이 코드에서도 같은 값으로 나오는지 재는 시험의 기준이고
+ * (`session.test.ts`), 둘째, 화면을 시안과 나란히 놓고 대조할 때 쓰는 **본보기 여정**의
+ * 본이다(`src/journey/demo.ts` 가 이 본을 오늘 날짜에 맞춰 세운다).
+ *
+ * 그래서 시작일이 2026년 8월 14일로 못박혀 있다 — v5 의 `dateKo()` 가 23일째를 9월 5일로
+ * 놓은 것에서 거꾸로 나온 날이다(`decisions.md` Q-24).
+ */
 export const currentJourney: Journey = {
   id: 'seed-fiftyfour',
   title: '어머니 병환 회복',
   format: 'fiftyfour',
   startDate: SEED_START_DATE,
   days: seedDays(),
+  kind: 'petition',
+  recitation: 'alternate',
 };
 
 /** 며칠째인가 — 54칸에서 `today` 가 앉은 자리로 센다 (v5 의 `dayNo`). */
@@ -128,10 +151,15 @@ export function mysteryOf(journey: Journey, today: Date = new Date()): MysteryKe
   });
 }
 
-/** `23일째 · 청원` 처럼 화면 머리에 붙는 한 줄 (FR-35). */
+/**
+ * `23일째 · 청원` 처럼 화면 머리에 붙는 한 줄 (FR-35).
+ *
+ * 여정을 `감사`로 시작한 경우에는 쉰네 날 내내 감사다 (v5 새 기도 구역 ②의 `쉰네 날 내내`).
+ */
 export function dayLabel(journey: Journey): string {
   const n = dayNumber(journey);
   if (journey.format !== 'fiftyfour') return `${n}일째`;
+  if (journey.kind === 'thanksgiving') return `${n}일째 · 감사`;
   return `${n}일째 · ${phaseForFiftyfourDay(n) === 'petition' ? '청원' : '감사'}`;
 }
 

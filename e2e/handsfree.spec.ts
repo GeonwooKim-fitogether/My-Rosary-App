@@ -7,7 +7,9 @@
 import { expect, test } from '@playwright/test';
 import {
   collectConsoleErrors,
-  installDeviceStubs,
+  enterHome,
+  enterPrayerFromHome,
+  openApp,
   pressMediaButton,
   shakeDevice,
 } from './support/harness';
@@ -16,10 +18,9 @@ test.use({ reducedMotion: 'reduce' });
 
 /** 첫 화면에서 눌러 기도 화면까지 간 뒤, 시간을 세운 채로 돌려준다. */
 async function enterPrayer(page: import('@playwright/test').Page) {
-  await page.clock.install();
-  await installDeviceStubs(page);
-  await page.goto('/');
-  await page.getByTestId('login-google').click();
+  await openApp(page);
+  await enterHome(page);
+  await enterPrayerFromHome(page);
   await expect(page.getByTestId('pray-screen')).toBeVisible();
   await expect(page.getByTestId('pray-a')).toContainText('성부와 성자와 성령의 이름으로');
 }

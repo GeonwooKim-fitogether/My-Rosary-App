@@ -3,13 +3,20 @@
  *
  * 여기서 확인하는 것은 넷이다.
  *
- * 1. **닿는가** — 앱의 첫 화면에서 눌러서 기도 화면까지 간다. 주소를 직접 치지 않는다.
+ * 1. **닿는가** — 앱의 첫 화면에서 눌러서 홈을 지나 기도 화면까지 간다. 주소를 직접 치지 않는다.
  * 2. **끝까지 가는가** — 아무도 손대지 않아도 77단계를 스스로 지나 하루 완주 화면에 닿는다.
  * 3. **기기에 말을 거는가** — 소리와 진동이 실제로 나는지가 아니라 요청되었는지를 센다.
  * 4. **조용한가** — 콘솔에 오류가 하나도 없다.
  */
 import { expect, test } from '@playwright/test';
-import { collectConsoleErrors, installDeviceStubs, readCalls } from './support/harness';
+import {
+  collectConsoleErrors,
+  enterHome,
+  enterPrayerFromHome,
+  openApp,
+  readCalls,
+  runUntilVisible,
+} from './support/harness';
 
 /* 숨쉬는 알의 움직임을 끈다. 가짜 시계로 시간을 크게 앞당길 때 애니메이션이 매 프레임
    깨어나면 시험이 하염없이 느려진다. v5 시안도 이 설정을 켠 기기에서는 숨쉬기를 멈춘다. */
@@ -17,26 +24,20 @@ test.use({ reducedMotion: 'reduce' });
 
 test('로그인 화면에서 눌러 들어가 하루 77단계를 스스로 완주한다', async ({ page }) => {
   const errors = collectConsoleErrors(page);
-  await page.clock.install();
-  await installDeviceStubs(page);
-
-  await page.goto('/');
+  await openApp(page);
   await expect(page.getByTestId('login-google')).toBeVisible();
 
-  // 1. 닿는가 — 첫 화면의 단추를 눌러 기도 화면으로.
-  await page.getByTestId('login-google').click();
+  // 1. 닿는가 — 첫 화면의 단추를 눌러 홈으로, 홈의 카드를 눌러 기도 화면으로.
+  await enterHome(page);
+  await enterPrayerFromHome(page);
   await expect(page.getByTestId('pray-screen')).toBeVisible();
   await expect(page.getByTestId('pray-title')).toContainText('어머니 병환 회복');
   await expect(page.getByTestId('pray-title')).toContainText('23일째');
   await expect(page.getByTestId('pray-step')).toHaveText('시작 기도 · 성호경');
 
   // 2. 끝까지 가는가 — 시간을 앞당기며 하루 완주 화면이 뜨기를 기다린다.
-  const dayDone = page.getByTestId('day-done-screen');
-  for (let i = 0; i < 300; i++) {
-    if (await dayDone.isVisible()) break;
-    await page.clock.runFor(5000);
-  }
-  await expect(dayDone).toBeVisible();
+  await runUntilVisible(page, 'day-done-screen');
+  await expect(page.getByTestId('day-done-screen')).toBeVisible();
   await expect(page.getByTestId('day-done-head')).toHaveText('9월 5일 · 스물세 번째 날');
   // 스물세 번째 날을 막 바쳤으니 바친 날은 스물하나(거른 날 둘), 남은 날은 서른하나다.
   // 셋을 더하면 쉰넷이 된다. 한때 여기가 22 와 30 이었는데, 그것은 오늘 칸이 이미

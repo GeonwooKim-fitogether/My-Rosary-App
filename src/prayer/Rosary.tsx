@@ -23,7 +23,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing } from 'react-native';
 import Svg, { Circle, Path, Text as SvgText } from 'react-native-svg';
-import { colors, fonts } from '../theme';
+import { fonts, useTheme } from '../theme';
 import { BEAD_POSITIONS, type RosaryPlacement } from './rosaryState';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -38,13 +38,29 @@ const BREATH_SCALE = 1.12;
 /** 숨 한 번의 길이. v5 의 `4s`. */
 const BREATH_MS = 4000;
 
-const THREAD = 'rgba(31,37,48,.22)';
-const CROSS = 'rgba(31,37,48,.40)';
-const PENDING = 'rgba(31,37,48,.30)';
-const BIG_PENDING = 'rgba(31,37,48,.34)';
+/**
+ * 실·십자가·아직 안 바친 알의 선. v5 는 이 넷을 먹빛에 투명도를 준 값으로 그렸다
+ * (22% · 40% · 30% · 34%). 밤 벌은 같은 투명도를 그 벌의 본문색(한지)에 준다 —
+ * 색표의 파생 규칙과 같다(`src/theme/tokens.ts` 의 `nightColors` 주석).
+ */
+const STROKES = {
+  day: {
+    thread: 'rgba(31,37,48,.22)',
+    cross: 'rgba(31,37,48,.40)',
+    pending: 'rgba(31,37,48,.30)',
+    bigPending: 'rgba(31,37,48,.34)',
+  },
+  night: {
+    thread: 'rgba(240,234,217,.22)',
+    cross: 'rgba(240,234,217,.40)',
+    pending: 'rgba(240,234,217,.30)',
+    bigPending: 'rgba(240,234,217,.34)',
+  },
+} as const;
 
 /** 숨 쉬는 알 — 지금 바치는 알 하나에만 붙는다. */
 function BreathingBead({ cx, cy, r }: { cx: number; cy: number; r: number }) {
+  const { colors } = useTheme();
   const breath = useRef(new Animated.Value(0)).current;
   const [still, setStill] = useState(false);
 
@@ -113,23 +129,25 @@ function BreathingBead({ cx, cy, r }: { cx: number; cy: number; r: number }) {
 }
 
 export function Rosary({ done, current }: RosaryPlacement) {
+  const { colors, mode } = useTheme();
+  const stroke = STROKES[mode];
   return (
     <Svg width={340} height={245} viewBox="0 0 390 281">
       {/* 실 — 고리와 늘어진 줄. */}
       <Path
         d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128"
         fill="none"
-        stroke={THREAD}
+        stroke={stroke.thread}
         strokeWidth={1.4}
       />
-      <Path d="M42 128 C56 170 147 198 195 210" fill="none" stroke={THREAD} strokeWidth={1.4} />
-      <Path d="M348 128 C334 170 243 198 195 210" fill="none" stroke={THREAD} strokeWidth={1.4} />
-      <Path d="M195 231 L195 252" fill="none" stroke={THREAD} strokeWidth={1.4} />
+      <Path d="M42 128 C56 170 147 198 195 210" fill="none" stroke={stroke.thread} strokeWidth={1.4} />
+      <Path d="M348 128 C334 170 243 198 195 210" fill="none" stroke={stroke.thread} strokeWidth={1.4} />
+      <Path d="M195 231 L195 252" fill="none" stroke={stroke.thread} strokeWidth={1.4} />
       {/* 십자가. */}
       <Path
         d="M195 252 L195 278 M180 262 L210 262"
         fill="none"
-        stroke={CROSS}
+        stroke={stroke.cross}
         strokeWidth={2.4}
       />
 
@@ -142,14 +160,14 @@ export function Rosary({ done, current }: RosaryPlacement) {
           cy={BIG_BEAD.cy}
           r={BIG_BEAD.r}
           fill="none"
-          stroke={BIG_PENDING}
+          stroke={stroke.bigPending}
           strokeWidth={1.6}
         />
       )}
 
       {BEAD_POSITIONS.map(([cx, cy], i) => {
         if (i === current) return <BreathingBead key={i} cx={cx} cy={cy} r={BEAD_RADIUS} />;
-        if (i < done) return <Circle key={i} cx={cx} cy={cy} r={BEAD_RADIUS} fill={colors.ink} />;
+        if (i < done) return <Circle key={i} cx={cx} cy={cy} r={BEAD_RADIUS} fill={colors.beadDone} />;
         return (
           <Circle
             key={i}
@@ -157,7 +175,7 @@ export function Rosary({ done, current }: RosaryPlacement) {
             cy={cy}
             r={BEAD_RADIUS}
             fill="none"
-            stroke={PENDING}
+            stroke={stroke.pending}
             strokeWidth={1.6}
           />
         );
@@ -171,7 +189,7 @@ export function Rosary({ done, current }: RosaryPlacement) {
           textAnchor="middle"
           fontFamily={fonts.sansMedium}
           fontSize={16}
-          fill={colors.inverse}
+          fill={colors.onAccentFill}
         >
           {current + 1}
         </SvgText>

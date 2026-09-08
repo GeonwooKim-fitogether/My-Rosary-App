@@ -1,4 +1,4 @@
-import { addDays, monthDayKo, objectParticle, ordinalKo } from './format';
+import { addDays, countKo, monthDayKo, nativeCountKo, objectParticle, ordinalKo, relativeTimeKo } from './format';
 
 describe('우리말 차례수', () => {
   it.each([
@@ -36,5 +36,29 @@ describe('목적격 조사', () => {
     ['', '을'],
   ])('%s 뒤에는 %s 가 붙는다', (word, particle) => {
     expect(objectParticle(word)).toBe(particle);
+  });
+});
+
+describe('세는 수와 상대 시각 (M2 가 더한 것)', () => {
+  it('하나부터 열까지는 우리말로, 그 위는 숫자로 센다', () => {
+    expect(countKo(1)).toBe('하나');
+    expect(countKo(2)).toBe('둘');
+    expect(countKo(10)).toBe('열');
+    expect(countKo(11)).toBe('11');
+  });
+
+  it('뒤에 이름이 오는 자리는 `쉰네` 처럼 적는다', () => {
+    expect(nativeCountKo(54)).toBe('쉰네');
+    expect(nativeCountKo(27)).toBe('스물일곱');
+    expect(nativeCountKo(9)).toBe('아홉');
+  });
+
+  it('마지막으로 바친 때를 상대 표기로 적는다', () => {
+    const now = new Date(2026, 8, 8, 21, 30);
+    expect(relativeTimeKo(new Date(2026, 8, 8, 21, 29, 40), now)).toBe('방금');
+    expect(relativeTimeKo(new Date(2026, 8, 8, 21, 10), now)).toBe('20분 전');
+    expect(relativeTimeKo(new Date(2026, 8, 8, 9, 30), now)).toBe('12시간 전');
+    expect(relativeTimeKo(new Date(2026, 8, 7, 20, 0), now)).toBe('어제 저녁');
+    expect(relativeTimeKo(new Date(2026, 8, 5, 20, 0), now)).toBe('3일 전');
   });
 });

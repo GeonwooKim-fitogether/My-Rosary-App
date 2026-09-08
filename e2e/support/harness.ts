@@ -133,3 +133,57 @@ export function collectConsoleErrors(page: Page): string[] {
   page.on('pageerror', (error) => errors.push(String(error)));
   return errors;
 }
+
+/* ── M2 가 더한 받침대 — 홈이 생기면서 "앱에 들어가는 길"이 길어졌다 ──────────────────
+   M1 까지는 로그인 단추 하나를 누르면 곧바로 기도 화면이었다(`decisions.md` Q-17 의 임시
+   배선). 이제 로그인 → 홈 → 여정 카드 → 기도로 간다. 시험마다 그 길을 다시 적지 않도록
+   여기 한 번만 적는다. ───────────────────────────────────────────────────────────── */
+
+/**
+ * 시험이 서 있는 날 — 2026년 9월 5일.
+ *
+ * 이 날을 고른 이유가 있다. 본보기 여정(`src/journey/demo.ts`)은 **오늘이 23일째가 되도록**
+ * 시작일을 잡는데, v5 시안이 못박은 대응이 "23일째 = 9월 5일"이다(`decisions.md` Q-24).
+ * 시험의 오늘을 9월 5일로 세워 두면 화면에 뜨는 날짜가 시안의 값과 글자까지 같아진다.
+ */
+export const FIXED_TODAY = new Date('2026-09-05T09:00:00');
+
+/**
+ * 앱을 연다. 기기를 흉내 내고, 시계를 세우고, 첫 화면을 띄운다.
+ *
+ * @param demo 본보기 여정을 세울 것인가. 빈 홈에서 시작하는 시험은 false 로 부른다.
+ */
+export async function openApp(
+  page: Page,
+  options: { demo?: boolean; at?: Date } = {},
+): Promise<void> {
+  await page.clock.install({ time: options.at ?? FIXED_TODAY });
+  await installDeviceStubs(page);
+  await page.goto(options.demo === false ? '/' : '/?demo=1');
+}
+
+/** 첫 화면의 단추를 눌러 홈으로 들어간다 (`decisions.md` Q-17 이 닫힌 배선). */
+export async function enterHome(page: Page): Promise<void> {
+  await page.getByTestId('login-google').click();
+  await page.getByTestId('home-screen').waitFor();
+}
+
+/** 홈의 첫 카드를 눌러 기도로 들어간다 (FR-42). */
+export async function enterPrayerFromHome(page: Page, index = 0): Promise<void> {
+  await page.getByTestId(`home-card-${index}`).click();
+  await page.getByTestId('pray-title').waitFor();
+}
+
+/** 하루가 끝날 때까지 시계를 앞당긴다. 다 마치면 true. */
+export async function runUntilVisible(
+  page: Page,
+  testId: string,
+  { stepMs = 5000, times = 320 }: { stepMs?: number; times?: number } = {},
+): Promise<boolean> {
+  const target = page.getByTestId(testId);
+  for (let i = 0; i < times; i++) {
+    if (await target.isVisible()) return true;
+    await page.clock.runFor(stepMs);
+  }
+  return target.isVisible();
+}
