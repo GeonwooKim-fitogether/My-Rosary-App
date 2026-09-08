@@ -11,8 +11,7 @@
 | 무엇 | 어디 |
 |---|---|
 | 제품 요구사항(PRD 제3판, FR-01~45), 디자인 시스템, 서비스 설계, 화면 명세, 화면 지도 | `docs/product/06-*.md` — 원본은 atelier `idea/mobile-rosary/`, 이관 뒤 atelier 쪽은 freeze. 이관 경위는 `docs/product/README.md` |
-| 프로토타입 핸드오프 (한지 낮 벌, 화면 열 벌 HTML, 성화 목업 자산) | `docs/product/prototype/` — 성화 4장은 저작권 미확정 목업 |
-| **눌러 보는 앱 (관문 2 산출물)** — 실제로 동작한다 | `docs/design/app.html` — 브라우저로 열면 곧바로 앱이다. 바람을 적어 여정을 만들고, 77단계가 스스로 넘어가고, 나갔다 들어오면 그 자리에서 이어진다. 원본은 `docs/design/app/`, 조립기는 `docs/design/build-app.mjs` |
+| 시안 계보 (v5 이전) | `docs/product/prototype/` (atelier 최초 핸드오프) · `docs/design/screens-day.html` · `screens-night.html` · `prototype.html`. **정본이 아니다** — 값이 어긋나면 v5 를 따른다(결정 2) |
 | **화면 시안 정본 (atelier v5 인계본)** | `docs/design/v5/` — `index.html` 한 파일에 화면 열과 기도 엔진, `art/` 에 성화 열여섯 장. `node docs/design/v5/build.mjs` 로 파일 하나짜리 조립본을 만든다. 경위와 슬롯 체계는 `docs/design/v5/README.md` |
 | 기도 도메인 데이터 (77단계, 신비 4종, 54일 규칙, 기도문 임시 판본) | `spec/` — 프레임워크 무관 JSON·마크다운. PRD에 없는 것은 지어 넣지 않았다 |
 | 개발 계획 (컨펌용 기획안 → 컨펌 뒤 정본) | `docs/plan/development-plan.md` |
