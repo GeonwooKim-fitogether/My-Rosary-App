@@ -4,7 +4,7 @@
 
 ## 지금 어디까지 왔나
 
-**관문 둘이 모두 닫혔다. 지금 열려 있는 것은 구현이다.** 관문 1(기획안 컨펌)은 2026-09-05에 닫혔고 — 화면 세 곳을 프로토타입 방식으로 가기로 해 화면이 여덟에서 열로 늘었다(결정 1) — 관문 2(시안)는 atelier v5 인계본이 정본 자리에 앉으면서 2026-09-08에 대체로 닫혔다(결정 2, `docs/design/v5/`). 같은 날 **프레임워크·스택이 A안(Expo + React Native + EAS Build + Supabase)으로 확정됐다**(결정 3). 다음 단계는 M0이며 작업 지시서는 `docs/plan/m0-work-order.md`가 정본이다. 코드는 아직 없다. 현재 상태와 다음 할 일은 언제나 `decisions.md`와 `docs/plan/development-plan.md`가 정본이다 — 이 파일의 이 절은 요약일 뿐이니, 어긋나면 그 두 파일을 믿는다.
+**관문 둘이 모두 닫혔다. 지금 열려 있는 것은 구현이다.** 관문 1(기획안 컨펌)은 2026-09-05에 닫혔고 — 화면 세 곳을 프로토타입 방식으로 가기로 해 화면이 여덟에서 열로 늘었다(결정 1) — 관문 2(시안)는 atelier v5 인계본이 정본 자리에 앉으면서 2026-09-08에 대체로 닫혔다(결정 2, `docs/design/v5/`). 같은 날 **프레임워크·스택이 A안(Expo + React Native + EAS Build + Supabase)으로 확정됐다**(결정 3). M0(바닥)과 M1(기도 루프)이 작업완료다 — Expo 골격과 도메인 코어 위에 v5 의 기도 화면·하루 완주 화면이 서 있고, 77단계가 스스로 도는 것을 웹 빌드의 Playwright e2e 가 확인한다. 화면 사진은 `docs/plan/m1-screens/`에 있다. **실기기(iOS·Android) 확인은 아직 한 번도 하지 못했다** — 이 컨테이너에 맥도 폰도 없어 소리·진동·이어폰 단추는 사람이 확인해야 한다. 다음은 M2(여정과 홈)다. 현재 상태와 다음 할 일은 언제나 `decisions.md`와 `docs/plan/development-plan.md`가 정본이다 — 이 파일의 이 절은 요약일 뿐이니, 어긋나면 그 두 파일을 믿는다.
 
 ## 정본 문서가 어디 있나
 
@@ -15,7 +15,8 @@
 | **화면 시안 정본 (atelier v5 인계본)** | `docs/design/v5/` — `index.html` 한 파일에 화면 열과 기도 엔진, `art/` 에 성화 열여섯 장. `node docs/design/v5/build.mjs` 로 파일 하나짜리 조립본을 만든다. 경위와 슬롯 체계는 `docs/design/v5/README.md` |
 | 기도 도메인 데이터 (77단계, 신비 4종, 54일 규칙, 기도문 임시 판본) | `spec/` — 프레임워크 무관 JSON·마크다운. PRD에 없는 것은 지어 넣지 않았다 |
 | 개발 계획 정본 (마일스톤 M0~M5, v5 값의 소재) | `docs/plan/development-plan.md` |
-| **M0 작업 지시서** (KimDeveloper가 지금 읽을 것) | `docs/plan/m0-work-order.md` |
+| **M0 작업 지시서** | `docs/plan/m0-work-order.md` |
+| M1 에서 찍은 화면 사진 (기도 · 하루 완주) | `docs/plan/m1-screens/` — v5 시안과 나란히 놓고 대조한다 |
 | 결정 로그·결정 큐·컨펌 필요 항목 | `decisions.md` — **일을 시작하기 전에 주제어로 한 번 검색한다** |
 | 폐기 목록 (다시 쓰지 않기로 한 도구·자리) | `.claude/retired.json` — 훅이 차단한다 |
 | 체계의 결함 기록 (창고 승격 후보) | `docs/lessons.md` |

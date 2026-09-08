@@ -39,3 +39,8 @@ expo-env.d.ts
 # 빌드하므로 저장소가 소유하지 않는다.
 /ios/
 /android/
+
+# 화면 e2e(Playwright)가 실행할 때마다 새로 쓰는 것들. 실패했을 때 들여다보는 흔적이라
+# 저장소가 가질 이유가 없다. 남겨야 하는 화면 사진은 docs/plan/m1-screens/ 에 따로 둔다.
+test-results/
+playwright-report/

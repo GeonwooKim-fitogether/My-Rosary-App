@@ -11,7 +11,8 @@
 | 관문 1 — 기획안 컨펌 | **닫힘** (2026-09-05, `decisions.md` 결정 1) |
 | 관문 2 — 시안 컨펌 | **닫힘** (2026-09-08, 결정 2 — 정본은 [`docs/design/v5/`](docs/design/v5/)) |
 | M0 — 프로젝트 바닥 | **작업완료** — Expo + TypeScript 골격, 기도 도메인 코어, 디자인 토큰, 성화 슬롯, 로그인 화면 한 장 |
-| M1~M3 — 기도 루프 · 여정과 홈 · 계정과 조 | M0 뒤 |
+| M1 — 기도 루프 | **작업완료** — 기도 화면과 하루 완주 화면, 77단계 진행기, 한국어 낭송과 진동, 자리 저장과 이어가기, 손 없이 조작, 전례색. 사진은 [`docs/plan/m1-screens/`](docs/plan/m1-screens/). **실기기 확인은 아직입니다** |
+| M2~M3 — 여정과 홈 · 계정과 조 | M1 뒤 |
 | M4 — TestFlight·내부 테스트 배포로 08 검증 진입 (4주 실사용) | M3 뒤 |
 | M5 — 스토어 정식 출시 | 3차 판정(Pass) 뒤 |
 
@@ -28,8 +29,11 @@ Node 22 와 npm 이 있으면 됩니다. 처음 한 번 `npm install` 로 의존
 | 웹 빌드 만들기 (`dist/` 에 나옵니다) | `npm run build:web` |
 | 타입 검사 | `npm run typecheck` |
 | 단위 테스트 | `npm test` |
+| 화면 e2e (웹 빌드를 브라우저로 열어 확인) | `npm run build:web` 뒤 `npm run test:e2e` |
 
-웹 빌드를 눈으로 확인하려면 빌드한 뒤 `dist/` 를 정적 서버로 열면 됩니다 (예: `npx serve dist`). 같은 세 검사(`typecheck` · `test` · `build:web`)를 PR 마다 `.github/workflows/app-ci.yml` 이 다시 돌립니다.
+웹 빌드를 눈으로 확인하려면 빌드한 뒤 `dist/` 를 정적 서버로 열면 됩니다. 이 저장소에 딸린 작은 서버가 하나 있습니다 — `node tools/e2e/serve-dist.mjs` 를 띄우고 브라우저로 `http://127.0.0.1:8081` 을 엽니다. 같은 네 검사(`typecheck` · `test` · `build:web` · `test:e2e`)를 PR 마다 `.github/workflows/app-ci.yml` 이 다시 돌립니다.
+
+화면 e2e 는 웹 빌드를 실제 브라우저(390×844 크기)로 열어 **로그인 화면에서 눌러 기도 화면까지 닿는지, 77단계를 스스로 완주하는지, 이어폰 단추와 흔들기가 알을 넘기는지, 멈췄다 들어오면 그 자리에서 이어지는지, 콘솔이 조용한지**를 확인하고 화면 사진 두 장을 남깁니다. 소리와 진동은 이 컨테이너에서 실제로 나지 않으므로 **앱이 기기에 요청했는지**만 셉니다 — 실제로 들리고 떨리는지는 실기기에서 사람이 확인할 몫입니다.
 
 ### 네이티브 빌드는 아직 한 번도 실행하지 않았습니다
 
@@ -43,6 +47,7 @@ Node 22 와 npm 이 있으면 됩니다. 처음 한 번 `npm install` 로 의존
 |---|---|
 | [`docs/product/`](docs/product/) | **제품 정본** — PRD 제3판(`06-prd.md`), 디자인 시스템, 서비스 설계, 화면 명세, 화면 지도, 프로토타입 핸드오프(`prototype/`). 이관 경위는 [`docs/product/README.md`](docs/product/README.md) |
 | [`spec/`](spec/) | 프레임워크와 무관한 기도 도메인 데이터 — 77단계 순서, 신비 4종, 54일 규칙, 기도문(판본 미확정) |
+| [`docs/plan/m1-screens/`](docs/plan/m1-screens/) | M1 에서 찍은 화면 사진 두 장 (기도 · 하루 완주). v5 시안과 나란히 놓고 대조하는 용도 |
 | [`docs/plan/development-plan.md`](docs/plan/development-plan.md) | 개발 계획 — 지금은 컨펌 대기 기획안. 정합 확인표, 마일스톤, 프레임워크 결정 카드, 디자인 과제, 스토어 체크리스트 |
 | [`decisions.md`](decisions.md) | 결정 로그와 결정 큐. 일을 시작하기 전에 주제어로 검색한다 |
 | [`CLAUDE.md`](CLAUDE.md) | Claude Code 세션을 위한 프로젝트 안내 |

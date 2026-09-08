@@ -8,11 +8,16 @@
  * 판정했기 때문이다. 그 줄이 차지하던 80px 만큼은 빈 자리로 남겨 아래 각주의 위치를
  * v5 와 같게 두었다.
  *
- * **단추는 아직 아무 일도 하지 않는다.** 실제 인증은 Supabase 를 붙이는 M3 의 일이다.
- * 눌리는데 아무 일도 일어나지 않는 단추가, 눌리면 거짓 화면으로 넘어가는 단추보다 정직하다.
+ * **단추는 M1 에서 기도 화면으로 들어간다. 아직 인증은 하지 않는다.** v5 시안의 배선이
+ * 그렇다 — 시안에서도 `Google로 계속하기` 는 계정을 확인하지 않고 곧바로 앱 안으로
+ * 들어간다. 실제 인증은 Supabase 를 붙이는 M3 의 일이다.
+ *
+ * 시안이 들어가는 곳은 홈 화면인데 홈은 M2 에서 만든다. 그래서 M1 동안만 **기도 화면**이
+ * 그 자리를 대신한다. M2 에서 홈이 서면 이 두 줄의 목적지가 홈으로 바뀐다.
  */
 import { Image } from 'expo-image';
-import { StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { artSession, SLOT_GEOMETRY } from '../src/art';
 import { colors, metrics, type } from '../src/theme';
 
@@ -44,12 +49,22 @@ export default function LoginScreen() {
 
         <View style={styles.spacer} />
 
-        <View style={styles.primaryButton}>
+        <Pressable
+          style={styles.primaryButton}
+          onPress={enter}
+          accessibilityRole="button"
+          testID="login-google"
+        >
           <Text style={styles.primaryButtonText}>Google로 계속하기</Text>
-        </View>
-        <View style={styles.secondaryButton}>
+        </Pressable>
+        <Pressable
+          style={styles.secondaryButton}
+          onPress={enter}
+          accessibilityRole="button"
+          testID="login-apple"
+        >
           <Text style={styles.secondaryButtonText}>Apple로 계속하기</Text>
-        </View>
+        </Pressable>
 
         {/* v5 의 `초대 코드로 들어가기` 줄이 있던 자리 (결정 1-1 · Q-13 으로 뺐다). */}
         <View style={styles.removedRowGap} />
@@ -61,6 +76,14 @@ export default function LoginScreen() {
       </View>
     </View>
   );
+}
+
+/**
+ * 앱 안으로 들어간다. M1 에서 갈 수 있는 곳은 기도 화면 하나뿐이다.
+ * M2 에서 홈이 서면 이 한 줄의 목적지가 홈으로 바뀐다.
+ */
+function enter(): void {
+  router.push('/pray');
 }
 
 const styles = StyleSheet.create({

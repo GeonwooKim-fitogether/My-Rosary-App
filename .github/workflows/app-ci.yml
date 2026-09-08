@@ -38,3 +38,25 @@ jobs:
 
       - name: 웹 빌드
         run: npm run build:web
+
+      # 화면 e2e 는 방금 만든 웹 빌드(`dist/`)를 띄워 실제 브라우저로 확인한다.
+      # 기도 화면까지 눌러서 닿는지, 77단계를 스스로 완주하는지, 콘솔이 조용한지가
+      # 여기서 걸린다. 브라우저는 이 단계에서 받아 온다 — 개발 컨테이너에는 이미
+      # 깔려 있지만 CI 러너에는 없기 때문이다.
+      - name: e2e 브라우저 받기
+        run: npx playwright install --with-deps chromium
+
+      - name: 화면 e2e (Playwright)
+        run: npm run test:e2e
+
+      # 화면이 어긋났을 때 눈으로 볼 수 있게 사진과 기록을 남긴다.
+      - name: e2e 산출물 올리기
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-결과
+          path: |
+            docs/plan/m1-screens/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore

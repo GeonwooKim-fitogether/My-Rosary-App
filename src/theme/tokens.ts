@@ -31,6 +31,14 @@ export interface ColorTokens {
   rule: string;
   /** 테두리만 있는 단추의 선. 괘선보다 진하다. */
   buttonBorder: string;
+  /**
+   * 면으로 칠하는 강조색(치자). 글자에 쓰는 `accent` 와 값이 다르다.
+   *
+   * 글자용 치자-d(`#82600F`)는 작은 글자가 바탕과 4.5:1 을 넘게 하려고 어둡게 조정한
+   * 값이고(`decisions.md` Q-09), 묵주 알처럼 큰 면을 칠할 때는 그 조정이 필요 없다.
+   * v5 시안이 묵주 알에 쓴 값이 이것이다.
+   */
+  accentFill: string;
 }
 
 /** 낮 벌. v5 가 그린 유일한 벌이다. */
@@ -42,6 +50,7 @@ export const dayColors: ColorTokens = {
   accent: '#82600F',
   rule: 'rgba(31,37,48,.16)',
   buttonBorder: 'rgba(31,37,48,.30)',
+  accentFill: '#8A6516',
 };
 
 /** 지금 쓰는 색표. M0 에서는 낮 벌 하나뿐이다. */
@@ -96,6 +105,72 @@ export const type = {
     fontSize: 11,
     lineHeight: 11 * 1.7, // CSS: /1.7
   },
+
+  /* ── 아래 여덟은 M1 이 더한 것이다. 값의 출처는 v5 의 기도 화면(`s-pray`)과
+     하루 완주 화면(`s-dayDone`) 마크업이고, 위와 같은 방식으로 CSS 의 배수 줄 높이와
+     em 자간을 픽셀로 환산했다. ─────────────────────────────────────────────── */
+
+  /** 12.5px · 줄 높이 1.4. 기도 화면 머리의 지향 한 줄. */
+  heading: {
+    fontFamily: fonts.sans,
+    fontSize: 12.5,
+    lineHeight: 12.5 * 1.4,
+  },
+  /** 10.5px · 자간 .16em. 지금 어느 구간인가 — 전례색으로 칠하는 유일한 글자다. */
+  stepLabel: {
+    fontFamily: fonts.sans,
+    fontSize: 10.5,
+    lineHeight: 10.5,
+    letterSpacing: 10.5 * 0.16,
+  },
+  /** 26px 명조 · 줄 높이 1.7. 기도문의 앞 절 — 앱이 읽는 부분. */
+  prayerLead: {
+    fontFamily: fonts.serif,
+    fontSize: 26,
+    lineHeight: 26 * 1.7,
+  },
+  /** 21px 명조 · 줄 높이 1.7. 기도문의 뒷 절 — 사용자가 받는 부분. */
+  prayerResponse: {
+    fontFamily: fonts.serif,
+    fontSize: 21,
+    lineHeight: 21 * 1.7,
+  },
+  /** 14px 중간 굵기. 아래 단추의 첫 줄. */
+  buttonCompact: {
+    fontFamily: fonts.sansMedium,
+    fontSize: 14,
+    lineHeight: 14,
+  },
+  /** 11px. 단추 아래 덧붙는 한 줄, 리본 아래 요약 한 줄. */
+  caption: {
+    fontFamily: fonts.sans,
+    fontSize: 11,
+    lineHeight: 11,
+  },
+  /** 34px 명조 · 줄 높이 1.35. 하루 완주의 큰 글. */
+  display: {
+    fontFamily: fonts.serif,
+    fontSize: 34,
+    lineHeight: 34 * 1.35,
+  },
+  /** 13px · 줄 높이 1.7. 하루 완주의 설명 두 줄. */
+  bodySmall: {
+    fontFamily: fonts.sans,
+    fontSize: 13,
+    lineHeight: 13 * 1.7,
+  },
+  /** 13px. 통계 줄의 이름. */
+  statLabel: {
+    fontFamily: fonts.sans,
+    fontSize: 13,
+    lineHeight: 13,
+  },
+  /** 13px 중간 굵기. 통계 줄의 값. */
+  statValue: {
+    fontFamily: fonts.sansMedium,
+    fontSize: 13,
+    lineHeight: 13,
+  },
 } as const;
 
 /** 치수. 화면마다 다시 적지 않도록 여기 모은다. */
@@ -114,4 +189,33 @@ export const metrics = {
   screenPadding: 24,
   /** 모서리를 굴리지 않는다. */
   radius: 0,
+} as const;
+
+/**
+ * 전례색 슬롯의 낮 벌 값 (FR-25 · 06-design-system §2-3 · `decisions.md` Q-10).
+ *
+ * 디자인 시스템 §2-3 은 전례색 넷을 **밤 팔레트 값으로만** 적어 두었고(자색 `#7A6699` ·
+ * 녹색 `#7E8B6B` · 백색 `#E4DED0` · 홍색 `#9E4A57`), v5 시안은 넷 중 자색 하나만
+ * 실제로 썼다 — 기도 화면의 구간 라벨(`pr-step`)에 박힌 `#63507F` 가 그것이다.
+ * 그래서 나머지 셋의 낮 값이 어디에도 없었고, 이 표가 그 자리를 채운다.
+ *
+ * **어림으로 고르지 않고 규칙 하나로 파생했다.** 밤 값의 색상(hue)과 채도를 그대로 두고,
+ * 낮 바탕(`#EDE7D8`) 위에서 본문 대비 4.5:1 을 넘길 때까지 명도만 낮춘다. 자색이 실제로
+ * 그렇게 만들어졌다 — 밤 자색은 낮 바탕에서 대비가 4.06:1 로 모자라고, v5 가 고른
+ * `#63507F` 는 같은 색상 계열을 어둡게 해 5.70:1 을 얻은 값이다.
+ *
+ * 백색만 예외다. 밝은 한지 바탕 위에서는 어떤 명도로도 "백색"이 백색으로 읽히지 않으므로
+ * **빛깔을 더하지 않고 먹빛을 쓴다.** 색을 하나 지어내는 것보다 정직하다.
+ *
+ * 파생한 셋(녹색·백색·홍색)은 KimDesigner 검수 대상이다 — `decisions.md` 결정 큐 참조.
+ */
+export const seasonColors = {
+  /** 대림·사순. v5 가 기도 화면에 박아 둔 값 그대로다. 대비 5.70:1. */
+  violet: '#63507F',
+  /** 연중. 밤 녹색 `#7E8B6B` 의 색상·채도를 유지하고 명도만 낮췄다. 대비 4.75:1. */
+  green: '#5F6850',
+  /** 부활·성탄·성모 축일. 빛깔을 더하지 않는다 — 본문 먹빛. 대비 12.47:1. */
+  white: dayColors.ink,
+  /** 성령강림·수난·순교. 밤 홍색이 낮 바탕에서 이미 4.77:1 이라 그대로 쓴다. */
+  red: '#9E4A57',
 } as const;
