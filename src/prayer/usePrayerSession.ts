@@ -67,9 +67,18 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
   const pace: PaceKey = options.pace ?? 'normal';
   const handsFree = options.handsFree ?? true;
 
-  // 화면이 열려 있는 동안 화면이 꺼지지 않게 한다 (FR-24).
-  // 기도 중에 화면이 꺼지면 묵주 그림도, 지금 어느 알인지도 함께 사라진다.
-  useKeepAwake();
+  /*
+   * 화면이 열려 있는 동안 화면이 꺼지지 않게 한다 (FR-24). 기도 중에 화면이 꺼지면
+   * 묵주 그림도, 지금 어느 알인지도 함께 사라진다.
+   *
+   * `suppressDeactivateWarnings` 를 켠 이유가 있다. 화면 잠금 방지를 **걸지 못하는**
+   * 브라우저·상황이 있는데(문서가 보이지 않는 상태로 열렸거나 브라우저가 거절한 경우),
+   * 그때 화면을 떠나며 잠금을 푸는 호출이 "아직 걸리지도 않았다"는 오류로 터진다.
+   * 이 오류는 기도와 아무 상관이 없는데도 콘솔에 남는다 — 실제로 CI 의 브라우저에서
+   * 이 오류가 나 화면 e2e 셋이 한꺼번에 실패했고, 그렇게 발견했다. 잠금을 걸 수 없는
+   * 기기에서는 조용히 넘어가는 것이 이 프로젝트의 규칙이다(`journey-rules.md` §5 와 같은 태도).
+   */
+  useKeepAwake(undefined, { suppressDeactivateWarnings: true });
 
   const [ready, setReady] = useState(false);
   const [index, setIndex] = useState(0);
