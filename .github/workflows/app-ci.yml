@@ -57,6 +57,7 @@ jobs:
           name: e2e-결과
           path: |
             docs/plan/m1-screens/
+            docs/plan/m2-screens/
             test-results/
           retention-days: 7
           if-no-files-found: ignore

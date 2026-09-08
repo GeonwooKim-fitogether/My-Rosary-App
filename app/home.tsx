@@ -16,7 +16,7 @@ import { useCallback, useState } from 'react';
 import { Image } from 'expo-image';
 import { router, useFocusEffect } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { artSession, SLOT_GEOMETRY } from '../src/art';
+import { artSession } from '../src/art';
 import { MYSTERY_SETS } from '../src/domain/mysteries';
 import { cardStatus, resumeLine, type CardStatus } from '../src/journey/card';
 import { countKo, monthDayKo, relativeTimeKo } from '../src/journey/format';
