@@ -4,7 +4,7 @@
 
 ## 지금 어디까지 왔나
 
-**관문 2(KimDesigner 시안 컨펌) 진행 중.** 관문 1(기획안 컨펌)은 2026-09-05에 닫혔다 — 화면 세 곳을 프로토타입 방식으로 가기로 해 화면이 여덟에서 열로 늘었다(`decisions.md` 결정 1). 프레임워크·스택은 아직 답 대기다. 코드는 아직 없다. 현재 상태와 다음 할 일은 언제나 `decisions.md`와 `docs/plan/development-plan.md`가 정본이다 — 이 파일의 이 절은 요약일 뿐이니, 어긋나면 그 두 파일을 믿는다.
+**시안 확정 · 구현 착수 대기.** atelier 가 확정한 v5 시안을 2026-09-08 에 인계받아 `docs/design/v5/` 에 정본으로 앉혔다(`decisions.md` 결정 2). 관문 1(기획안 컨펌)은 2026-09-05에 닫혔다 — 화면 세 곳을 프로토타입 방식으로 가기로 해 화면이 여덟에서 열로 늘었다(`decisions.md` 결정 1). 프레임워크·스택은 아직 답 대기다. 코드는 아직 없다. 현재 상태와 다음 할 일은 언제나 `decisions.md`와 `docs/plan/development-plan.md`가 정본이다 — 이 파일의 이 절은 요약일 뿐이니, 어긋나면 그 두 파일을 믿는다.
 
 ## 정본 문서가 어디 있나
 
@@ -13,7 +13,7 @@
 | 제품 요구사항(PRD 제3판, FR-01~45), 디자인 시스템, 서비스 설계, 화면 명세, 화면 지도 | `docs/product/06-*.md` — 원본은 atelier `idea/mobile-rosary/`, 이관 뒤 atelier 쪽은 freeze. 이관 경위는 `docs/product/README.md` |
 | 프로토타입 핸드오프 (한지 낮 벌, 화면 열 벌 HTML, 성화 목업 자산) | `docs/product/prototype/` — 성화 4장은 저작권 미확정 목업 |
 | **눌러 보는 앱 (관문 2 산출물)** — 실제로 동작한다 | `docs/design/app.html` — 브라우저로 열면 곧바로 앱이다. 바람을 적어 여정을 만들고, 77단계가 스스로 넘어가고, 나갔다 들어오면 그 자리에서 이어진다. 원본은 `docs/design/app/`, 조립기는 `docs/design/build-app.mjs` |
-| **앱 화면 시안 (관문 2 산출물)** — 낮·밤 두 벌 마흔세 장 + 견줌 패널, 접근성 실측, 수용 기준 자가 점검표 | `docs/design/` — `screens-day.html` · `screens-night.html`은 화면을 나란히 늘어놓아 견주는 판이고, `prototype.html`은 단추를 누르면 다른 화면으로 넘어가는 화면 전환기다. 값·규칙·판단 요청은 `docs/design/README.md` |
+| **화면 시안 정본 (atelier v5 인계본)** | `docs/design/v5/` — `index.html` 한 파일에 화면 열과 기도 엔진, `art/` 에 성화 열여섯 장. `node docs/design/v5/build.mjs` 로 파일 하나짜리 조립본을 만든다. 경위와 슬롯 체계는 `docs/design/v5/README.md` |
 | 기도 도메인 데이터 (77단계, 신비 4종, 54일 규칙, 기도문 임시 판본) | `spec/` — 프레임워크 무관 JSON·마크다운. PRD에 없는 것은 지어 넣지 않았다 |
 | 개발 계획 (컨펌용 기획안 → 컨펌 뒤 정본) | `docs/plan/development-plan.md` |
 | 결정 로그·결정 큐·컨펌 필요 항목 | `decisions.md` — **일을 시작하기 전에 주제어로 한 번 검색한다** |
