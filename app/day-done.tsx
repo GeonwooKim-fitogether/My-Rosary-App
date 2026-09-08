@@ -15,7 +15,12 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { MYSTERY_SETS } from '../src/domain/mysteries';
 import type { MysteryKey } from '../src/domain/types';
 import { monthDayKo, objectParticle, ordinalKo } from '../src/journey/format';
-import { currentJourney, dateOfDay, dayNumber, tally } from '../src/journey/session';
+import {
+  currentJourney,
+  dateOfDay,
+  dayNumber,
+  tallyAfterFinishing,
+} from '../src/journey/session';
 import { leaveToHome } from '../src/navigation/leaveToHome';
 import { colors, metrics, type } from '../src/theme';
 
@@ -49,7 +54,9 @@ export default function DayDoneScreen() {
     | MysteryKey
     | undefined;
 
-  const counts = tally(journey);
+  // 오늘 칸은 이미 내일로 옮겨 간 뒤다. 그래서 `tally` 가 아니라 이쪽을 쓴다 —
+  // 그러지 않으면 내일을 바친 것으로 세어 머리글의 날짜와 어긋난다.
+  const counts = tallyAfterFinishing(journey);
   const mysteryName = mystery ? MYSTERY_SETS[mystery]?.name : undefined;
 
   return (

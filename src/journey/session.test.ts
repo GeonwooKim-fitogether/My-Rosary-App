@@ -9,6 +9,7 @@ import {
   dayNumber,
   mysteryOf,
   tally,
+  tallyAfterFinishing,
   type Journey,
 } from './session';
 import { monthDayKo } from './format';
@@ -48,6 +49,19 @@ describe('하루를 마치면', () => {
     expect(finished).toBe(false);
     expect(dayNumber(journey)).toBe(24);
     expect(tally(journey)).toEqual({ done: 22, missed: 2, left: 30 });
+  });
+
+  it('하루 완주 화면의 셈은 내일을 바친 것으로 세지 않는다', () => {
+    // `tally` 는 `today` 를 바친 쪽으로 세는데, 하루를 마친 직후에는 그 `today` 가
+    // 이미 내일 칸이다. 그대로 쓰면 스물세 번째 날을 바친 사람에게 "스물두 날
+    // 바쳤다"고 말하게 된다. 하루 완주 화면은 `tallyAfterFinishing` 을 써서
+    // 실제로 지나온 만큼만 말한다.
+    const journey = freshJourney();
+    completeToday(journey);
+
+    expect(tallyAfterFinishing(journey)).toEqual({ done: 21, missed: 2, left: 31 });
+    const { done, missed, left } = tallyAfterFinishing(journey);
+    expect(done + missed + left).toBe(54);
   });
 
   it('마지막 칸을 마치면 여정이 끝난다', () => {

@@ -73,13 +73,47 @@ export function dateOfDay(journey: Journey, dayIndex: number): Date {
   return addDays(journey.startDate, dayIndex - 1);
 }
 
-/** 바친 날·거른 날·남은 날 (v5 의 `tally`). `today` 는 바친 쪽으로 센다. */
+/**
+ * 바친 날·거른 날·남은 날 (v5 의 `tally`). `today` 는 바친 쪽으로 센다.
+ *
+ * 오늘을 아직 바치지 않은 화면(기도 화면·홈)에서 쓴다. **하루를 막 마친 뒤에는 쓰지
+ * 않는다** — 그때는 `today` 가 이미 내일 칸으로 옮겨 가 있어서, 내일을 바친 것으로
+ * 세게 된다. 그 자리에는 아래 `tallyAfterFinishing` 을 쓴다.
+ */
 export function tally(journey: Journey): { done: number; missed: number; left: number } {
   let done = 0;
   let missed = 0;
   let left = 0;
   for (const state of journey.days) {
     if (state === 'prayed' || state === 'today') done++;
+    else if (state === 'missed') missed++;
+    else left++;
+  }
+  return { done, missed, left };
+}
+
+/**
+ * 하루를 막 마친 직후의 셈 — 하루 완주 화면이 쓴다.
+ *
+ * `completeToday` 가 오늘 칸을 `prayed` 로 바꾸고 `today` 를 다음 칸으로 옮긴 뒤에
+ * 불린다. 그래서 여기서는 **`prayed` 만 바친 날로 세고, 새로 놓인 `today` 는 남은
+ * 날로 센다.** 그렇게 해야 방금 스물세 번째 날을 바친 사람에게 "스물한 날 바쳤고
+ * 서른한 날 남았다"고, 곧 실제로 지나온 만큼만 말하게 된다.
+ *
+ * 이 구분이 필요한 이유는 v5 가 남긴 주석이 말해 준다 — 날짜 번호와 리본이 따로 놀아
+ * "리본은 24일째를 가리키는데 머리글은 스물세 번째 날이라고 말하는" 어긋남이 실제로
+ * 있었다. 머리글을 방금 바친 날로 되돌린 이상, 셈도 같은 시점을 가리켜야 한다.
+ */
+export function tallyAfterFinishing(journey: Journey): {
+  done: number;
+  missed: number;
+  left: number;
+} {
+  let done = 0;
+  let missed = 0;
+  let left = 0;
+  for (const state of journey.days) {
+    if (state === 'prayed') done++;
     else if (state === 'missed') missed++;
     else left++;
   }

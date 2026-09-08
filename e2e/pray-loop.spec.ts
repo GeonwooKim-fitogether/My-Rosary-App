@@ -38,8 +38,11 @@ test('로그인 화면에서 눌러 들어가 하루 77단계를 스스로 완�
   }
   await expect(dayDone).toBeVisible();
   await expect(page.getByTestId('day-done-head')).toHaveText('9월 5일 · 스물세 번째 날');
+  // 스물세 번째 날을 막 바쳤으니 바친 날은 스물하나(거른 날 둘), 남은 날은 서른하나다.
+  // 셋을 더하면 쉰넷이 된다. 한때 여기가 22 와 30 이었는데, 그것은 오늘 칸이 이미
+  // 내일로 옮겨 간 뒤의 상태를 그대로 세어 내일까지 바친 것으로 셈한 값이었다.
   await expect(page.getByTestId('day-done-summary')).toHaveText(
-    '54일 중 22일 바쳤습니다 · 남은 30일',
+    '54일 중 21일 바쳤습니다 · 남은 31일',
   );
 
   // 3. 기기에 말을 거는가.
