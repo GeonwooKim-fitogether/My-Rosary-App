@@ -16,6 +16,7 @@
     "expo": "~57.0.21",
     "expo-constants": "~57.0.17",
     "expo-font": "~57.0.3",
+    "expo-image": "~57.0.4",
     "expo-linking": "~57.0.9",
     "expo-router": "~57.0.20",
     "expo-splash-screen": "~57.0.8",
@@ -35,7 +36,10 @@
     "typescript": "~6.0.3"
   },
   "jest": {
-    "preset": "jest-expo",
-    "testMatch": ["**/*.test.ts", "**/*.test.tsx"]
+    "preset": "jest-expo/node",
+    "testMatch": [
+      "**/*.test.ts",
+      "**/*.test.tsx"
+    ]
   }
 }

@@ -1,0 +1,40 @@
+# 앱 검사 — 타입 검사 · 단위 테스트 · 웹 빌드.
+#
+# 웹 빌드까지 여기서 도는 이유가 있다. 타입 검사와 단위 테스트가 모두 통과해도 번들이
+# 깨지는 경우가 있는데, 이 저장소에서 웹 빌드는 화면을 눈으로 확인할 수 있는 유일한
+# 통로다(맥이 없어 iOS 네이티브 빌드가 불가능하다). 그래서 깨지면 즉시 알아야 한다.
+#
+# 이 파일의 원본은 이 저장소다 — `.github/workflows/` 는 창고 동기화 봇이 내려보내지
+# 않는 폴더이기 때문이다 (원본 우선 규칙의 예외 항목).
+name: app-ci
+
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: 타입 검사 · 테스트 · 웹 빌드
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 의존성 설치
+        run: npm ci
+
+      - name: 타입 검사
+        run: npm run typecheck
+
+      - name: 단위 테스트
+        run: npm test
+
+      - name: 웹 빌드
+        run: npm run build:web

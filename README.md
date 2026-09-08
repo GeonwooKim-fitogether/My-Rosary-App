@@ -8,13 +8,34 @@
 
 | 단계 | 상태 |
 |---|---|
-| 관문 1 — 기획안 컨펌 | **대기 중** — [`docs/plan/development-plan.md`](docs/plan/development-plan.md)를 공방장이 검토합니다 |
-| 관문 2 — KimDesigner 시안 컨펌 | 관문 1 뒤 |
-| M0~M3 — 기반 · 기도 루프 · 여정과 홈 · 계정과 조 | 관문 2 뒤 |
+| 관문 1 — 기획안 컨펌 | **닫힘** (2026-09-05, `decisions.md` 결정 1) |
+| 관문 2 — 시안 컨펌 | **닫힘** (2026-09-08, 결정 2 — 정본은 [`docs/design/v5/`](docs/design/v5/)) |
+| M0 — 프로젝트 바닥 | **작업완료** — Expo + TypeScript 골격, 기도 도메인 코어, 디자인 토큰, 성화 슬롯, 로그인 화면 한 장 |
+| M1~M3 — 기도 루프 · 여정과 홈 · 계정과 조 | M0 뒤 |
 | M4 — TestFlight·내부 테스트 배포로 08 검증 진입 (4주 실사용) | M3 뒤 |
 | M5 — 스토어 정식 출시 | 3차 판정(Pass) 뒤 |
 
-코드는 아직 없습니다. 프레임워크·스택은 결정 카드로 올라가 있습니다([`decisions.md`](decisions.md)).
+스택은 Expo(React Native · TypeScript) + EAS Build + Supabase 입니다(`decisions.md` 결정 3). M0 에서 만든 것과 통과 기준은 [`docs/plan/m0-work-order.md`](docs/plan/m0-work-order.md)가 정본입니다.
+
+## 앱을 돌려 보기
+
+Node 22 와 npm 이 있으면 됩니다. 처음 한 번 `npm install` 로 의존성을 갖춥니다.
+
+| 하려는 것 | 명령 |
+|---|---|
+| 개발 서버 띄우기 (기기·시뮬레이터·웹 공용) | `npm start` |
+| 브라우저에서 바로 보기 | `npm run web` |
+| 웹 빌드 만들기 (`dist/` 에 나옵니다) | `npm run build:web` |
+| 타입 검사 | `npm run typecheck` |
+| 단위 테스트 | `npm test` |
+
+웹 빌드를 눈으로 확인하려면 빌드한 뒤 `dist/` 를 정적 서버로 열면 됩니다 (예: `npx serve dist`). 같은 세 검사(`typecheck` · `test` · `build:web`)를 PR 마다 `.github/workflows/app-ci.yml` 이 다시 돌립니다.
+
+### 네이티브 빌드는 아직 한 번도 실행하지 않았습니다
+
+**iOS·Android 앱 파일을 만드는 빌드는 이 저장소에서 단 한 번도 돌지 않았습니다.** `app.json` 과 `eas.json` 은 갖춰 두었지만 검증되지 않은 설정이며, **Expo 계정과 Apple Developer·Google Play Console 계정을 연결한 뒤에 실행합니다.** 개발 환경이 리눅스 컨테이너라 맥이 없고, 애플이 iOS 빌드에 맥을 요구하기 때문입니다. 클라우드 빌드(EAS Build)는 사람이 만들어야 하는 계정을 전제로 하므로 그 세 계정이 준비되기 전에는 돌릴 수 없습니다. 필요한 계정과 절차는 [`docs/plan/m0-work-order.md`](docs/plan/m0-work-order.md) §8 에 있습니다.
+
+앱 아이콘과 스플래시 이미지도 아직 없습니다. `app.json` 의 웹 파비콘은 배경색만 채운 임시 파일(`assets/images/favicon-placeholder.png`)이며, 실제 아이콘은 디자인 산출물로 따로 정합니다.
 
 ## 무엇이 어디 있나
 
@@ -46,4 +67,4 @@
 
 ## 자동 검사 (`.github/workflows/`)
 
-PR 크로스컷 게이트(`pr-gate-check.yml`) · 파일 등록부(`file-registry.yml`, 등록부 없으면 no-op) · 브랜치 겹침 알림(`branch-overlap.yml`) · 자산 그래프 정합(`asset-graph.yml`) · 통합 현황판 게시(`integration-board.yml`) · 창고 동기화(`sync-skills.yml`). 창고 전용이던 README 스킬 표 검사는 제거했습니다(`decisions.md` Q-12).
+앱 검사(`app-ci.yml` — 타입 검사·단위 테스트·웹 빌드) · PR 크로스컷 게이트(`pr-gate-check.yml`) · 파일 등록부(`file-registry.yml`, 등록부 없으면 no-op) · 브랜치 겹침 알림(`branch-overlap.yml`) · 자산 그래프 정합(`asset-graph.yml`) · 통합 현황판 게시(`integration-board.yml`) · 창고 동기화(`sync-skills.yml`). 창고 전용이던 README 스킬 표 검사는 제거했습니다(`decisions.md` Q-12).
