@@ -24,11 +24,13 @@ const M1 = 'docs/plan/m1-screens';
 const M2 = 'docs/plan/m2-screens';
 /** 알 쉰아홉과 단 넘기기 (`decisions.md` 결정 6) 를 찍어 두는 자리. */
 const ROSARY_FULL = 'docs/plan/rosary-full';
+/** 표준 도해에 맞춘 기도 순서 (`decisions.md` 결정 7) 를 찍어 두는 자리. */
+const PRAYER_ORDER = 'docs/plan/prayer-order';
 
 test.use({ reducedMotion: 'reduce' });
 
 /**
- * 기도 화면을 v5 시안이 보여 주는 단계까지 옮긴다 — 제3단의 네 번째 알(77단계 중 41번째).
+ * 기도 화면을 v5 시안이 보여 주는 단계까지 옮긴다 — 제3단의 네 번째 알(81단계 중 43번째).
  * 시안이 그 단계를 그려 두었으므로 같은 단계를 찍어야 나란히 놓고 대조할 수 있다.
  */
 async function moveToThirdDecadeFourthBead(page: import('@playwright/test').Page) {
@@ -176,4 +178,59 @@ test('결정 6 · 알 쉰아홉과 단 넘기기를 두 크기 두 벌로 찍는
   await page.setViewportSize({ width: 390, height: 640 });
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${ROSARY_FULL}/pray-night-640.png` });
+});
+
+/**
+ * 결정 7 — 표준 「묵주기도 방법」 도해에 맞춘 순서를 눈으로 확인하는 넉 장.
+ *
+ * 여기서 확인하는 것은 넷이다. 첫째, 시작 기도에 구원을 비는 기도가 실제로 생겼는가
+ * (도해 7번, 그전에는 없었다). 둘째, 제1단의 첫 성모송에서 지금 알이 고리의 **오른쪽**에
+ * 있는가. 셋째, 제5단의 마지막 성모송에서 지금 알이 **왼쪽**에 있는가 — 둘을 합치면
+ * 고리가 도해대로 오른쪽으로 돈다는 뜻이다. 넷째, 마침 기도의 성모찬송이 화면에 뜨는가
+ * (도해 33번, 그전에는 없었다).
+ *
+ * 시계는 `openApp` 이 세워 두므로 앱이 스스로 알을 넘기지 않는다. 그래서 아래의 단추
+ * 누름 수가 곧 지나간 단계 수이고, 사진이 언제 찍어도 같은 단계에서 나온다.
+ */
+test('결정 7 · 도해에 맞춘 기도 순서를 넉 장으로 찍는다', async ({ page }) => {
+  const beadNumber = page.locator('svg text').first();
+  const step = page.getByTestId('pray-step');
+
+  await openApp(page);
+  await enterHome(page);
+  await enterPrayerFromHome(page);
+  await expect(step).toHaveText('시작 기도 · 성호경');
+
+  // 1. 시작 기도의 구원을 비는 기도 — 성호경에서 여덟 걸음이다
+  //    (입맞춤 · 사도신경 · 주님의 기도 · 성모송 셋 · 영광송 · 구원을 비는 기도).
+  for (let i = 0; i < 8; i++) await pressMediaButton(page, 'nexttrack');
+  await expect(step).toHaveText('시작 기도 · 구원을 비는 기도');
+  await expect(page.getByTestId('pray-a')).toContainText('저희를 지옥 불에서 구하시고');
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${PRAYER_ORDER}/1-opening-save.png` });
+
+  // 2. 제1단의 첫 성모송 — 지금 알이 고리의 오른쪽에 있어야 한다.
+  await page.getByTestId('pray-next-decade').click();
+  await expect(step).toHaveText('제1단 · 신비 선포');
+  for (let i = 0; i < 2; i++) await pressMediaButton(page, 'nexttrack');
+  await expect(step).toHaveText('제1단 · 성모송');
+  await expect(beadNumber).toHaveText('1');
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${PRAYER_ORDER}/2-decade1-first-bead.png` });
+
+  // 3. 제5단의 마지막 성모송 — 지금 알이 왼쪽에 있어야 한다.
+  for (let i = 0; i < 4; i++) await page.getByTestId('pray-next-decade').click();
+  await expect(step).toHaveText('제5단 · 신비 선포');
+  for (let i = 0; i < 11; i++) await pressMediaButton(page, 'nexttrack');
+  await expect(step).toHaveText('제5단 · 성모송');
+  await expect(beadNumber).toHaveText('10');
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${PRAYER_ORDER}/3-decade5-last-bead.png` });
+
+  // 4. 마침 기도의 성모찬송.
+  await page.getByTestId('pray-next-decade').click();
+  await expect(step).toHaveText('마침 기도 · 성모찬송');
+  await expect(page.getByTestId('pray-a')).toContainText('여왕이시며 어머니시요');
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${PRAYER_ORDER}/4-closing-salve.png` });
 });

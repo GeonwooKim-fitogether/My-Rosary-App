@@ -1,5 +1,5 @@
 /**
- * 기도 진행기 시험 — 화면 없이 "77단계를 끝까지 가는가"를 확인한다.
+ * 기도 진행기 시험 — 화면 없이 "81단계를 끝까지 가는가"를 확인한다.
  *
  * 가짜 타이머로 시간을 앞당겨 돌린다. 실제로 기다리면 한 번 완주에 십수 분이 걸리는데,
  * 그 시간은 사람이 기도하는 시간이지 시험이 기다릴 시간이 아니다.
@@ -44,7 +44,7 @@ afterEach(() => {
 });
 
 describe('하루 완주', () => {
-  it('교대 낭송으로 77단계를 스스로 끝까지 간다', async () => {
+  it('교대 낭송으로 81단계를 스스로 끝까지 간다', async () => {
     const channels = recorder();
     const seen: number[] = [];
     let finished = 0;
@@ -60,9 +60,9 @@ describe('하루 완주', () => {
     runner.start();
     await runToEnd();
 
-    expect(seen).toHaveLength(77);
+    expect(seen).toHaveLength(81);
     expect(seen[0]).toBe(0);
-    expect(seen[76]).toBe(76);
+    expect(seen[80]).toBe(80);
     expect(finished).toBe(1);
     expect(runner.isRunning()).toBe(false);
   });
@@ -73,9 +73,9 @@ describe('하루 완주', () => {
     runner.start();
     await runToEnd();
 
-    expect(channels.spoken).toHaveLength(77);
+    expect(channels.spoken).toHaveLength(81);
     expect(channels.spoken[0]).toBe(QUEUE[0]!.a);
-    expect(channels.spoken).not.toContain(QUEUE[3]!.b);
+    expect(channels.spoken).not.toContain(QUEUE[4]!.b);
   });
 
   it('전부 읽기는 앞 절과 뒷 절을 모두 읽는다', async () => {
@@ -85,8 +85,8 @@ describe('하루 완주', () => {
     await runToEnd();
 
     const withTail = QUEUE.filter((s) => s.b).length;
-    expect(channels.spoken).toHaveLength(77 + withTail);
-    expect(channels.spoken).toContain(QUEUE[3]!.b);
+    expect(channels.spoken).toHaveLength(81 + withTail);
+    expect(channels.spoken).toContain(QUEUE[4]!.b);
   });
 
   it('읽지 않기는 아무 소리도 내지 않고 알마다 진동한다', async () => {
@@ -99,10 +99,10 @@ describe('하루 완주', () => {
     const beads = channels.vibrations.filter(
       (v) => v.length === 1 && v[0] === HAPTIC_PATTERNS.beadAdvance[0],
     );
-    expect(beads).toHaveLength(77);
+    expect(beads).toHaveLength(81);
   });
 
-  it('단이 바뀔 때 다섯 번, 하루를 마칠 때 한 번 진동한다', async () => {
+  it('구간이 바뀔 때 여섯 번, 하루를 마칠 때 한 번 진동한다', async () => {
     const channels = recorder();
     const runner = createRunner({ queue: QUEUE, mode: 'alternate', pace: 'normal', channels });
     runner.start();
@@ -114,8 +114,9 @@ describe('하루 완주', () => {
     const completions = channels.vibrations.filter(
       (v) => v.length === 1 && v[0] === HAPTIC_PATTERNS.dayComplete[0],
     );
-    // 시작 기도 → 제1단, 그리고 제1단 → 제2단부터 제4단 → 제5단까지 넷. 합이 다섯이다.
-    expect(decadeChanges).toHaveLength(5);
+    // 시작 기도에서 제1단으로 한 번, 제1단에서 제5단까지 한 단씩 옮겨 가며 넷,
+    // 그리고 제5단에서 마침 기도로 한 번. 합이 여섯이다.
+    expect(decadeChanges).toHaveLength(6);
     expect(completions).toHaveLength(1);
   });
 });
@@ -206,7 +207,7 @@ describe('손 없이 조작', () => {
     let finished = 0;
     const runner = createRunner({
       queue: QUEUE,
-      startIndex: 76,
+      startIndex: 80,
       mode: 'alternate',
       pace: 'normal',
       channels,
@@ -240,12 +241,12 @@ describe('아무 자리로나 옮기기', () => {
     runner.start();
     await jest.advanceTimersByTimeAsync(1);
 
-    runner.goTo(35); // 제3단 신비 선포
+    runner.goTo(37); // 제3단 신비 선포
     await jest.advanceTimersByTimeAsync(1);
 
-    expect(runner.index()).toBe(35);
-    expect(seen).toContain(35);
-    expect(channels.spoken.at(-1)).toBe(QUEUE[35]!.a);
+    expect(runner.index()).toBe(37);
+    expect(seen).toContain(37);
+    expect(channels.spoken.at(-1)).toBe(QUEUE[37]!.a);
   });
 
   it('멈춰 있을 때 옮겨도 자리가 바뀐 것을 알린다', async () => {
@@ -263,11 +264,11 @@ describe('아무 자리로나 옮기기', () => {
     runner.pause();
     const spokenBefore = channels.spoken.length;
 
-    runner.goTo(21); // 제2단 신비 선포
+    runner.goTo(23); // 제2단 신비 선포
     await jest.advanceTimersByTimeAsync(1);
 
-    expect(runner.index()).toBe(21);
-    expect(seen.at(-1)).toBe(21);
+    expect(runner.index()).toBe(23);
+    expect(seen.at(-1)).toBe(23);
     // 멈춰 있으므로 읽지는 않는다 — 자리만 옮긴다.
     expect(channels.spoken).toHaveLength(spokenBefore);
     expect(runner.isRunning()).toBe(false);
@@ -285,7 +286,7 @@ describe('아무 자리로나 옮기기', () => {
     await jest.advanceTimersByTimeAsync(1);
     channels.vibrations.length = 0;
 
-    runner.goTo(49); // 제4단
+    runner.goTo(51); // 제4단
     await jest.advanceTimersByTimeAsync(1);
 
     expect(channels.vibrations).toContainEqual([...HAPTIC_PATTERNS.decadeChange]);
@@ -306,12 +307,12 @@ describe('아무 자리로나 옮기기', () => {
     runner.start();
     await jest.advanceTimersByTimeAsync(1);
 
-    runner.goTo(63); // 제5단 신비 선포로 뛴다
+    runner.goTo(65); // 제5단 신비 선포로 뛴다
     await runToEnd();
 
     expect(finished).toBe(1);
     // 뛰어넘은 단들은 한 번도 들르지 않았다 — 하루 완주 화면의 성모송 수가 여기서 나온다.
     expect(seen).not.toContain(30);
-    expect(seen.filter((i) => i >= 63)).toHaveLength(77 - 63);
+    expect(seen.filter((i) => i >= 65)).toHaveLength(81 - 65);
   });
 });

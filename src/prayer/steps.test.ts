@@ -1,5 +1,5 @@
 /**
- * 하루 큐 시험 — `spec/` 의 77단계에 `spec/` 의 문구가 제대로 붙는가.
+ * 하루 큐 시험 — `spec/` 의 81단계에 `spec/` 의 문구가 제대로 붙는가.
  */
 import { PRAYERS, TOTAL_STEPS } from '../domain/sequence';
 import { MYSTERY_SETS } from '../domain/mysteries';
@@ -8,7 +8,7 @@ import { buildDayQueue, declarationText, hailCount, hailCountAmong } from './ste
 const QUEUE = buildDayQueue('sorrowful');
 
 describe('하루 큐', () => {
-  it('77단계다', () => {
+  it('81단계다', () => {
     expect(QUEUE).toHaveLength(TOTAL_STEPS);
   });
 
@@ -18,9 +18,21 @@ describe('하루 큐', () => {
 
   it('구간 이름은 v5 의 형식을 따른다 — 구간 · 기도문 이름', () => {
     expect(QUEUE[0]!.head).toBe('시작 기도 · 성호경');
-    expect(QUEUE[3]!.head).toBe('시작 기도 · 성모송');
+    expect(QUEUE[4]!.head).toBe('시작 기도 · 성모송');
     const decadeHail = QUEUE.find((s) => s.decade === 3 && s.prayer === 'hail')!;
     expect(decadeHail.head).toBe('제3단 · 성모송');
+  });
+
+  it('마침 기도 구간도 같은 형식으로 적는다', () => {
+    const closing = QUEUE.filter((s) => s.section === 'closing');
+    expect(closing.map((s) => s.head)).toEqual(['마침 기도 · 성모찬송', '마침 기도 · 성호경']);
+  });
+
+  it('십자가에 입맞춤은 낭송할 기도문 대신 무엇을 하는지 알리는 한 줄이다', () => {
+    const kiss = QUEUE.find((s) => s.prayer === 'kiss')!;
+    expect(kiss.head).toBe('시작 기도 · 십자가에 입맞춤');
+    expect(kiss.a).toBe('십자가에 입맞춥니다.');
+    expect(kiss.b).toBe('');
   });
 
   it('신비 선포에는 그 단의 신비 제목이 들어간다', () => {
@@ -40,7 +52,7 @@ describe('하루 큐', () => {
 
   it('성호경처럼 받는 절이 없는 기도는 뒷 절이 빈 문자열이다', () => {
     expect(QUEUE[0]!.b).toBe('');
-    expect(QUEUE[3]!.b).toBe(PRAYERS.hail.b);
+    expect(QUEUE[4]!.b).toBe(PRAYERS.hail.b);
   });
 
   it('하루에 성모송은 쉰세 번이다 — 시작 기도 셋에 각 단 열씩', () => {
@@ -73,7 +85,8 @@ describe('실제로 지나온 성모송만 세기', () => {
   });
 
   it('같은 알을 되짚어 두 번 지나도 한 번으로 센다', () => {
-    const twice = [9, 10, 9, 10, 11];
+    // 11~13 은 제1단의 첫 세 성모송이다.
+    const twice = [11, 12, 11, 12, 13];
     expect(hailCountAmong(QUEUE, twice)).toBe(3);
   });
 

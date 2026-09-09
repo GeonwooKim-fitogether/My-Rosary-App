@@ -13,11 +13,12 @@
 | 제품 요구사항(PRD 제3판, FR-01~45), 디자인 시스템, 서비스 설계, 화면 명세, 화면 지도 | `docs/product/06-*.md` — 원본은 atelier `idea/mobile-rosary/`, 이관 뒤 atelier 쪽은 freeze. 이관 경위는 `docs/product/README.md` |
 | 시안 계보 (v5 이전) | `docs/product/prototype/` (atelier 최초 핸드오프) · `docs/design/screens-day.html` · `screens-night.html` · `prototype.html`. **정본이 아니다** — 값이 어긋나면 v5 를 따른다(결정 2) |
 | **화면 시안 정본 (atelier v5 인계본)** | `docs/design/v5/` — `index.html` 한 파일에 화면 열과 기도 엔진, `art/` 에 성화 열여섯 장. `node docs/design/v5/build.mjs` 로 파일 하나짜리 조립본을 만든다. 경위와 슬롯 체계는 `docs/design/v5/README.md` |
-| 기도 도메인 데이터 (77단계, 신비 4종, 54일 규칙, 기도문 임시 판본) | `spec/` — 프레임워크 무관 JSON·마크다운. PRD에 없는 것은 지어 넣지 않았다 |
+| 기도 도메인 데이터 (81단계, 신비 4종, 54일 규칙, 기도문 임시 판본) | `spec/` — 프레임워크 무관 JSON·마크다운. PRD에 없는 것은 지어 넣지 않았다 |
 | 개발 계획 정본 (마일스톤 M0~M5, v5 값의 소재) | `docs/plan/development-plan.md` |
 | **M0 작업 지시서** | `docs/plan/m0-work-order.md` |
 | M1·M2 에서 찍은 화면 사진 | `docs/plan/m1-screens/`(기도 · 하루 완주) · `docs/plan/m2-screens/`(홈 · 새 기도 · 여정 상세 · 여정 완주 · 설정 · 초대 코드 · 시트 · 밤 벌) — v5 시안과 나란히 놓고 대조한다 |
 | 알 쉰아홉을 다 그리고 단 넘기기를 붙인 뒤의 화면 사진 | `docs/plan/rosary-full/` — 낮·밤 두 벌과 390×844·390×640 두 크기, 모두 네 장. 무엇을 보며 확인하는지는 그 폴더의 `README.md` (결정 6) |
+| 기도 순서를 한국 천주교 표준 도해에 맞춘 뒤의 화면 사진 | `docs/plan/prayer-order/` — 시작 기도의 구원을 비는 기도, 제1단 첫 알(오른쪽), 제5단 마지막 알(왼쪽), 마침 기도의 성모찬송, 모두 넉 장. 무엇을 보는 사진인지는 그 폴더의 `README.md` (결정 7) |
 | 묵주 그림을 사실적으로 다듬은 일의 전/후 사진 | `docs/plan/rosary-before-after/` — 같은 성화 위에서 고치기 전과 후를 나란히 놓았다. 무엇을 왜 바꿨는지는 그 폴더의 `README.md` |
 | 결정 로그·결정 큐·컨펌 필요 항목 | `decisions.md` — **일을 시작하기 전에 주제어로 한 번 검색한다** |
 | 폐기 목록 (다시 쓰지 않기로 한 도구·자리) | `.claude/retired.json` — 훅이 차단한다 |

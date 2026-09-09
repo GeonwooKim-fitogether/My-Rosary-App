@@ -1,5 +1,5 @@
 /**
- * 묵주 알 배치 시험 — 77단계를 훑으며 알이 하나씩 밀리지 않는지 본다.
+ * 묵주 알 배치 시험 — 81단계를 훑으며 알이 하나씩 밀리지 않는지 본다.
  *
  * 2026-09-09 에 그림이 열 알에서 **쉰아홉 알**로 바뀌면서(`decisions.md` 결정 6) 이
  * 시험도 함께 바뀌었다. 옛 시험은 "고리의 열 알 중 몇째인가"를 물었고, 지금 시험은
@@ -33,6 +33,20 @@ describe('알 쉰아홉의 자리', () => {
     expect(Math.abs(toMedal(loop[0]!) - toMedal(loop[54]!))).toBeLessThan(0.1);
   });
 
+  it('고리는 메달에서 출발해 오른쪽으로 돈다 — 실제 묵주가 도는 방향이다', () => {
+    // 표준 「묵주기도 방법」 도해는 제1단을 고리의 오른쪽에, 제5단을 왼쪽에 그린다.
+    const first = rosaryStateFor(QUEUE.find((s) => s.decade === 1 && s.prayer === 'hail')!);
+    expect(BEADS[first.current]!.x).toBeGreaterThan(LOOP.cx);
+
+    const last = rosaryStateFor(
+      QUEUE.find((s) => s.decade === 5 && s.prayer === 'hail' && s.bead === 10)!,
+    );
+    expect(BEADS[last.current]!.x).toBeLessThan(LOOP.cx);
+
+    // 고리로 들어서는 첫 알도 메달의 오른쪽에 앉는다.
+    expect(BEADS[4]!.x).toBeGreaterThan(MEDAL.x);
+  });
+
   it('어떤 알도 그림 밖으로 나가지 않는다', () => {
     for (const bead of BEADS) {
       expect(bead.x).toBeGreaterThanOrEqual(0);
@@ -46,8 +60,8 @@ describe('알 쉰아홉의 자리', () => {
 });
 
 describe('어느 알이 켜지는가', () => {
-  it('성호경과 사도신경은 십자가에서 바친다', () => {
-    for (const prayer of ['sign', 'creed']) {
+  it('성호경과 십자가에 입맞춤과 사도신경은 십자가에서 한다', () => {
+    for (const prayer of ['sign', 'kiss', 'creed']) {
       const step = QUEUE.find((s) => s.section === 'opening' && s.prayer === prayer)!;
       expect(rosaryStateFor(step)).toEqual({ done: 0, current: -1, focus: 'cross', label: null });
     }
@@ -68,8 +82,24 @@ describe('어느 알이 켜지는가', () => {
       });
     });
 
-    const glory = QUEUE.find((s) => s.section === 'opening' && s.prayer === 'glory')!;
-    expect(rosaryStateFor(glory)).toEqual({ done: 4, current: -1, focus: 'medal', label: null });
+    // 영광송과 구원을 비는 기도는 둘 다 중심 메달에서 바친다 (도해 6·7번).
+    for (const prayer of ['glory', 'save']) {
+      const step = QUEUE.find((s) => s.section === 'opening' && s.prayer === prayer)!;
+      expect(rosaryStateFor(step)).toEqual({ done: 4, current: -1, focus: 'medal', label: null });
+    }
+  });
+
+  it('마침 기도는 알을 다 바친 뒤 중심 메달로 돌아와 바친다', () => {
+    const closing = QUEUE.filter((s) => s.section === 'closing');
+    expect(closing.map((s) => s.prayer)).toEqual(['salve', 'sign']);
+    for (const step of closing) {
+      expect(rosaryStateFor(step)).toEqual({
+        done: BEAD_COUNT,
+        current: -1,
+        focus: 'medal',
+        label: null,
+      });
+    }
   });
 
   it('신비 선포와 주님의 기도는 그 단의 큰 알에서 바친다', () => {

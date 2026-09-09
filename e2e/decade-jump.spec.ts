@@ -19,7 +19,7 @@ import {
 
 test.use({ reducedMotion: 'reduce' });
 
-test('시작 기도에서도 제5단에서도 단을 넘길 수 있다', async ({ page }) => {
+test('시작 기도에서도 제5단에서도 구간을 넘길 수 있다', async ({ page }) => {
   const errors = collectConsoleErrors(page);
   await openApp(page);
   await enterHome(page);
@@ -41,11 +41,15 @@ test('시작 기도에서도 제5단에서도 단을 넘길 수 있다', async (
     await page.getByTestId('pray-next-decade').click();
     await expect(page.getByTestId('pray-step')).toHaveText(`제${decade}단 · 신비 선포`);
   }
+
+  // 제5단 다음은 마침 기도다 — 결정 7 로 구간이 여섯에서 일곱이 됐다. 거기가 끝이다.
+  await page.getByTestId('pray-next-decade').click();
+  await expect(page.getByTestId('pray-step')).toHaveText('마침 기도 · 성모찬송');
   await expect(page.getByTestId('pray-next-decade')).toContainText('여기가 끝');
 
   // 되돌아가는 것도 같다.
   await page.getByTestId('pray-previous-decade').click();
-  await expect(page.getByTestId('pray-step')).toHaveText('제4단 · 신비 선포');
+  await expect(page.getByTestId('pray-step')).toHaveText('제5단 · 신비 선포');
 
   expect(errors).toEqual([]);
 });
