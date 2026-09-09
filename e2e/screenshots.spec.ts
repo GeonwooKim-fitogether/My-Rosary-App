@@ -26,6 +26,18 @@ const M2 = 'docs/plan/m2-screens';
 const ROSARY_FULL = 'docs/plan/rosary-full';
 /** 표준 도해에 맞춘 기도 순서 (`decisions.md` 결정 7) 를 찍어 두는 자리. */
 const PRAYER_ORDER = 'docs/plan/prayer-order';
+/** 늘어진 묵주 모양과 재질 넷 (`decisions.md` 결정 8·9) 을 찍어 두는 자리. */
+const MATERIALS = 'docs/plan/rosary-materials';
+
+/** 설정 화면에서 묵주를 골라 온다. 사용자가 하는 그대로다. */
+async function chooseRosary(page: import('@playwright/test').Page, key: string) {
+  await page.getByTestId('home-settings').click();
+  await page.getByTestId('settings-rosary').click();
+  await expect(page.getByTestId('sheet-rosary')).toBeVisible();
+  await page.getByTestId(`sheet-choice-${key}`).click();
+  await page.getByTestId('settings-close').click();
+  await expect(page.getByTestId('home-screen')).toBeVisible();
+}
 
 test.use({ reducedMotion: 'reduce' });
 
@@ -210,27 +222,89 @@ test('결정 7 · 도해에 맞춘 기도 순서를 넉 장으로 찍는다', as
   await page.screenshot({ path: `${PRAYER_ORDER}/1-opening-save.png` });
 
   // 2. 제1단의 첫 성모송 — 지금 알이 고리의 오른쪽에 있어야 한다.
-  await page.getByTestId('pray-next-decade').click();
-  await expect(step).toHaveText('제1단 · 신비 선포');
-  for (let i = 0; i < 2; i++) await pressMediaButton(page, 'nexttrack');
+  //    구원을 비는 기도에서 세 걸음이다 (신비 선포 · 주님의 기도 · 첫 성모송).
+  for (let i = 0; i < 3; i++) await pressMediaButton(page, 'nexttrack');
   await expect(step).toHaveText('제1단 · 성모송');
   await expect(beadNumber).toHaveText('1');
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${PRAYER_ORDER}/2-decade1-first-bead.png` });
 
   // 3. 제5단의 마지막 성모송 — 지금 알이 왼쪽에 있어야 한다.
-  for (let i = 0; i < 4; i++) await page.getByTestId('pray-next-decade').click();
-  await expect(step).toHaveText('제5단 · 신비 선포');
-  for (let i = 0; i < 11; i++) await pressMediaButton(page, 'nexttrack');
+  //    제1단 첫 성모송에서 예순다섯 걸음이다 — 한 단이 열네 단계이므로 넉 단이 쉰여섯이고,
+  //    거기에 제1단에서 남은 아홉(성모송 아홉)을 더한 값이다.
+  for (let i = 0; i < 65; i++) await pressMediaButton(page, 'nexttrack');
   await expect(step).toHaveText('제5단 · 성모송');
   await expect(beadNumber).toHaveText('10');
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${PRAYER_ORDER}/3-decade5-last-bead.png` });
 
-  // 4. 마침 기도의 성모찬송.
-  await page.getByTestId('pray-next-decade').click();
+  // 4. 마침 기도의 성모찬송 — 영광송과 구원을 비는 기도를 지나 세 걸음이다.
+  for (let i = 0; i < 3; i++) await pressMediaButton(page, 'nexttrack');
   await expect(step).toHaveText('마침 기도 · 성모찬송');
   await expect(page.getByTestId('pray-a')).toContainText('여왕이시며 어머니시요');
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${PRAYER_ORDER}/4-closing-salve.png` });
+});
+
+/**
+ * 결정 8·9 — 늘어진 묵주 모양과 재질 넷을 눈으로 확인하는 여섯 장.
+ *
+ * 여기서 확인하는 것은 넷이다. 첫째, 고리가 타원이 아니라 아래 메달로 모이는 물방울인가.
+ * 둘째, 알과 알 사이에 줄이 보이고 단과 단 사이만 한 칸 더 긴가. 셋째, 재질 넷이 실제로
+ * 서로 달라 보이는가(같은 단계에서 넉 장을 찍으므로 나란히 놓고 견줄 수 있다). 넷째,
+ * 고르는 시트에서 그 차이가 미리 보이는가.
+ *
+ * 다섯째로 밤 벌 한 장을 더 찍는다 — 금과 은은 밝은 한지에서, 나무와 장미는 어두운 쪽빛에서
+ * 흐려지기 쉬워 두 벌을 다 봐야 판정이 선다.
+ */
+test('결정 8·9 · 늘어진 묵주 모양과 재질 넷을 여섯 장으로 찍는다', async ({ page }) => {
+  await openApp(page);
+  await enterHome(page);
+
+  for (const key of ['rose', 'wood', 'silver', 'gold']) {
+    await chooseRosary(page, key);
+    await enterPrayerFromHome(page);
+    await moveToThirdDecadeFourthBead(page);
+    await page.waitForTimeout(400);
+    await page.screenshot({ path: `${MATERIALS}/pray-${key}-day.png` });
+    await page.getByTestId('pray-pause').click();
+    await expect(page.getByTestId('home-screen')).toBeVisible();
+  }
+
+  // 밤 벌 — 기본값인 붉은 장미가 쪽빛 위에서도 읽히는지 본다.
+  await chooseRosary(page, 'rose');
+  await page.getByTestId('home-settings').click();
+  await page.getByTestId('settings-theme').click();
+  await page.getByTestId('sheet-choice-night').click();
+  await expect(page.getByTestId('settings-theme-value')).toHaveText('밤 →');
+  await page.getByTestId('settings-close').click();
+  await enterPrayerFromHome(page);
+  await moveToThirdDecadeFourthBead(page);
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${MATERIALS}/pray-rose-night.png` });
+
+  // 고르는 시트 — 미리보기가 보이는 상태. 낮으로 되돌려 찍는다.
+  await page.getByTestId('pray-pause').click();
+  await expect(page.getByTestId('home-screen')).toBeVisible();
+  await page.getByTestId('home-settings').click();
+  await page.getByTestId('settings-theme').click();
+  await page.getByTestId('sheet-choice-day').click();
+  await page.getByTestId('settings-rosary').click();
+  await expect(page.getByTestId('rosary-preview')).toBeVisible();
+  await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${MATERIALS}/sheet-rosary.png` });
+
+  /*
+   * 새 기도 화면의 묵주 줄. 이 줄은 첫 화면 밖에 있어 M2 사진에는 나오지 않으므로, 고른
+   * 재질이 여기까지 닿았는지는 따로 찍어야 알 수 있다. 금으로 바꾼 뒤 그 줄까지 굴려
+   * 내려가, 작은 묵주 표시가 금빛 사슬로 바뀌었는지 본다.
+   */
+  await page.getByTestId('sheet-choice-gold').click();
+  await page.getByTestId('settings-close').click();
+  await expect(page.getByTestId('home-screen')).toBeVisible();
+  await page.getByTestId('home-new').click();
+  await page.getByTestId('new-rosary').scrollIntoViewIfNeeded();
+  await expect(page.getByTestId('new-rosary')).toContainText('금');
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${MATERIALS}/new-rosary-row.png` });
 });

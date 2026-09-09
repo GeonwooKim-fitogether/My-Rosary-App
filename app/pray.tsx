@@ -13,10 +13,11 @@
  * 2. **기도문 영역의 높이를 361 로 적었다.** 시안의 340 은 CSS 의 content-box 기준
  *    값이고 위쪽 여백 20 과 괘선 1 이 그 밖에 붙는다. React Native 의 높이는 여백과
  *    선을 포함하므로 340 + 20 + 1 = 361 이 브라우저에서 실제로 차지하던 높이다.
- * 3. **성화와 기도문 사이에 단을 넘기는 줄이 하나 있다.** v5 에 없는 줄이고,
- *    `decisions.md` 결정 6 이 더한 것이다 — 공방장이 "어떤 상황에서든 단을 마음대로
- *    넘길 수 있어야 한다"고 정했다. 모양은 v5 의 어법(높이 80 · 괘선 · 굴리지 않은
- *    모서리 · 토큰 색)을 그대로 쓰고, 자리를 왜 여기로 잡았는지는 그 줄 옆에 적었다.
+ * 3. **성화와 기도문 사이에 한 알씩 옮기는 줄이 하나 있다.** v5 에 없는 줄이고,
+ *    `decisions.md` 결정 6 이 더한 것이다 — 공방장이 "어떤 상황에서든 마음대로 넘길 수
+ *    있어야 한다"고 정했다. 2026-09-09 에 그 줄이 **한 단씩에서 한 알씩으로** 바뀌었다
+ *    (결정 8). 모양은 v5 의 어법(높이 80 · 괘선 · 굴리지 않은 모서리 · 토큰 색)을 그대로
+ *    쓰고, 자리를 왜 여기로 잡았는지는 그 줄 옆에 적었다.
  */
 import { useCallback, useMemo } from 'react';
 import { Image } from 'expo-image';
@@ -26,8 +27,11 @@ import { artSession } from '../src/art';
 import { liturgicalDay } from '../src/domain/liturgy';
 import { Rosary } from '../src/prayer/Rosary';
 import { rosaryStateFor, type RosaryPlacement } from '../src/prayer/rosaryState';
-import type { SectionMove } from '../src/prayer/sections';
+import { buildDayQueue } from '../src/prayer/steps';
+import { PRAYERS } from '../src/domain/sequence';
+import type { PrayerKey } from '../src/domain/types';
 import { usePrayerSession, type DayResult } from '../src/prayer/usePrayerSession';
+import type { RosaryKey } from '../src/storage/settings';
 import type { PaceKey } from '../src/domain/types';
 import { dayIndexOn, dayLabelOn } from '../src/journey/rules';
 import type { Journey } from '../src/journey/session';
@@ -66,6 +70,7 @@ export default function PrayScreen() {
       journey={journey}
       pace={settings.pace}
       handsFree={settings.handsFree}
+      rosary={settings.rosary}
     />
   );
 }
@@ -74,10 +79,13 @@ function PraySession({
   journey,
   pace,
   handsFree,
+  rosary,
 }: {
   journey: Journey;
   pace: PaceKey;
   handsFree: boolean;
+  /** 설정에서 고른 묵주 (FR-39). 그림의 재질을 정한다. */
+  rosary: RosaryKey;
 }) {
   const styles = useThemedStyles(prayStyles);
   const { season } = useTheme();
@@ -125,6 +133,22 @@ function PraySession({
     ? rosaryStateFor(step)
     : { done: 0, current: -1, focus: 'cross', label: null };
 
+  /*
+   * 앞뒤 단추에 적을 이름 — 한 걸음 앞과 뒤에 무슨 기도가 있는가.
+   *
+   * 큐를 여기서 다시 만드는 것이 낭비로 보일 수 있지만, `usePrayerSession` 은 지금 단계
+   * 하나만 내보내고 큐 전체는 내보내지 않는다. 큐는 그날의 신비 하나로 정해지는 값이라
+   * (`buildDayQueue`) 같은 신비로 다시 만들면 진행기가 쓰는 것과 글자까지 같다. 신비가
+   * 바뀔 때만 다시 만든다.
+   */
+  const queue = useMemo(() => buildDayQueue(session.mystery), [session.mystery]);
+  const nameOf = (at: number): string | null => {
+    const found = queue[at];
+    return found ? PRAYERS[found.prayer as PrayerKey].name : null;
+  };
+  const previousName = nameOf(session.index - 1);
+  const nextName = nameOf(session.index + 1);
+
   /** 잠시 멈춤 — 자리를 남기고 나간다 (FR-18). */
   const pauseAndLeave = useCallback(() => {
     session.pause();
@@ -163,39 +187,40 @@ function PraySession({
         ) : null}
         <View style={[StyleSheet.absoluteFill, styles.paper]} />
         <View style={[StyleSheet.absoluteFill, styles.rosaryBox]}>
-          <Rosary {...placement} />
+          <Rosary {...placement} rosary={rosary} />
         </View>
       </View>
 
       {/*
-        단 넘기기 (`decisions.md` 결정 6). 성화 바로 아래, 기도문 위에 둔다.
+        한 알씩 옮기는 줄 (`decisions.md` 결정 6 이 만들고 결정 8 이 한 알씩으로 바꿨다).
+        성화 바로 아래, 기도문 위에 둔다.
 
         자리를 여기로 잡은 이유가 둘이다. 첫째, 공방장의 요구가 "어떤 상황에서든"이므로
         **스크롤하지 않고 언제나 보여야** 한다 — 단추 두 줄(잠시 멈춤·여기서 끝내기)
         아래에 세 번째 줄로 붙이면 짧은 화면에서 첫 화면 밖으로 밀린다. 둘째, "지금 어디
-        있나"를 말하는 묵주 그림과 "다른 단으로 옮긴다"는 조작은 한 가지 일의 앞뒤라
-        나란히 있는 편이 읽힌다.
+        있나"를 말하는 묵주 그림과 "한 알 옮긴다"는 조작은 한 가지 일의 앞뒤라 나란히
+        있는 편이 읽힌다.
 
         치르는 값도 적어 둔다 — 기도문이 81 만큼 아래로 밀린다. 390×844 에서는 앞 절이
         그대로 다 보이고, 390×640 에서는 뒷 절을 보려면 조금 더 스크롤하게 된다.
       */}
-      <View style={styles.decadeNav} testID="pray-decade-nav">
-        <DecadeButton
-          move={session.moves.previous}
-          onPress={session.goToSection}
-          action="앞 단"
-          title="← 앞 단"
+      <View style={styles.stepNav} testID="pray-step-nav">
+        <StepButton
+          onPress={session.back}
+          to={previousName}
+          action="앞 알"
+          title="← 앞 알"
           empty="여기가 처음"
-          testID="pray-previous-decade"
+          testID="pray-previous-step"
         />
-        <View style={styles.decadeDivider} />
-        <DecadeButton
-          move={session.moves.next}
-          onPress={session.goToSection}
-          action="다음 단"
-          title="다음 단 →"
+        <View style={styles.stepDivider} />
+        <StepButton
+          onPress={session.advance}
+          to={nextName}
+          action="다음 알"
+          title="다음 알 →"
           empty="여기가 끝"
-          testID="pray-next-decade"
+          testID="pray-next-step"
         />
       </View>
 
@@ -236,21 +261,25 @@ function PraySession({
 }
 
 /**
- * 단을 넘기는 단추 하나.
+ * 한 알 옮기는 단추 하나.
  *
- * 갈 데가 없으면(시작 기도에서의 앞 단, 제5단에서의 다음 단) 감추지 않고 **흐리게 둔다.**
- * 감추면 남은 단추가 자리를 옮겨, 같은 자리를 눌렀는데 다른 일이 일어난다.
+ * 갈 데가 없으면(첫 단계에서의 앞 알, 마지막 단계에서의 다음 알) 감추지 않고 **흐리게
+ * 둔다.** 감추면 남은 단추가 자리를 옮겨, 같은 자리를 눌렀는데 다른 일이 일어난다.
+ *
+ * 아래 줄에 **갈 곳의 기도문 이름**(`성모송` · `영광송`)을 적는다. 화살표만 있으면 누르기
+ * 전에는 무엇이 나올지 알 수 없어, 되짚어 보려는 사람이 화면을 여러 번 넘기게 된다.
  */
-function DecadeButton({
-  move,
+function StepButton({
   onPress,
+  to,
   action,
   title,
   empty,
   testID,
 }: {
-  move: SectionMove | null;
-  onPress: (move: SectionMove) => void;
+  onPress: () => void;
+  /** 갈 곳의 기도문 이름. 갈 데가 없으면 null 이다. */
+  to: string | null;
   /** 소리로 읽어 줄 때의 이름. 화살표가 없는 쪽이다 — 화면 낭독기가 화살표를 읽으면 방해가 된다. */
   action: string;
   /** 화면에 보이는 이름. 화살표가 방향을 말한다. */
@@ -262,16 +291,16 @@ function DecadeButton({
   const styles = useThemedStyles(prayStyles);
   return (
     <Pressable
-      style={styles.decadeButton}
-      onPress={move ? () => onPress(move) : undefined}
-      disabled={!move}
+      style={styles.stepButton}
+      onPress={to ? onPress : undefined}
+      disabled={!to}
       accessibilityRole="button"
-      accessibilityState={{ disabled: !move }}
-      accessibilityLabel={`${action}, ${move ? move.label : empty}`}
+      accessibilityState={{ disabled: !to }}
+      accessibilityLabel={`${action}, ${to ?? empty}`}
       testID={testID}
     >
-      <Text style={move ? styles.actionTitle : styles.actionTitleDisabled}>{title}</Text>
-      <Text style={styles.actionNote}>{move ? move.label : empty}</Text>
+      <Text style={to ? styles.actionTitle : styles.actionTitleDisabled}>{title}</Text>
+      <Text style={styles.actionNote}>{to ?? empty}</Text>
     </Pressable>
   );
 }
@@ -328,17 +357,17 @@ const prayStyles = ({ colors, mode }: Theme) =>
     // 실제로 그려지는 부분이 아래쪽에 몰려 있기 때문이다 (v5 의 주석 그대로).
     rosaryBox: { alignItems: 'center', justifyContent: 'flex-start' },
     /*
-     * 단 넘기기 줄. v5 의 어법을 그대로 쓴다 — 높이 80, 괘선으로 나누고, 모서리를
+     * 한 알씩 옮기는 줄. v5 의 어법을 그대로 쓴다 — 높이 80, 괘선으로 나누고, 모서리를
      * 굴리지 않으며, 색은 토큰으로만. 설정 화면의 줄과 같은 문법이라 새로 배울 것이 없다.
      * 좌우 여백을 두지 않고 화면을 가로지르게 한 것도 그 줄들과 같다.
      */
-    decadeNav: {
+    stepNav: {
       flexDirection: 'row',
       height: metrics.touchTargetHeight, // 80
       flexShrink: 0,
     },
-    decadeDivider: { width: 1, backgroundColor: colors.rule },
-    decadeButton: {
+    stepDivider: { width: 1, backgroundColor: colors.rule },
+    stepButton: {
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',

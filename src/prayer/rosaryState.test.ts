@@ -6,7 +6,16 @@
  * "실제 묵주 쉰아홉 알 중 몇째인가"를 묻는다.
  */
 import { mysteryForFiftyfourDay } from '../domain/mysteries';
-import { BEADS, BEAD_COUNT, LOOP, MEDAL, VIEWBOX, rosaryStateFor } from './rosaryState';
+import {
+  BEADS,
+  BEAD_COUNT,
+  BEAD_RADIUS,
+  LOOP,
+  LOOP_PATH,
+  MEDAL,
+  VIEWBOX,
+  rosaryStateFor,
+} from './rosaryState';
 import { buildDayQueue } from './steps';
 
 const QUEUE = buildDayQueue(mysteryForFiftyfourDay(23));
@@ -18,19 +27,53 @@ describe('알 쉰아홉의 자리', () => {
     expect(BEADS.filter((bead) => bead.big)).toHaveLength(6); // 늘어진 줄 하나 + 단마다 하나
   });
 
-  it('고리의 알은 둘레를 따라 고르게 놓인다 — 몰리거나 성기는 데가 없다', () => {
+  it('성모송 알 사이는 고르고, 단 경계의 줄만 한 칸 더 길다 (결정 8)', () => {
     const loop = BEADS.slice(4);
-    const gaps = loop
-      .slice(1)
-      .map((bead, i) => Math.hypot(bead.x - loop[i]!.x, bead.y - loop[i]!.y));
-    const smallest = Math.min(...gaps);
-    const largest = Math.max(...gaps);
-    // 가장 좁은 사이와 가장 넓은 사이의 차이가 2% 안이면 눈에는 고르게 보인다.
-    expect(largest / smallest).toBeLessThan(1.02);
-    // 메달 양옆의 첫 알과 마지막 알도 같은 간격으로 앉는다.
+    const gap = (i: number) => Math.hypot(loop[i + 1]!.x - loop[i]!.x, loop[i + 1]!.y - loop[i]!.y);
+
+    // 큰 알에 닿지 않는 도막 — 성모송 알과 성모송 알 사이다.
+    const plain: number[] = [];
+    // 큰 알에 닿는 도막 — 사진에서 큰 알이 홀로 놓이게 하는 긴 줄이다.
+    const long: number[] = [];
+    for (let i = 0; i < loop.length - 1; i++) {
+      (loop[i]!.big || loop[i + 1]!.big ? long : plain).push(gap(i));
+    }
+
+    // 보통 도막끼리는 눈에 고르게 보인다 (차이 2% 안).
+    expect(Math.max(...plain) / Math.min(...plain)).toBeLessThan(1.02);
+    // 긴 도막은 어느 것이든 가장 긴 보통 도막보다 확실히 길다.
+    expect(Math.min(...long) / Math.max(...plain)).toBeGreaterThan(1.4);
+
+    // 메달 양옆의 첫 알과 마지막 알은 같은 거리에 앉는다 (좌우가 어긋나면 눈에 띈다).
     const toMedal = (bead: { x: number; y: number }) =>
       Math.hypot(bead.x - MEDAL.x, bead.y - MEDAL.y);
     expect(Math.abs(toMedal(loop[0]!) - toMedal(loop[54]!))).toBeLessThan(0.1);
+  });
+
+  it('알끼리 겹치지 않는다 — 사이마다 줄이 보인다 (결정 8)', () => {
+    const loop = BEADS.slice(4);
+    for (let i = 0; i < loop.length - 1; i++) {
+      const distance = Math.hypot(loop[i + 1]!.x - loop[i]!.x, loop[i + 1]!.y - loop[i]!.y);
+      const touching =
+        (loop[i]!.big ? BEAD_RADIUS.big : BEAD_RADIUS.small) +
+        (loop[i + 1]!.big ? BEAD_RADIUS.big : BEAD_RADIUS.small);
+      // 알 둘의 반지름을 더한 것보다 사이가 넉넉히 멀어야 그 틈으로 줄이 보인다.
+      expect(distance - touching).toBeGreaterThan(1.5);
+    }
+  });
+
+  it('고리는 타원이 아니라 아래로 모이는 물방울이다 (결정 8)', () => {
+    const loop = BEADS.slice(4);
+    const halfWidth = (bead: { x: number }) => Math.abs(bead.x - MEDAL.x);
+
+    // 메달 옆의 첫 알과 마지막 알은 메달 가까이 모여 있다 — 타원이라면 여기가 가장 넓다.
+    expect(halfWidth(loop[0]!)).toBeLessThan(30);
+    expect(halfWidth(loop[54]!)).toBeLessThan(30);
+
+    // 가장 넓은 자리는 고리의 위쪽 절반에 있다 (사진의 두 어깨).
+    const widest = loop.reduce((a, b) => (halfWidth(a) >= halfWidth(b) ? a : b));
+    expect(halfWidth(widest)).toBeGreaterThan(140);
+    expect(widest.y).toBeLessThan(LOOP.cy);
   });
 
   it('고리는 메달에서 출발해 오른쪽으로 돈다 — 실제 묵주가 도는 방향이다', () => {
@@ -54,8 +97,27 @@ describe('알 쉰아홉의 자리', () => {
       expect(bead.y).toBeGreaterThanOrEqual(0);
       expect(bead.y).toBeLessThanOrEqual(VIEWBOX.height);
     }
-    // 부푼 지금 알(반지름 17)과 그 빛무리(28.9)까지 담을 자리가 고리 위쪽에 있다.
-    expect(LOOP.cy - LOOP.ry).toBeGreaterThanOrEqual(17 * 1.7);
+    // 부푼 지금 알(반지름 17)과 그 빛무리의 **보이는 부분**까지 담을 자리가 위쪽에 있다.
+    // 빛무리는 반지름 28.9 까지 번지지만 바깥 20% 는 완전히 투명해지는 구간이라, 실제로
+    // 잘리면 안 되는 것은 알 반지름의 1.3 배 안쪽이다.
+    expect(LOOP.cy - LOOP.ry).toBeGreaterThanOrEqual(BEAD_RADIUS.current * 1.3);
+  });
+
+  it('줄을 그리는 경로가 알을 놓는 곡선과 같다 — 알이 줄에서 뜨지 않는다', () => {
+    // 경로의 마디마다 가장 가까운 알까지의 거리를 재는 대신, 알마다 경로 위에 그 알을
+    // 지나는 마디가 있는지를 본다. 둘이 다른 곡선에서 나왔다면 여기서 벌어진다.
+    const points = LOOP_PATH.slice(0, -2)
+      .split(/[ML]/)
+      .filter(Boolean)
+      .map((pair) => {
+        const [x, y] = pair.trim().split(' ').map(Number);
+        return { x: x!, y: y! };
+      });
+    for (const bead of BEADS.slice(4)) {
+      const nearest = Math.min(...points.map((p) => Math.hypot(p.x - bead.x, p.y - bead.y)));
+      // 마디 사이가 이 크기에서 3.8 이므로, 알은 언제나 그 절반 안쪽에 있다.
+      expect(nearest).toBeLessThan(2);
+    }
   });
 });
 

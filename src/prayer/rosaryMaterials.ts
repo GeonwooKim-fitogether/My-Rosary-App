@@ -1,0 +1,186 @@
+/**
+ * 묵주 재질 넷 — 무엇으로 만든 묵주인가를 색으로 정하는 표.
+ *
+ * ── 이 파일이 왜 생겼나 (2026-09-09, `decisions.md` 결정 9) ──────────────────────
+ *
+ * 그전까지 설정의 `묵주` 항목은 **글자만 바꾸고 그림은 하나도 바꾸지 않았다.** 저장된
+ * 값(`나무` · `진주` · `유리`)을 그리는 층이 읽지도 않았기 때문이다. 그래서 요구사항
+ * FR-39("고른 묵주가 모든 여정의 기도 화면에 적용된다")와 화면 명세 S5("고르면 즉시 큰
+ * 미리보기")가 둘 다 지켜지지 않고 있었다. 이 파일은 그 빈자리를 채우는 첫 표다.
+ *
+ * 재질은 공방장이 보낸 실제 묵주 사진 넉 장에서 왔다.
+ *
+ * | 키 | 이름 | 사진에서 본 것 |
+ * |---|---|---|
+ * | `rose` | 붉은 장미 | 붉은 장미꽃으로 조각된 알, 검은 끈 마디, 금빛 십자고상과 금빛 메달. **기본값이다** |
+ * | `wood` | 나무 | 짙은 갈색 나무 알인데 주님의 기도 큰 알만 밝은 살구빛이라 눈에 띈다. 크림빛 매듭 끈 |
+ * | `silver` | 은 | 은빛 금속 구슬, 빛이 한 점에 또렷하게 맺힌다. 은 사슬 고리로 이어진다 |
+ * | `gold` | 금 | 금빛 금속 구슬, 은보다 따뜻하고 반사가 넓다. 금 사슬 고리 |
+ *
+ * ── 재질이 바꾸는 것과 바꾸지 않는 것 ─────────────────────────────────────────
+ *
+ * **바꾸는 것은 빛깔과 광택, 줄의 생김새, 십자가와 메달의 빛깔뿐이다.** 알의 자리와
+ * 크기는 넷이 모두 같다 — 자리는 `rosaryState.ts` 가 정하고 재질은 칠하기만 한다. 그래서
+ * 재질을 바꿔도 어느 알이 어느 기도인지가 흔들리지 않는다.
+ *
+ * **지금 바치는 알의 치자색도 바꾸지 않는다.** 그 색은 재질이 아니라 **상태**를 말하는
+ * 색이기 때문이다(디자인 시스템 §4-2 의 다섯 상태). 어느 묵주를 골라도 지금 알은 같은
+ * 치자색으로 부풀어 숨을 쉬므로, "지금 어디인가"가 재질에 따라 흐려지는 일이 없다.
+ *
+ * ── 낮과 밤을 따로 두는 이유 ──────────────────────────────────────────────────
+ *
+ * 금과 은은 밝은 한지 바탕에서 흐려지고, 나무는 어두운 쪽빛 바탕에서 묻힌다. 그래서
+ * 재질마다 낮 값과 밤 값을 따로 둔다. 낮은 골동품처럼 가라앉힌 금속을, 밤은 빛을 머금은
+ * 금속을 쓴다. 값이 실제로 읽히는지는 눈으로 판정하지 않고 `rosaryMaterials.test.ts` 가
+ * 대비를 계산해 못 박는다.
+ */
+import type { ThemeMode } from '../theme';
+import type { RosaryKey } from '../storage/settings';
+
+/** 줄의 생김새. 끈은 이어진 한 줄이고 사슬은 고리가 이어진 마디다. */
+export type LinkStyle = 'cord' | 'chain';
+
+export interface RosaryMaterial {
+  /** 성모송 작은 알의 빛깔. 이미 바친 알을 이 색으로 채운다. */
+  bead: string;
+  /** 주님의 기도 큰 알의 빛깔. 나무 묵주만 작은 알과 크게 다르다(사진의 살구빛). */
+  bigBead: string;
+  /** 줄의 빛깔. */
+  thread: string;
+  /** 줄이 끈인가 사슬인가. 사슬은 마디가 보이도록 끊어 그린다. */
+  link: LinkStyle;
+  /** 십자고상과 중심 메달의 빛깔. */
+  metal: string;
+  /** 알에 얹는 빛의 색. */
+  light: string;
+  /** 알에 지는 그늘의 색. */
+  shade: string;
+  /**
+   * 빛이 얼마나 좁게 맺히는가 (0 이면 넓고 무디게, 1 이면 좁고 또렷하게).
+   *
+   * 사진에서 금속 구슬은 빛이 한 점에 맺히고 나무와 장미 알은 넓게 퍼진다. 이 값 하나가
+   * 그 차이를 만든다 — 그리는 층이 이 값으로 빛 그러데이션의 정지점을 계산한다.
+   */
+  sheen: number;
+}
+
+/**
+ * 낮 벌 — 한지 바탕(`#EDE7D8`) 위에서 읽히는 값들.
+ *
+ * 금과 은을 실제 금속보다 어둡게 가라앉힌 것은 밝은 종이 위에서 사라지지 않게 하려는
+ * 것이다. 오래 쓴 묵주의 빛깔이기도 해서 이 앱의 차분한 톤과도 어긋나지 않는다.
+ */
+const DAY_MATERIALS: Record<RosaryKey, RosaryMaterial> = {
+  rose: {
+    bead: '#8E2733',
+    bigBead: '#6E1C27',
+    thread: '#2A2732',
+    link: 'cord',
+    metal: '#8A6A22',
+    light: '#F5F1E6',
+    shade: '#1F2530',
+    sheen: 0.45,
+  },
+  wood: {
+    bead: '#4E3423',
+    bigBead: '#9A6234',
+    thread: '#6B5A44',
+    link: 'cord',
+    metal: '#6B4830',
+    light: '#F5F1E6',
+    shade: '#1F2530',
+    sheen: 0.25,
+  },
+  silver: {
+    bead: '#767E8D',
+    bigBead: '#5C6472',
+    thread: '#767E8D',
+    link: 'chain',
+    metal: '#767E8D',
+    light: '#FFFFFF',
+    shade: '#1F2530',
+    sheen: 0.9,
+  },
+  gold: {
+    bead: '#9F7518',
+    bigBead: '#7E5C11',
+    thread: '#9F7518',
+    link: 'chain',
+    metal: '#9F7518',
+    light: '#FFF6DF',
+    shade: '#1F2530',
+    sheen: 0.75,
+  },
+};
+
+/**
+ * 밤 벌 — 쪽빛 바탕(`#10161F`) 위에서 읽히는 값들.
+ *
+ * 낮 벌을 그대로 쓰면 나무와 장미가 바탕에 묻힌다. 그래서 같은 빛깔을 밝은 쪽으로 옮겼다.
+ * 옮기는 규칙은 하나다 — 색상(무슨 색인가)은 그대로 두고 밝기만 올린다. 그래야 밤에도
+ * "이건 나무구나"가 유지된다.
+ */
+const NIGHT_MATERIALS: Record<RosaryKey, RosaryMaterial> = {
+  rose: {
+    bead: '#DE6A7E',
+    bigBead: '#E9909E',
+    thread: '#9A96A6',
+    link: 'cord',
+    metal: '#E0BE72',
+    light: '#F0EAD9',
+    shade: '#10161F',
+    sheen: 0.45,
+  },
+  wood: {
+    bead: '#A87C55',
+    bigBead: '#DCB183',
+    thread: '#CBB79A',
+    link: 'cord',
+    metal: '#C79A6E',
+    light: '#F0EAD9',
+    shade: '#10161F',
+    sheen: 0.25,
+  },
+  silver: {
+    bead: '#C3C9D5',
+    bigBead: '#DDE2EA',
+    thread: '#C3C9D5',
+    link: 'chain',
+    metal: '#C3C9D5',
+    light: '#FFFFFF',
+    shade: '#10161F',
+    sheen: 0.9,
+  },
+  gold: {
+    bead: '#E0BE72',
+    bigBead: '#EDD394',
+    thread: '#E0BE72',
+    link: 'chain',
+    metal: '#E0BE72',
+    light: '#FFF6DF',
+    shade: '#10161F',
+    sheen: 0.75,
+  },
+};
+
+/** 두 벌을 한 표로 묶는다. 시험이 두 벌을 나란히 훑을 수 있게 하려는 것이다. */
+export const ROSARY_MATERIALS: Record<ThemeMode, Record<RosaryKey, RosaryMaterial>> = {
+  day: DAY_MATERIALS,
+  night: NIGHT_MATERIALS,
+};
+
+/** 고른 묵주와 지금 벌에 해당하는 재질 하나. */
+export function materialFor(mode: ThemeMode, rosary: RosaryKey): RosaryMaterial {
+  return ROSARY_MATERIALS[mode][rosary];
+}
+
+/**
+ * 알을 얼마나 짙게 그리나.
+ *
+ * 값을 여기 둔 이유는 시험 때문이다. 대비를 재는 시험은 **화면에 실제로 나타나는 색**을
+ * 재야 하는데, 반투명하게 그리면 나타나는 색이 바탕과 섞인 값이 되어 표의 값과 달라진다.
+ * 그래서 알은 아직 안 바친 것도 이미 바친 것도 **온전한 짙기로** 그리고, 둘을 가르는 일은
+ * 짙기가 아니라 **채웠는가 테만 둘렀는가**가 맡는다. 그러면 표의 값이 곧 화면의 값이라
+ * 시험이 재는 것과 사람이 보는 것이 같아진다.
+ */
+export const BEAD_OPACITY = { pending: 1, done: 1 } as const;

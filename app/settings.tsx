@@ -28,10 +28,10 @@ import {
   RECITATION_CHOICES,
   RECITATION_NAMES,
   ROSARY_NAMES,
-  type RosaryKey,
   type ThemePreference,
 } from '../src/storage/settings';
 import { metrics, type as type1, type2, useThemedStyles, type Theme } from '../src/theme';
+import { RosarySheet } from '../src/prayer/RosarySheet';
 import { BottomSheet, ChoiceSheet, ConfirmSheet } from '../src/ui/Sheet';
 import { ScreenBody, ScreenHeader } from '../src/ui/Screen';
 
@@ -171,15 +171,14 @@ export default function SettingsScreen() {
         testID="sheet-pace"
       />
 
-      {/* S5 묵주 고르기 */}
-      <ChoiceSheet
+      {/*
+        S5 묵주 고르기. 다른 시트와 달리 전용 시트를 쓰는 이유는 **고른 묵주를 눈으로
+        보여 줘야** 하기 때문이다 (`src/prayer/RosarySheet.tsx` 의 머리글).
+      */}
+      <RosarySheet
         visible={sheet === 'rosary'}
-        label="묵주"
-        choices={(Object.keys(ROSARY_NAMES) as RosaryKey[]).map((key) => ({
-          key,
-          name: ROSARY_NAMES[key],
-        }))}
         selected={settings.rosary}
+        note="모든 여정의 기도 화면에 적용됩니다"
         onSelect={(key) => {
           updateSettings({ rosary: key });
           close();

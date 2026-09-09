@@ -26,7 +26,7 @@ import { journeyLength } from '../src/journey/rules';
 import { addJourney } from '../src/state/appStore';
 import { useAppState, } from '../src/state/useAppState';
 import { updateSettings } from '../src/state/appStore';
-import { ROSARY_NAMES, type RosaryKey } from '../src/storage/settings';
+import { ROSARY_NAMES } from '../src/storage/settings';
 import { addDays } from '../src/journey/format';
 import {
   metrics,
@@ -34,9 +34,12 @@ import {
   type as type1,
   type2,
   useThemedStyles,
+  useTheme,
   type Theme,
 } from '../src/theme';
 import { ChoiceRow, ChoiceSheet } from '../src/ui/Sheet';
+import { RosarySheet } from '../src/prayer/RosarySheet';
+import { materialFor } from '../src/prayer/rosaryMaterials';
 import { PrimaryButton, ScreenHeader } from '../src/ui/Screen';
 import { primeSpeech } from '../src/prayer/channels';
 
@@ -73,7 +76,10 @@ function spanNote(format: JourneyFormat): string {
 
 export default function NewJourneyScreen() {
   const styles = useThemedStyles(newStyles);
+  const { mode } = useTheme();
   const { settings } = useAppState();
+  // 이 줄의 작은 묵주 표시가 고른 재질을 그대로 따르게 한다 (FR-39).
+  const rosaryIcon = materialFor(mode, settings.rosary);
 
   const [title, setTitle] = useState('');
   const [format, setFormat] = useState<JourneyFormat>('fiftyfour');
@@ -212,10 +218,23 @@ export default function NewJourneyScreen() {
           testID="new-rosary"
         >
           <View style={styles.rosaryIconRow}>
-            {/* v5 가 이 줄에 그려 둔 작은 묵주 표시 — 좌표와 굵기 그대로다. */}
+            {/*
+              v5 가 이 줄에 그려 둔 작은 묵주 표시 — 좌표와 굵기는 시안 그대로이고, 색만
+              고른 재질을 따른다. 줄은 그 재질의 줄 빛깔로, 알은 그 재질의 알 빛깔로 그리며,
+              사슬로 이어지는 묵주(은·금)는 줄을 끊어 그려 마디가 보이게 한다. 이 줄에서
+              바꾼 것이 아래 시트에서 고른 것과 같다는 것을 눈으로 확인할 수 있어야 한다.
+            */}
             <Svg width={30} height={30} viewBox="0 0 34 34">
-              <Circle cx={17} cy={17} r={11} fill="none" stroke={styles.rosaryIcon.color} strokeWidth={1.4} />
-              <Circle cx={17} cy={6} r={4} fill={styles.rosaryIcon.color} />
+              <Circle
+                cx={17}
+                cy={17}
+                r={11}
+                fill="none"
+                stroke={rosaryIcon.thread}
+                strokeWidth={1.4}
+                strokeDasharray={rosaryIcon.link === 'chain' ? [2.4, 1.6] : undefined}
+              />
+              <Circle cx={17} cy={6} r={4} fill={rosaryIcon.bead} />
             </Svg>
           </View>
           <View style={styles.rosaryLeft}>
@@ -230,14 +249,10 @@ export default function NewJourneyScreen() {
         <PrimaryButton label="시작하기" onPress={start} testID="new-start" />
       </View>
 
-      <ChoiceSheet
+      <RosarySheet
         visible={rosarySheet}
-        label="묵주"
-        choices={(Object.keys(ROSARY_NAMES) as RosaryKey[]).map((key) => ({
-          key,
-          name: ROSARY_NAMES[key],
-        }))}
         selected={settings.rosary}
+        note="모든 여정의 기도 화면에 적용됩니다"
         onSelect={(key) => {
           updateSettings({ rosary: key });
           setRosarySheet(false);
@@ -332,7 +347,6 @@ const newStyles = ({ colors }: Theme) =>
     rosaryTitle: { ...type2.rowLabel, color: colors.ink },
     rosaryNote: { ...type2.rowSub, color: colors.inkMuted, marginTop: 5 },
     rosaryAction: { ...type2.rowValue, color: colors.inkMuted },
-    rosaryIcon: { color: colors.accent },
     footer: {
       paddingTop: 18,
       paddingHorizontal: metrics.screenPadding,
