@@ -17,6 +17,7 @@
 | 개발 계획 정본 (마일스톤 M0~M5, v5 값의 소재) | `docs/plan/development-plan.md` |
 | **M0 작업 지시서** | `docs/plan/m0-work-order.md` |
 | M1·M2 에서 찍은 화면 사진 | `docs/plan/m1-screens/`(기도 · 하루 완주) · `docs/plan/m2-screens/`(홈 · 새 기도 · 여정 상세 · 여정 완주 · 설정 · 초대 코드 · 시트 · 밤 벌) — v5 시안과 나란히 놓고 대조한다 |
+| 묵주 그림을 사실적으로 다듬은 일의 전/후 사진 | `docs/plan/rosary-before-after/` — 같은 성화 위에서 고치기 전과 후를 나란히 놓았다. 무엇을 왜 바꿨는지는 그 폴더의 `README.md` |
 | 결정 로그·결정 큐·컨펌 필요 항목 | `decisions.md` — **일을 시작하기 전에 주제어로 한 번 검색한다** |
 | 폐기 목록 (다시 쓰지 않기로 한 도구·자리) | `.claude/retired.json` — 훅이 차단한다 |
 | 체계의 결함 기록 (창고 승격 후보) | `docs/lessons.md` |
