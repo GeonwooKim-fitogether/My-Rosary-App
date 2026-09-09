@@ -22,6 +22,8 @@ import {
 
 const M1 = 'docs/plan/m1-screens';
 const M2 = 'docs/plan/m2-screens';
+/** 알 쉰아홉과 단 넘기기 (`decisions.md` 결정 6) 를 찍어 두는 자리. */
+const ROSARY_FULL = 'docs/plan/rosary-full';
 
 test.use({ reducedMotion: 'reduce' });
 
@@ -134,4 +136,44 @@ test('M2 · 밤 벌을 찍는다 — 홈 · 기도 · 시트', async ({ page }) 
   await moveToThirdDecadeFourthBead(page);
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${M2}/pray-night.png` });
+});
+
+/**
+ * 알 쉰아홉과 단 넘기기 — 네 장을 찍는다 (`decisions.md` 결정 6).
+ *
+ * 두 크기를 찍는 이유는 이 그림이 성화 띠(267) 안에 들어가야 하기 때문이다. 390×844 는
+ * 시안의 크기이고, 390×640 은 브라우저 주소창이 높이를 가져간 실제 폰의 크기다 —
+ * 짧은 쪽에서 묵주가 잘리지 않는지, 단 넘기는 줄이 스크롤 없이 보이는지가 여기서 갈린다.
+ * 두 벌(낮·밤)을 다 찍는 것은 알의 빛과 그늘이 벌마다 다른 색에서 나오기 때문이다.
+ */
+test('결정 6 · 알 쉰아홉과 단 넘기기를 두 크기 두 벌로 찍는다', async ({ page }) => {
+  await openApp(page);
+  await enterHome(page);
+  await enterPrayerFromHome(page);
+  await moveToThirdDecadeFourthBead(page);
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${ROSARY_FULL}/pray-day-844.png` });
+
+  await page.setViewportSize({ width: 390, height: 640 });
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${ROSARY_FULL}/pray-day-640.png` });
+
+  // 설정에서 밤으로 바꾼다. 사용자가 하는 그대로다.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByTestId('pray-pause').click();
+  await expect(page.getByTestId('home-screen')).toBeVisible();
+  await page.getByTestId('home-settings').click();
+  await page.getByTestId('settings-theme').click();
+  await page.getByTestId('sheet-choice-night').click();
+  await expect(page.getByTestId('settings-theme-value')).toHaveText('밤 →');
+  await page.getByTestId('settings-close').click();
+
+  await enterPrayerFromHome(page);
+  await moveToThirdDecadeFourthBead(page);
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${ROSARY_FULL}/pray-night-844.png` });
+
+  await page.setViewportSize({ width: 390, height: 640 });
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${ROSARY_FULL}/pray-night-640.png` });
 });

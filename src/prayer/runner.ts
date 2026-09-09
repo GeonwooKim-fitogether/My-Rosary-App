@@ -54,6 +54,13 @@ export interface Runner {
   advance(): void;
   /** 앞 알로 되돌아간다 (이어폰 이전 버튼). */
   back(): void;
+  /**
+   * 아무 자리로나 옮긴다 — 단을 넘기는 단추가 부른다 (`decisions.md` 결정 6).
+   *
+   * 멈춰 있을 때 옮겨도 화면과 저장된 자리가 함께 따라온다. 진행 중이면 그 자리부터
+   * 다시 읽기 시작한다.
+   */
+  goTo(index: number): void;
   /** 완전히 멈춘다. 화면을 떠날 때 부른다. */
   stop(): void;
   index(): number;
@@ -166,7 +173,16 @@ export function createRunner(options: RunnerOptions): Runner {
     if (previous && queue[index]!.decade !== previous.decade) {
       channels.vibrate(HAPTIC_PATTERNS.decadeChange);
     }
-    if (running) startLoop();
+    if (running) {
+      startLoop();
+      return;
+    }
+    /*
+     * 멈춘 채로 옮겼으면 반복문이 없으므로 아무도 자리가 바뀐 것을 모른다. 화면은 옛
+     * 단계를 그대로 보이고 저장된 자리도 옛 자리에 머문다 — 다시 열면 옮기기 전으로
+     * 돌아간다는 뜻이다. 그래서 여기서 한 번 알린다.
+     */
+    options.onStep?.(index, queue[index]!);
   }
 
   return {
@@ -190,6 +206,9 @@ export function createRunner(options: RunnerOptions): Runner {
     },
     back() {
       goTo(index - 1);
+    },
+    goTo(target) {
+      goTo(target);
     },
     stop() {
       running = false;

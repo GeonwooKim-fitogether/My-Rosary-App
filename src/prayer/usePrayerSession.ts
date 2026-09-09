@@ -17,7 +17,8 @@ import { positionStore } from '../storage/asyncStore';
 import { createDeviceChannels, hasKoreanVoice } from './channels';
 import { useRemoteCommands, useShakeToAdvance } from './handsfree';
 import { createRunner, type Runner } from './runner';
-import { buildDayQueue, hailCount, type RunStep } from './steps';
+import { sectionMoves, type SectionMove } from './sections';
+import { buildDayQueue, hailCountAmong, type RunStep } from './steps';
 
 /** 하루를 마쳤을 때 하루 완주 화면으로 넘겨줄 것들. */
 export interface DayResult {
@@ -57,6 +58,13 @@ export interface PrayerSession {
   /** 다음 알 · 이전 알 (손 없이 조작이 부른다). */
   advance(): void;
   back(): void;
+  /**
+   * 앞 단·다음 단으로 옮길 곳 (`decisions.md` 결정 6). 갈 데가 없으면 null 이다 —
+   * 시작 기도에서의 `previous` 와 제5단에서의 `next` 가 그렇다.
+   */
+  moves: { previous: SectionMove | null; next: SectionMove | null };
+  /** 그 구간의 첫 단계로 옮긴다. 진행 중이든 멈춰 있든 언제나 된다. */
+  goToSection(move: SectionMove): void;
   /** 여기서 끝내기 — 오늘 자리를 지운다 (FR-18). */
   discard(): Promise<void>;
 }
@@ -87,6 +95,11 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
   const [mystery, setMystery] = useState<MysteryKey>(() => mysteryOf(journey));
 
   const runnerRef = useRef<Runner | null>(null);
+  /**
+   * 오늘 실제로 지나온 단계들. 단을 건너뛸 수 있으므로(`decisions.md` 결정 6) 하루
+   * 완주 화면의 성모송 수는 큐가 아니라 이 목록에서 나온다.
+   */
+  const visitedRef = useRef<Set<number>>(new Set());
   const resumeCountRef = useRef(0);
   const elapsedRef = useRef(0);
   const startedAtRef = useRef<number | null>(null);
@@ -123,6 +136,7 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
       const startIndex = resumable?.stepIndex ?? 0;
       resumeCountRef.current = (resumable?.resumeCount ?? 0) + (startIndex > 0 ? 1 : 0);
       elapsedRef.current = resumable?.elapsedMs ?? 0;
+      visitedRef.current = new Set(resumable?.visited ?? []);
 
       // 3. 기기에 한국어 음성이 있는가. 없으면 읽지 않기로 낮춘다 (PRD §8).
       const effectiveMode: RecitationMode =
@@ -145,6 +159,7 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
         onStep: (at, step) => {
           if (cancelled) return;
           setIndex(at);
+          visitedRef.current.add(at);
           // 알을 넘길 때마다 자리를 남긴다 (FR-17).
           void positionStore.save({
             journeyId: journey.id,
@@ -156,6 +171,7 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
             savedAt: new Date().toISOString(),
             resumeCount: resumeCountRef.current,
             elapsedMs: elapsedNow(),
+            visited: [...visitedRef.current],
           });
         },
         onFinish: () => {
@@ -167,7 +183,8 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
           // 하루를 마쳤으므로 오늘 자리는 지운다. 내일은 처음부터다.
           void positionStore.clear();
           onFinishRef.current?.({
-            hails: hailCount(queueRef.current),
+            // 큐 전체가 아니라 실제로 지나온 단계만 센다 — 건너뛴 단의 성모송은 세지 않는다.
+            hails: hailCountAmong(queueRef.current, visitedRef.current),
             elapsedMs: spent,
             resumeCount: resumeCountRef.current,
             mystery: todaysMystery,
@@ -215,6 +232,17 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
   const advance = useCallback(() => runnerRef.current?.advance(), []);
   const back = useCallback(() => runnerRef.current?.back(), []);
 
+  /**
+   * 단 넘기기 (`decisions.md` 결정 6).
+   *
+   * 진행기에게 자리만 넘기면 나머지는 이미 있는 길로 흐른다 — 진행기가 `onStep` 을
+   * 부르고, 그 자리에서 화면이 갱신되고 자리가 저장된다. 멈춰 있을 때도 마찬가지다
+   * (`runner.ts` 의 `goTo` 가 멈춘 채로도 알린다).
+   */
+  const goToSection = useCallback((move: SectionMove) => {
+    runnerRef.current?.goTo(move.index);
+  }, []);
+
   const discard = useCallback(async () => {
     runnerRef.current?.stop();
     setRunning(false);
@@ -230,5 +258,20 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
   });
 
   const step = queue[index] ?? null;
-  return { ready, index, step, running, mystery, mode, pause, resume, advance, back, discard };
+  const moves = sectionMoves(queue, index);
+  return {
+    ready,
+    index,
+    step,
+    running,
+    mystery,
+    mode,
+    pause,
+    resume,
+    advance,
+    back,
+    moves,
+    goToSection,
+    discard,
+  };
 }

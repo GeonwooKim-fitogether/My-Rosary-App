@@ -3,7 +3,7 @@
  */
 import { PRAYERS, TOTAL_STEPS } from '../domain/sequence';
 import { MYSTERY_SETS } from '../domain/mysteries';
-import { buildDayQueue, declarationText, hailCount } from './steps';
+import { buildDayQueue, declarationText, hailCount, hailCountAmong } from './steps';
 
 const QUEUE = buildDayQueue('sorrowful');
 
@@ -45,5 +45,39 @@ describe('하루 큐', () => {
 
   it('하루에 성모송은 쉰세 번이다 — 시작 기도 셋에 각 단 열씩', () => {
     expect(hailCount(QUEUE)).toBe(53);
+  });
+});
+
+/**
+ * 건너뛴 뒤의 셈 — `decisions.md` 결정 6.
+ *
+ * 단을 건너뛸 수 있게 되면서 "하루를 마쳤다"가 더는 "쉰세 번 바쳤다"를 뜻하지 않는다.
+ * 바치지 않은 기도를 바쳤다고 적어 주면 그 화면이 하는 일이 무너지므로, 실제로 지나온
+ * 단계만 센다.
+ */
+describe('실제로 지나온 성모송만 세기', () => {
+  const all = QUEUE.map((_, i) => i);
+
+  it('처음부터 끝까지 지나면 쉰셋 — 큐 전체를 센 것과 같다', () => {
+    expect(hailCountAmong(QUEUE, all)).toBe(hailCount(QUEUE));
+  });
+
+  it('제5단만 바치면 열 번이다 (시작 기도의 셋도 건너뛰었으므로)', () => {
+    const fifth = all.filter((i) => QUEUE[i]!.decade === 5);
+    expect(hailCountAmong(QUEUE, fifth)).toBe(10);
+  });
+
+  it('시작 기도만 바치면 세 번이다', () => {
+    const opening = all.filter((i) => QUEUE[i]!.section === 'opening');
+    expect(hailCountAmong(QUEUE, opening)).toBe(3);
+  });
+
+  it('같은 알을 되짚어 두 번 지나도 한 번으로 센다', () => {
+    const twice = [9, 10, 9, 10, 11];
+    expect(hailCountAmong(QUEUE, twice)).toBe(3);
+  });
+
+  it('아무 데도 지나지 않았으면 영이다', () => {
+    expect(hailCountAmong(QUEUE, [])).toBe(0);
   });
 });

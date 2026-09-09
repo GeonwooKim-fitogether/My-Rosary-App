@@ -66,9 +66,30 @@ export function buildDayQueue(mystery: MysteryKey): RunStep[] {
   return STEPS.map((step) => fill(step, mystery));
 }
 
-/** 큐 안의 성모송 횟수. 하루 완주 화면의 통계에 쓴다. */
+/** 큐 안의 성모송 횟수 — 하루를 처음부터 끝까지 바쳤을 때의 수다. */
 export function hailCount(queue: readonly RunStep[]): number {
   return queue.filter((s) => s.prayer === 'hail').length;
+}
+
+/**
+ * **실제로 지나온** 단계 중 성모송의 수.
+ *
+ * 단을 건너뛸 수 있게 되면서(`decisions.md` 결정 6) 하루 완주 화면의 "성모송 N번"이
+ * 큐를 세는 것으로는 참이 아니게 됐다. 제3단으로 뛰어들어 하루를 마친 사람에게 쉰셋을
+ * 보이면, 앱이 바치지 않은 기도를 바쳤다고 적어 주는 것이 된다. 그래서 진행기가 실제로
+ * 들른 자리만 센다.
+ *
+ * @param visited 지나온 단계의 자리들. 같은 자리를 여러 번 들렀어도 한 번으로 센다.
+ */
+export function hailCountAmong(queue: readonly RunStep[], visited: Iterable<number>): number {
+  let count = 0;
+  const counted = new Set<number>();
+  for (const at of visited) {
+    if (counted.has(at)) continue;
+    counted.add(at);
+    if (queue[at]?.prayer === 'hail') count++;
+  }
+  return count;
 }
 
 /**

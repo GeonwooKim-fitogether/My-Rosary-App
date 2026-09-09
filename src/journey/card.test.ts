@@ -31,6 +31,7 @@ function position(over: Partial<PrayerPosition> = {}): PrayerPosition {
     savedAt: new Date(2026, 8, 8, 21, 0).toISOString(),
     resumeCount: 0,
     elapsedMs: 0,
+    visited: [],
     ...over,
   };
 }

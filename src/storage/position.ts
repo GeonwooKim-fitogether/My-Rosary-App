@@ -29,6 +29,17 @@ export interface PrayerPosition {
   resumeCount: number;
   /** 오늘 기도에 든 시간의 합. 멈춘 사이는 빼고 센다. */
   elapsedMs: number;
+  /**
+   * 오늘 **실제로 지나온** 단계의 자리들 (0~76, 순서는 상관없다).
+   *
+   * 단을 건너뛸 수 있게 되면서(`decisions.md` 결정 6) 필요해졌다. 그전에는 하루를
+   * 마쳤다는 것이 곧 77단계를 다 지났다는 뜻이라 성모송 수가 언제나 쉰셋이었지만,
+   * 이제는 건너뛴 단의 성모송을 세면 바치지 않은 기도를 바쳤다고 적는 것이 된다.
+   *
+   * 개수가 아니라 **자리 목록**을 남기는 이유는 되돌아가기 때문이다. 앱을 닫았다 열고
+   * 앞 알로 되돌아가 다시 바치면, 개수만 세는 방식은 같은 알을 두 번 센다.
+   */
+  visited: number[];
 }
 
 /** 아주 작은 저장소 인터페이스. AsyncStorage 도 브라우저의 localStorage 도 이 모양이다. */
@@ -59,6 +70,12 @@ export function parsePosition(raw: string | null): PrayerPosition | null {
       savedAt: typeof value.savedAt === 'string' ? value.savedAt : new Date(0).toISOString(),
       resumeCount: Number.isInteger(value.resumeCount) ? (value.resumeCount as number) : 0,
       elapsedMs: Number.isFinite(value.elapsedMs) ? (value.elapsedMs as number) : 0,
+      // 옛 판에는 없던 칸이다. 없으면 빈 목록으로 읽어 이어가기가 깨지지 않게 한다.
+      visited: Array.isArray(value.visited)
+        ? (value.visited as unknown[]).filter(
+            (at): at is number => Number.isInteger(at) && (at as number) >= 0,
+          )
+        : [],
     };
   } catch {
     return null;

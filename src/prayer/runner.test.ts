@@ -219,3 +219,99 @@ describe('손 없이 조작', () => {
     expect(finished).toBe(1);
   });
 });
+
+/**
+ * 단 넘기기 — `decisions.md` 결정 6.
+ *
+ * 진행기가 할 일은 하나다: 자리를 옮기고 **그 사실을 알린다.** 알리지 않으면 화면도
+ * 저장된 자리도 옛 자리에 머물러, 앱을 다시 열었을 때 옮기기 전으로 돌아간다.
+ */
+describe('아무 자리로나 옮기기', () => {
+  it('진행 중에 옮기면 그 자리부터 읽기 시작한다', async () => {
+    const channels = recorder();
+    const seen: number[] = [];
+    const runner = createRunner({
+      queue: QUEUE,
+      mode: 'alternate',
+      pace: 'normal',
+      channels,
+      onStep: (i) => seen.push(i),
+    });
+    runner.start();
+    await jest.advanceTimersByTimeAsync(1);
+
+    runner.goTo(35); // 제3단 신비 선포
+    await jest.advanceTimersByTimeAsync(1);
+
+    expect(runner.index()).toBe(35);
+    expect(seen).toContain(35);
+    expect(channels.spoken.at(-1)).toBe(QUEUE[35]!.a);
+  });
+
+  it('멈춰 있을 때 옮겨도 자리가 바뀐 것을 알린다', async () => {
+    const channels = recorder();
+    const seen: number[] = [];
+    const runner = createRunner({
+      queue: QUEUE,
+      mode: 'alternate',
+      pace: 'normal',
+      channels,
+      onStep: (i) => seen.push(i),
+    });
+    runner.start();
+    await jest.advanceTimersByTimeAsync(1);
+    runner.pause();
+    const spokenBefore = channels.spoken.length;
+
+    runner.goTo(21); // 제2단 신비 선포
+    await jest.advanceTimersByTimeAsync(1);
+
+    expect(runner.index()).toBe(21);
+    expect(seen.at(-1)).toBe(21);
+    // 멈춰 있으므로 읽지는 않는다 — 자리만 옮긴다.
+    expect(channels.spoken).toHaveLength(spokenBefore);
+    expect(runner.isRunning()).toBe(false);
+  });
+
+  it('단이 바뀌면 진동으로 알린다', async () => {
+    const channels = recorder();
+    const runner = createRunner({
+      queue: QUEUE,
+      mode: 'alternate',
+      pace: 'normal',
+      channels,
+    });
+    runner.start();
+    await jest.advanceTimersByTimeAsync(1);
+    channels.vibrations.length = 0;
+
+    runner.goTo(49); // 제4단
+    await jest.advanceTimersByTimeAsync(1);
+
+    expect(channels.vibrations).toContainEqual([...HAPTIC_PATTERNS.decadeChange]);
+  });
+
+  it('건너뛴 채로도 하루를 마칠 수 있다', async () => {
+    const channels = recorder();
+    const seen: number[] = [];
+    let finished = 0;
+    const runner = createRunner({
+      queue: QUEUE,
+      mode: 'alternate',
+      pace: 'normal',
+      channels,
+      onStep: (i) => seen.push(i),
+      onFinish: () => finished++,
+    });
+    runner.start();
+    await jest.advanceTimersByTimeAsync(1);
+
+    runner.goTo(63); // 제5단 신비 선포로 뛴다
+    await runToEnd();
+
+    expect(finished).toBe(1);
+    // 뛰어넘은 단들은 한 번도 들르지 않았다 — 하루 완주 화면의 성모송 수가 여기서 나온다.
+    expect(seen).not.toContain(30);
+    expect(seen.filter((i) => i >= 63)).toHaveLength(77 - 63);
+  });
+});
