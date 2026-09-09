@@ -17,7 +17,7 @@
 import { useCallback, useMemo } from 'react';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { artSession } from '../src/art';
 import { liturgicalDay } from '../src/domain/liturgy';
 import { Rosary } from '../src/prayer/Rosary';
@@ -131,6 +131,7 @@ function PraySession({
 
   return (
     <View style={styles.screen} testID="pray-screen">
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollInner}>
       <View style={styles.header}>
         <Text style={styles.heading} testID="pray-title">
           {journey.title}{' '}
@@ -143,7 +144,7 @@ function PraySession({
         </Text>
       </View>
 
-      <View style={styles.stage}>
+      <View style={styles.stage} testID="pray-stage">
         {plate ? (
           <Image
             source={plate.source}
@@ -190,6 +191,7 @@ function PraySession({
           <Text style={styles.actionNote}>오늘 처음부터</Text>
         </Pressable>
       </View>
+      </ScrollView>
     </View>
   );
 }
@@ -198,10 +200,25 @@ const prayStyles = ({ colors, mode }: Theme) =>
   StyleSheet.create({
     screen: {
       flex: 1,
+      backgroundColor: colors.background,
+    },
+    /**
+     * 화면이 짧으면 눌리지 않고 아래로 흐르게 한다.
+     *
+     * v5 시안은 390×844 한 크기를 전제로 그려졌고 구현이 그것을 그대로 옮겼다. 그래서
+     * 실제 폰에서 브라우저 주소창이 높이를 가져가면 남는 자리를 성화 띠가 혼자 떠안아
+     * 짜부라졌다 — 844 에서 267px 이던 띠가 640 에서 63px 이 되어 묵주가 잘렸고, 기도문은
+     * 상자 밖으로 넘쳐 윗줄이 잘려 나갔다. 공방장이 실기기에서 발견했다(2026-09-09).
+     *
+     * 고침의 방향은 공방장이 정했다 — 그림을 침범하지 않고, 글자 크기도 줄이지 않고,
+     * 대신 아래로 스크롤한다.
+     */
+    scroll: { flex: 1 },
+    scrollInner: {
       flexDirection: 'column',
       paddingTop: 56,
       paddingBottom: 26,
-      backgroundColor: colors.background,
+      flexGrow: 1,
     },
     header: {
       paddingHorizontal: metrics.screenPadding, // 24
@@ -212,12 +229,17 @@ const prayStyles = ({ colors, mode }: Theme) =>
       borderBottomWidth: 1,
       borderBottomColor: colors.rule,
     },
-    heading: { ...type.heading, color: colors.ink },
+    // 바람이 길면 제목만 줄바꿈하고, 오른쪽 구간 이름은 한 줄로 둔다. 둘 다 접히면
+    // 두 글줄이 서로 엇물려 읽히지 않는다(실기기에서 실제로 그렇게 보였다).
+    heading: { ...type.heading, color: colors.ink, flexShrink: 1 },
     headingDim: { color: colors.inkMuted },
-    stepLabel: { ...type.stepLabel },
+    stepLabel: { ...type.stepLabel, flexShrink: 0, marginLeft: 12 },
     stage: {
-      flex: 1,
-      minHeight: 0,
+      // 844 에서 재 보면 267 이다. 그 값을 바닥으로 깔아 짧은 화면에서도 줄지 않게 하고,
+      // 긴 화면에서는 예전처럼 남는 자리를 가져가게 둔다.
+      minHeight: 267,
+      flexGrow: 1,
+      flexShrink: 0,
       position: 'relative',
       overflow: 'hidden',
     },
@@ -227,13 +249,18 @@ const prayStyles = ({ colors, mode }: Theme) =>
     rosaryBox: { alignItems: 'center', justifyContent: 'flex-start' },
     prayerBox: {
       paddingHorizontal: metrics.screenPadding,
-      height: 361, // v5 의 340 + 위쪽 여백 20 + 괘선 1 (위 머리글의 설명 참고)
+      // v5 의 340 + 위쪽 여백 20 + 괘선 1. 고정 높이가 아니라 **바닥**이다 — 주님의 기도처럼
+      // 긴 기도문은 이 높이를 넘는데, 고정이면 넘친 윗줄이 잘려 나갔다.
+      minHeight: 361,
       paddingTop: 20,
       borderTopWidth: 1,
       borderTopColor: colors.rule,
-      overflow: 'hidden',
       flexDirection: 'column',
-      justifyContent: 'flex-end',
+      // v5 는 기도문을 이 상자의 **아래쪽**에 붙여 단추 바로 위에 오게 했다. 화면 높이가
+      // 844 로 고정된 시안에서는 그것이 옳았지만, 화면이 짧아 스크롤이 생기면 그림과
+      // 기도문 사이에 빈 자리가 생겨 **기도문이 첫 화면 밖으로 밀려난다.** 정작 읽어야 할
+      // 것을 보려고 스크롤하게 되므로, 위쪽에 붙여 그림 바로 아래에서 시작하게 한다.
+      justifyContent: 'flex-start',
     },
     prayerLead: { ...type.prayerLead, color: colors.ink },
     prayerResponse: { ...type.prayerResponse, color: colors.accent, marginTop: 12 },
