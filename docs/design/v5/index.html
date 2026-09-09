@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>묵주 — 54일 기도</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────────────────────────────────
+   여기 있는 규칙은 전부 "표현 층"이다 — 기기 프레임을 씌울지 말지, 어느
+   화면을 보일지, 알이 어떻게 숨쉴지. 화면 안쪽의 색·크기·간격은 한 줄도
+   여기 없다. 그 값들은 전부 아래 각 화면의 인라인 스타일에 있고,
+   _design-reference.html 에서 글자 그대로 옮긴 것이다.
+   ───────────────────────────────────────────────────────────────────────── */
+*{-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:#EDE7D8;font-family:"Noto Sans KR",system-ui,sans-serif}
+
+/* 좁은 화면(실제 휴대폰) — 프레임 없이 화면을 채운다 */
+#device{position:relative;width:100%;height:100vh;height:100dvh;overflow:hidden;background:#EDE7D8}
+
+/* 넓은 화면(데스크톱) — 시안과 똑같은 기기 프레임 안에 한 화면씩 */
+@media (min-width:760px){
+  body{background:#0b0d12;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:44px 0;box-sizing:border-box}
+  #device{width:390px;height:844px;flex:none;border-radius:42px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+}
+
+.scr{position:absolute;inset:0;display:none}
+.scr.on{display:block}
+.t{cursor:pointer}
+.t:active{opacity:.72}
+
+/* 알의 숨 — 시안의 @keyframes 그대로.
+   SVG <circle> 에 걸 때 transform-box:fill-box; transform-origin:center 가
+   반드시 함께 있어야 뷰박스 원점이 아니라 알 자신을 중심으로 커진다. */
+@keyframes bre{0%,100%{opacity:.42;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
+@media (prefers-reduced-motion:reduce){
+  [style*="animation:bre"]{animation:none !important}
+}
+</style>
+</head>
+<body>
+<div id="device">
+
+<!-- ══ L 로그인 ══ -->
+<div class="scr" id="s-login">
+  <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:0 0 26px;box-sizing:border-box">
+    <div id="art-login" style="height:340px;flex:none;background-image:url('art/01_Mary_Single.jpg');background-size:cover;background-position:50% 24%"></div>
+    <div style="padding:34px 24px 0;display:flex;flex-direction:column;flex:1">
+      <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.24em">54일 기도</div>
+      <div style="font:400 38px/1.25 'Noto Serif KR',serif;color:#1F2530;margin-top:16px">묵주</div>
+      <div style="font:400 13.5px/1.8 'Noto Sans KR',sans-serif;color:#1F2530;margin-top:16px">하나의 지향을 쉰네 날 동안 바칩니다.<br>오늘 어디까지 바쳤는지는 앱이 기억합니다.</div>
+      <div style="flex:1"></div>
+      <div id="go-google" class="t" style="height:80px;background:#1F2530;display:flex;align-items:center;justify-content:center;font:500 15px/1 'Noto Sans KR',sans-serif;color:#F5F1E6">Google로 계속하기</div>
+      <div style="height:80px;border:1px solid rgba(31,37,48,.30);display:flex;align-items:center;justify-content:center;font:500 15px/1 'Noto Sans KR',sans-serif;color:#1F2530;margin-top:12px" id="go-apple" class="t">Apple로 계속하기</div>
+      <div style="display:flex;align-items:center;justify-content:center;height:80px;font:400 12.5px/1 'Noto Sans KR',sans-serif;color:#5C6272" id="go-invite1" class="t">초대 코드로 들어가기</div>
+      <div style="font:400 11px/1.7 'Noto Sans KR',sans-serif;color:#5C6272;text-align:center">계속하면 이용약관과 개인정보 처리방침에 동의합니다.<br>바람 문구는 서버에서 암호화해 보관합니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 초대 코드 입력 ══ -->
+<div class="scr" id="s-invite">
+  <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:56px 24px 26px;box-sizing:border-box">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid rgba(31,37,48,.16)">
+      <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.24em">초대 코드</div>
+      <div style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272" id="inv-close" class="t">닫기</div>
+    </div>
+    <div style="font:400 28px/1.4 'Noto Serif KR',serif;color:#1F2530;margin-top:36px">받은 여섯 자리를<br>넣어 주세요</div>
+    <div id="inv-row" style="display:flex;gap:8px;margin-top:32px;position:relative"><input id="inv-input" maxlength="6" autocomplete="off" autocapitalize="characters" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;padding:0;margin:0;font-size:16px"></div>
+    <div style="font:400 12px/1.7 'Noto Sans KR',sans-serif;color:#5C6272;margin-top:14px">대소문자를 가리지 않습니다. 붙여넣어도 됩니다.</div>
+    <div style="margin-top:36px;padding:22px 20px;border:1px solid rgba(31,37,48,.16)">
+      <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.2em">들어갈 여정</div>
+      <div style="font:400 22px/1.35 'Noto Serif KR',serif;color:#1F2530;margin-top:12px">아버지 세례를 위해</div>
+      <div style="font:400 12.5px/1.7 'Noto Sans KR',sans-serif;color:#1F2530;margin-top:10px">6일째 · 다섯 사람 중 넷이 들어와 있습니다<br><span style="color:#5C6272">이모 · 김요한 · 박마리아 · 나</span></div>
+    </div>
+    <div style="flex:1"></div>
+    <div style="height:80px;background:#1F2530;display:flex;align-items:center;justify-content:center;font:500 15px/1 'Noto Sans KR',sans-serif;color:#F5F1E6" id="inv-enter" class="t">들어가기</div>
+  </div>
+</div>
+
+<!-- ══ A 홈 — 여정 목록 ══ -->
+<div class="scr" id="s-home">
+  <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:56px 24px 26px;box-sizing:border-box">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid rgba(31,37,48,.16)">
+      <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.24em">내 기도 · 둘</div>
+      <div style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.1em" id="go-settings" class="t">설정</div>
+    </div>
+
+    <div style="padding:26px 0 24px;border-bottom:1px solid rgba(31,37,48,.16)">
+      <div id="j0-row" class="t" style="display:flex;gap:16px;align-items:flex-start">
+        <div id="art-j0" style="width:96px;height:124px;flex:none;background-image:url('art/02_Mary_and_Child.jpg');background-size:cover;background-position:16% 50%"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font:400 24px/1.3 'Noto Serif KR',serif;color:#1F2530;margin-bottom:10px">어머니 병환 회복</div>
+          <div id="j0-meta" style="font:500 12px/1 'Noto Sans KR',sans-serif;color:#82600F;letter-spacing:.06em">23일째 · 청원</div>
+          <div id="j0-resume" style="font:400 12.5px/1.6 'Noto Sans KR',sans-serif;color:#1F2530;margin-top:14px">고통의 신비<br>제3단 4번째 알부터 이어서</div>
+          <div id="j0-when" style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272;margin-top:8px">어제 저녁</div>
+        </div>
+      </div>
+      <div id="rib-home" class="t" style="display:flex;gap:2px;margin-top:18px"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px"><span style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272">7월 14일 시작</span><span style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272">9월 5일 마침</span></div>
+    </div>
+
+    <div style="padding:26px 0 24px;border-bottom:1px solid rgba(31,37,48,.16)">
+      <div id="j1-row" class="t" style="display:flex;gap:16px;align-items:flex-start">
+        <div id="art-j1" style="width:96px;height:124px;flex:none;background-image:url('art/07_Relief_Holy_Family.jpg');background-size:cover;background-position:50% 0%"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font:400 24px/1.3 'Noto Serif KR',serif;color:#1F2530;margin-bottom:10px">아버지 세례를 위해</div>
+          <div style="font:500 12px/1 'Noto Sans KR',sans-serif;color:#82600F;letter-spacing:.06em">6일째 · 함께 바치기</div>
+          <div style="font:400 12.5px/1.6 'Noto Sans KR',sans-serif;color:#1F2530;margin-top:14px">오늘 바쳤습니다</div>
+          <div style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272;margin-top:8px">내 몫 제2단 · 오늘 다섯 중 셋</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:1"></div>
+    <div style="height:80px;background:#1F2530;display:flex;align-items:center;justify-content:center;font:500 15px/1 'Noto Sans KR',sans-serif;color:#F5F1E6;margin-bottom:14px" id="go-new" class="t">새 기도</div>
+    <div style="display:flex;align-items:center;justify-content:center;height:80px;font:400 12.5px/1 'Noto Sans KR',sans-serif;color:#5C6272" id="go-invite2" class="t">초대 코드로 들어가기</div>
+  </div>
+</div>
+
+<!-- ══ N 새 기도 ══ -->
+<div class="scr" id="s-new">
+  <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:56px 0 26px;box-sizing:border-box">
+    <div style="padding:0 24px 16px;display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid rgba(31,37,48,.16)">
+      <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.24em">새 기도</div>
+      <div style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272" id="new-close" class="t">닫기</div>
+    </div>
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:0 24px">
+      <div style="padding:18px 0 14px;border-bottom:1px solid rgba(31,37,48,.16)">
+        <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.2em">무엇을 위하여</div>
+        <div style="font:400 23px/1.3 'Noto Serif KR',serif;color:#1F2530;margin-top:10px"><span id="new-intent" contenteditable="true" spellcheck="false" style="outline:none">어머니 병환 회복</span><span style="color:#82600F">|</span></div>
+        <div style="font:400 11px/1.6 'Noto Sans KR',sans-serif;color:#5C6272;margin-top:8px">쉰네 날 동안 · 나만 봅니다</div>
+      </div>
+      <div style="padding:14px 0;border-bottom:1px solid rgba(31,37,48,.16)">
+        <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.2em">청원인가 감사인가</div>
+        <div style="display:flex;gap:10px;margin-top:10px">
+          <div id="kind-0" class="t" style="flex:1;height:80px;border:1px solid #1F2530;background:#1F2530;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px"><span style="font:500 15px/1 'Noto Sans KR',sans-serif;color:#F5F1E6">청원</span><span style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#C9C2B0">27일 + 27일</span></div>
+          <div id="kind-1" class="t" style="flex:1;height:80px;border:1px solid rgba(31,37,48,.30);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px"><span style="font:500 15px/1 'Noto Sans KR',sans-serif;color:#1F2530">감사</span><span style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272">쉰네 날 내내</span></div>
+        </div>
+      </div>
+      <div style="padding:14px 0;border-bottom:1px solid rgba(31,37,48,.16)">
+        <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.2em">낭송</div>
+        <div style="display:flex;flex-direction:column;gap:1px;margin-top:10px">
+          <div id="rec-0" class="t" style="height:80px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border:1px solid #82600F"><div><div style="font:500 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">교대로</div><div style="font:400 11px/1.5 'Noto Sans KR',sans-serif;color:#5C6272;margin-top:5px">앞은 소리가 읽고 뒤는 내가 받습니다</div></div><div style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#82600F">기본</div></div>
+          <div id="rec-1" class="t" style="height:80px;display:flex;align-items:center;padding:0 16px;border:1px solid rgba(31,37,48,.18);border-top:none"><div><div style="font:500 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">전부 소리로</div><div style="font:400 11px/1.5 'Noto Sans KR',sans-serif;color:#5C6272;margin-top:5px">처음부터 끝까지 읽어 줍니다</div></div></div>
+          <div id="rec-2" class="t" style="height:80px;display:flex;align-items:center;padding:0 16px;border:1px solid rgba(31,37,48,.18);border-top:none"><div><div style="font:500 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">소리 없이</div><div style="font:400 11px/1.5 'Noto Sans KR',sans-serif;color:#5C6272;margin-top:5px">글자만 보며 내 속도로</div></div></div>
+        </div>
+      </div>
+      <div style="height:80px;display:flex;align-items:center;justify-content:space-between;gap:14px">
+        <div style="display:flex;align-items:center;gap:14px">
+          <svg width="30" height="30" viewBox="0 0 34 34"><circle cx="17" cy="17" r="11" fill="none" stroke="#82600F" stroke-width="1.4"></circle><circle cx="17" cy="6" r="4" fill="#82600F"></circle></svg>
+          <div><div style="font:400 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">묵주</div><div style="font:400 11px/1.5 'Noto Sans KR',sans-serif;color:#5C6272;margin-top:5px">나무</div></div>
+        </div>
+        <span style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">고르기 →</span>
+      </div>
+    </div>
+    <div style="padding:18px 24px 0;border-top:1px solid rgba(31,37,48,.16)">
+      <div style="height:80px;background:#1F2530;display:flex;align-items:center;justify-content:center;font:500 15px/1 'Noto Sans KR',sans-serif;color:#F5F1E6" id="new-start" class="t">시작하기</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 함께 바치기 배정 ══ -->
+<div class="scr" id="s-assign">
+  <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:56px 24px 26px;box-sizing:border-box">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid rgba(31,37,48,.16)">
+      <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.24em">함께 바치기 · 오늘 몫</div>
+      <div style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272" id="as-close" class="t">닫기</div>
+    </div>
+    <div style="font:400 26px/1.4 'Noto Serif KR',serif;color:#1F2530;margin-top:30px">오늘 내 몫은<br>제2단입니다</div>
+    <div style="font:400 12.5px/1.7 'Noto Sans KR',sans-serif;color:#5C6272;margin-top:12px">아버지 세례를 위해 · 6일째 · 고통의 신비<br>다섯 사람이 한 단씩 나누어 하루를 채웁니다</div>
+    <div style="margin-top:30px;display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;gap:14px;padding:16px 0;border-top:1px solid rgba(31,37,48,.16)"><span style="width:26px;font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272">1단</span><span style="flex:1;font:400 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">이모</span><span style="font:400 12px/1 'Noto Sans KR',sans-serif;color:#82600F">바쳤습니다</span></div>
+      <div style="display:flex;align-items:center;gap:14px;padding:16px 0;border-top:2px solid #82600F;border-bottom:2px solid #82600F"><span style="width:26px;font:500 11px/1 'Noto Sans KR',sans-serif;color:#82600F">2단</span><span style="flex:1;font:500 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">나</span><span style="font:400 12px/1 'Noto Sans KR',sans-serif;color:#5C6272">아직</span></div>
+      <div style="display:flex;align-items:center;gap:14px;padding:16px 0;border-top:1px solid rgba(31,37,48,.16)"><span style="width:26px;font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272">3단</span><span style="flex:1;font:400 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">김요한</span><span style="font:400 12px/1 'Noto Sans KR',sans-serif;color:#82600F">바쳤습니다</span></div>
+      <div style="display:flex;align-items:center;gap:14px;padding:16px 0;border-top:1px solid rgba(31,37,48,.16)"><span style="width:26px;font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272">4단</span><span style="flex:1;font:400 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">박마리아</span><span style="font:400 12px/1 'Noto Sans KR',sans-serif;color:#82600F">바쳤습니다</span></div>
+      <div style="display:flex;align-items:center;gap:14px;padding:16px 0;border-top:1px solid rgba(31,37,48,.16);border-bottom:1px solid rgba(31,37,48,.16)"><span style="width:26px;font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272">5단</span><span style="flex:1;font:400 14px/1 'Noto Sans KR',sans-serif;color:#5C6272">아직 아무도</span><span style="font:400 12px/1 'Noto Sans KR',sans-serif;color:#5C6272">빈 자리</span></div>
+    </div>
+    <div style="font:400 11.5px/1.7 'Noto Sans KR',sans-serif;color:#5C6272;margin-top:16px">오늘 다섯 중 셋 · 남은 두 단은 자정까지 기다립니다</div>
+    <div style="flex:1"></div>
+    <div style="height:80px;background:#1F2530;display:flex;align-items:center;justify-content:center;font:500 15px/1 'Noto Sans KR',sans-serif;color:#F5F1E6" id="as-mine" class="t">내 몫 바치기</div>
+    <div style="display:flex;align-items:center;justify-content:center;height:80px;font:400 12.5px/1 'Noto Sans KR',sans-serif;color:#5C6272" id="as-all" class="t">다섯 단 모두 혼자 바치기</div>
+  </div>
+</div>
+
+<!-- ══ B 기도 ══ -->
+<div class="scr" id="s-pray">
+  <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:56px 0 26px;box-sizing:border-box">
+    <div style="padding:0 24px 16px;display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid rgba(31,37,48,.16)">
+      <div style="font:400 12.5px/1.4 'Noto Sans KR',sans-serif;color:#1F2530"><span id="pr-title">어머니 병환 회복</span> <span id="pr-day" style="color:#5C6272">· 23일째</span></div>
+      <div id="pr-step" style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#63507F;letter-spacing:.16em">제3단 · 성모송</div>
+    </div>
+    <!-- 성화와 묵주를 한 공간으로. 성화는 배경으로 물러나고 그 위에 묵주가 얹힌다.
+         한지 덮개 84%는 열여섯 장 중 가장 어두운 화소까지 먹빛 잉크와 4.5:1 을
+         넘도록 계산해 정한 값이다(계산상 최소는 60%). 그림이 인물 사진이 아니라
+         질감으로 읽히는 지점이기도 하다. -->
+    <div style="flex:1;min-height:0;position:relative;overflow:hidden">
+      <div id="art-pray" style="position:absolute;inset:0;background-image:url('art/02_Mary_and_Child.jpg');background-size:cover;background-position:50% 19%"></div>
+      <div style="position:absolute;inset:0;background:rgba(237,231,216,.84)"></div>
+      <!-- 묵주를 위로 붙인다. 가운데 정렬이면 그림이 아래로 치우쳐 보인다
+           (SVG 안에서 실제로 그려지는 부분이 아래쪽에 몰려 있기 때문). -->
+      <div style="position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:center">
+      <svg id="pr-rosary" width="340" height="245" viewBox="0 0 390 281">
+        <path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="rgba(31,37,48,.22)" stroke-width="1.4"></path>
+        <path d="M42 128 C56 170 147 198 195 210" fill="none" stroke="rgba(31,37,48,.22)" stroke-width="1.4"></path>
+        <path d="M348 128 C334 170 243 198 195 210" fill="none" stroke="rgba(31,37,48,.22)" stroke-width="1.4"></path>
+        <path d="M195 231 L195 252" fill="none" stroke="rgba(31,37,48,.22)" stroke-width="1.4"></path>
+        <path d="M195 252 L195 278 M180 262 L210 262" fill="none" stroke="rgba(31,37,48,.40)" stroke-width="2.4"></path>
+        <circle cx="195" cy="210" r="21" fill="none" stroke="rgba(31,37,48,.34)" stroke-width="1.6"></circle>
+        <circle cx="42" cy="128" r="18.4" fill="#1F2530"></circle>
+        <circle cx="56" cy="93" r="18.4" fill="#1F2530"></circle>
+        <circle cx="93" cy="74" r="18.4" fill="#1F2530"></circle>
+        <circle cx="133" cy="65" r="34" fill="#8A6516" opacity=".14" style="transform-box:fill-box;transform-origin:center;animation:bre 4s ease-in-out infinite"></circle>
+        <circle cx="133" cy="65" r="18.4" fill="#8A6516" style="transform-box:fill-box;transform-origin:center;animation:bre 4s ease-in-out infinite"></circle>
+        <circle cx="174" cy="61" r="18.4" fill="none" stroke="rgba(31,37,48,.30)" stroke-width="1.6"></circle>
+        <circle cx="216" cy="61" r="18.4" fill="none" stroke="rgba(31,37,48,.30)" stroke-width="1.6"></circle>
+        <circle cx="257" cy="65" r="18.4" fill="none" stroke="rgba(31,37,48,.30)" stroke-width="1.6"></circle>
+        <circle cx="297" cy="74" r="18.4" fill="none" stroke="rgba(31,37,48,.30)" stroke-width="1.6"></circle>
+        <circle cx="334" cy="93" r="18.4" fill="none" stroke="rgba(31,37,48,.30)" stroke-width="1.6"></circle>
+        <circle cx="348" cy="128" r="18.4" fill="none" stroke="rgba(31,37,48,.30)" stroke-width="1.6"></circle>
+        <text x="133" y="71" text-anchor="middle" style="font:500 16px 'Noto Sans KR',sans-serif;fill:#F5F1E6">4</text>
+      </svg>
+      </div>
+    </div>
+
+    <div style="padding:0 24px;height:340px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;border-top:1px solid rgba(31,37,48,.16);padding-top:20px">
+      <div id="pr-a" style="font:400 26px/1.7 'Noto Serif KR',serif;color:#1F2530">은총이 가득하신 마리아님, 기뻐하소서! 주님께서 함께 계시니 여인 중에 복되시며 태중의 아들 예수님 또한 복되시나이다.</div>
+      <div id="pr-b" style="font:400 21px/1.7 'Noto Serif KR',serif;color:#82600F;margin-top:12px">천주의 성모 마리아님, 이제와 저희 죽을 때에 저희 죄인을 위하여 빌어주소서. 아멘.</div>
+    </div>
+
+    <div style="padding:0 24px;display:flex;gap:12px;margin-top:20px">
+      <div id="pr-pause" class="t" style="flex:1;height:80px;border:1px solid rgba(31,37,48,.30);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><span style="font:500 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">잠시 멈춤</span><span style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272">자리가 남습니다</span></div>
+      <div id="pr-stop" class="t" style="flex:1;height:80px;border:1px solid rgba(31,37,48,.14);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><span style="font:500 14px/1 'Noto Sans KR',sans-serif;color:#5C6272">여기서 끝내기</span><span style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272">오늘 처음부터</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ C 하루 완주 ══ -->
+<div class="scr" id="s-dayDone">
+  <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:56px 24px 26px;box-sizing:border-box">
+    <div id="cd-head" style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.24em;padding-bottom:16px;border-bottom:1px solid rgba(31,37,48,.16)">9월 5일 · 스물세 번째 날</div>
+    <div style="font:400 34px/1.35 'Noto Serif KR',serif;color:#1F2530;margin:48px 0 18px">다 바쳤습니다</div>
+    <div style="font:400 13px/1.7 'Noto Sans KR',sans-serif;color:#5C6272">어머니 병환 회복을 위하여<br>고통의 신비 다섯 단</div>
+    <div id="rib-day" class="t" style="display:flex;gap:2px;margin-top:44px"></div>
+    <div id="cd-sum" style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272;margin-top:10px">54일 중 21일 바쳤습니다 · 남은 31일</div>
+    <div style="margin-top:44px;display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between;padding:16px 0;border-top:1px solid rgba(31,37,48,.16)"><span style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">성모송</span><span style="font:500 13px/1 'Noto Sans KR',sans-serif;color:#1F2530">50번</span></div>
+      <div style="display:flex;justify-content:space-between;padding:16px 0;border-top:1px solid rgba(31,37,48,.16)"><span style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">걸린 시간</span><span style="font:500 13px/1 'Noto Sans KR',sans-serif;color:#1F2530">18분</span></div>
+      <div style="display:flex;justify-content:space-between;padding:16px 0;border-top:1px solid rgba(31,37,48,.16);border-bottom:1px solid rgba(31,37,48,.16)"><span style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">이어서</span><span style="font:500 13px/1 'Noto Sans KR',sans-serif;color:#1F2530">2번</span></div>
+    </div>
+    <div style="flex:1"></div>
+    <div style="height:80px;background:#1F2530;display:flex;align-items:center;justify-content:center;font:500 15px/1 'Noto Sans KR',sans-serif;color:#F5F1E6" id="cd-back" class="t">돌아가기</div>
+  </div>
+</div>
+
+<!-- ══ D 여정 상세 ══ -->
+<div class="scr" id="s-journey">
+  <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:56px 24px 26px;box-sizing:border-box">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid rgba(31,37,48,.16)">
+      <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.24em">여정</div>
+      <div style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272" id="jd-back" class="t">돌아가기</div>
+    </div>
+    <div style="font:400 28px/1.35 'Noto Serif KR',serif;color:#1F2530;margin-top:26px">어머니 병환 회복</div>
+    <div id="jd-meta" style="font:400 12.5px/1 'Noto Sans KR',sans-serif;color:#82600F;margin-top:12px">23일째 · 청원 · 7월 14일 시작</div>
+    <div id="grid-journey" class="t" style="display:grid;grid-template-columns:repeat(9,1fr);gap:5px;margin-top:26px"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:10px"><span style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272">한 칸이 하루 · 빈 칸은 못 바친 날</span><span id="jd-count" style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272">54일 중 21일</span></div>
+    <div style="margin-top:28px;display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between;padding:11px 0;border-top:1px solid rgba(31,37,48,.16)"><span style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">바친 날</span><span id="jd-done" style="font:500 13px/1 'Noto Sans KR',sans-serif;color:#1F2530">21일</span></div>
+      <div style="display:flex;justify-content:space-between;padding:11px 0;border-top:1px solid rgba(31,37,48,.16)"><span style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">못 바친 날</span><span id="jd-miss" style="font:500 13px/1 'Noto Sans KR',sans-serif;color:#1F2530">2일</span></div>
+      <div style="display:flex;justify-content:space-between;padding:11px 0;border-top:1px solid rgba(31,37,48,.16)"><span style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">성모송</span><span style="font:500 13px/1 'Noto Sans KR',sans-serif;color:#1F2530">1,050번</span></div>
+      <div style="display:flex;justify-content:space-between;padding:11px 0;border-top:1px solid rgba(31,37,48,.16)"><span style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">청원에서 감사로</span><span style="font:500 13px/1 'Noto Sans KR',sans-serif;color:#1F2530">27일째부터</span></div>
+      <div style="display:flex;justify-content:space-between;padding:11px 0;border-top:1px solid rgba(31,37,48,.16);border-bottom:1px solid rgba(31,37,48,.16)"><span style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">마치는 날</span><span style="font:500 13px/1 'Noto Sans KR',sans-serif;color:#1F2530">11월 6일</span></div>
+    </div>
+    <div style="flex:1"></div>
+    <div style="flex:none;height:80px;min-height:80px;border:1px solid rgba(31,37,48,.30);display:flex;align-items:center;justify-content:center;font:500 15px/1 'Noto Sans KR',sans-serif;color:#1F2530" id="jd-resume" class="t">오늘 이어서 바치기</div>
+    <div style="flex:none;display:flex;align-items:center;justify-content:center;height:80px;min-height:80px;font:400 12.5px/1 'Noto Sans KR',sans-serif;color:#5C6272" id="jd-quit" class="t">이 여정 그만두기</div>
+  </div>
+</div>
+
+<!-- ══ C′ 여정 완주 ══ -->
+<div class="scr" id="s-allDone">
+  <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:0 0 26px;box-sizing:border-box">
+    <div id="art-finish" style="height:248px;flex:none;background-image:url('art/02_Mary_and_Child.jpg');background-size:cover;background-position:50% 25%"></div>
+    <div style="padding:32px 24px 0;display:flex;flex-direction:column;flex:1">
+      <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.24em">쉰네 번째 날 · 11월 6일</div>
+      <div style="font:400 36px/1.3 'Noto Serif KR',serif;color:#1F2530;margin-top:18px">쉰네 날을<br>다 바쳤습니다</div>
+      <div style="font:400 13px/1.8 'Noto Sans KR',sans-serif;color:#1F2530;margin-top:18px">어머니 병환 회복을 위하여<br>청원 스물일곱 날, 감사 스물일곱 날</div>
+      <div id="rib-all" style="display:flex;gap:2px;margin-top:26px"></div>
+      <div style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272;margin-top:10px">성모송 2,700번 · 못 바친 날은 뒤로 밀려 채워졌습니다</div>
+      <div style="flex:1"></div>
+      <div style="height:80px;background:#1F2530;display:flex;align-items:center;justify-content:center;font:500 15px/1 'Noto Sans KR',sans-serif;color:#F5F1E6" id="ad-again" class="t">이 지향으로 다시 시작하기</div>
+      <div style="display:flex;align-items:center;justify-content:center;height:80px;font:400 12.5px/1 'Noto Sans KR',sans-serif;color:#5C6272" id="ad-home" class="t">여정 목록으로</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ E 설정 ══ -->
+<div class="scr" id="s-settings">
+  <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:56px 24px 26px;box-sizing:border-box">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid rgba(31,37,48,.16)">
+      <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.24em">설정</div>
+      <div style="font:400 11px/1 'Noto Sans KR',sans-serif;color:#5C6272" id="set-close" class="t">닫기</div>
+    </div>
+    <div style="flex:1;overflow:hidden;margin-top:8px">
+      <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.2em;padding:22px 0 4px">기도</div>
+      <div class="t" style="height:80px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(31,37,48,.16)"><span style="font:400 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">기도문 판본</span><span id="set-version" style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">가톨릭 기도서 →</span></div>
+      <div class="t" style="height:80px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(31,37,48,.16)"><span style="font:400 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">낭송 기본값</span><span id="set-recit" style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">교대로 →</span></div>
+      <div class="t" style="height:80px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(31,37,48,.16)"><span style="font:400 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">소리 속도</span><span id="set-rate" style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">보통 →</span></div>
+      <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.2em;padding:26px 0 4px">보기</div>
+      <div class="t" style="height:80px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(31,37,48,.16)"><span style="font:400 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">낮과 밤</span><span id="set-theme" style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">기기 설정 따름 →</span></div>
+      <div class="t" style="height:80px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(31,37,48,.16)"><span style="font:400 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">글자 크기</span><span id="set-size" style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">보통 →</span></div>
+      <div class="t" style="height:80px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(31,37,48,.16)"><span style="font:400 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">기도 시각 알림</span><span id="set-remind" style="font:400 13px/1 'Noto Sans KR',sans-serif;color:#5C6272">밤 9시 →</span></div>
+      <div style="font:400 10.5px/1 'Noto Sans KR',sans-serif;color:#5C6272;letter-spacing:.2em;padding:26px 0 4px">계정</div>
+      <div id="set-logout" class="t" style="height:80px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(31,37,48,.16);border-bottom:1px solid rgba(31,37,48,.16)"><span style="font:400 14px/1 'Noto Sans KR',sans-serif;color:#1F2530">로그아웃</span><span style="font:400 12px/1 'Noto Sans KR',sans-serif;color:#5C6272">올리지 못한 기록은 먼저 보냅니다</span></div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   묵주 — 54일 기도 · v5 통합 시제품
+   화면 안쪽의 모든 값은 _design-reference.html 에서 글자 그대로 옮겼다.
+   이 스크립트가 하는 일은 배선(화면 이동) · 기도 엔진 · 성화 회전 뿐이다.
+   ══════════════════════════════════════════════════════════════════════════ */
+(function () {
+"use strict";
+
+/* ── 1. 성화 슬롯 ─────────────────────────────────────────────────────────
+   교체 가능한 슬롯: 그림을 더하거나 빼는 일은 이 배열 하나만 고치면 된다.
+   네 슬롯의 기하는 고정이고(390x340 · 96x124 · 390x148 · 390x248),
+   슬롯마다 초점 좌표를 따로 갖는다 — 같은 그림이라도 띠의 비율이 달라지면
+   얼굴이 걸리는 자리가 달라지기 때문이다(FR-23).
+   값은 17장을 네 기하에 각각 넣어 렌더한 뒤 눈으로 확인해 정했다.        */
+var ART_DIR = "art/";
+/* 열여섯 장이다 — 09 는 워터마크가 그림 전면에 있어 풀에서 뺐고, 표식이 있던
+   여섯 장은 잘라 낸 사본이라 세로 비율이 달라져 초점을 다시 잡았다.
+   슬롯마다 "쓸 수 있는가"(no)를 함께 갖는다. 슬롯의 세로 비율이 극단적이면
+   초점을 어디에 두어도 이목구비가 안 들어오는 그림이 있기 때문이다.
+   no 에 적힌 슬롯에서는 그 그림을 뽑지 않고, 나머지 슬롯에서는 그대로 쓴다.
+   값과 가부는 16장을 네 기하에 실제로 넣어 렌더하고 눈으로 보고 정했다. */
+var ART = [
+  {f:"01_Mary_Single",            login:"50% 24%",  thumb:"50% 0%",   prayer:"50% 30%", finish:"50% 33%"},
+  {f:"02_Mary_and_Child",         login:"50% 0%",   thumb:"16% 50%",  prayer:"50% 19%", finish:"50% 25%"},
+  {f:"03_Prating_Jesus",          login:"50% 0%",   thumb:"50% 50%",  prayer:"50% 34%", finish:"50% 18%"},
+  {f:"04_Cross",                  login:"50% 50%",  thumb:"50% 50%",  prayer:"50% 8%",  finish:"50% 24%"},
+  {f:"05_Jesus_and_Sheep",        login:"50% 11%",  thumb:"50% 0%",   prayer:"50% 19%", finish:"50% 22%"},
+  /* 06 은 얼굴이 그림 맨 위에 있어, 가로로 긴 기도 배경에서는 어느 초점을 줘도
+     알이 얼굴을 가로지르거나 얼굴이 위로 잘린다. 기도 배경에서만 뺀다. */
+  {f:"06_Side_Jesus",             login:"50% 12%",  thumb:"50% 0%",   prayer:"50% 17%", finish:"50% 20%", no:["prayer"]},
+  {f:"07_Relief_Holy_Family",     login:"50% 0%",   thumb:"50% 0%",   prayer:"50% 4%",  finish:"50% 9%"},
+  {f:"08_Mary_Profile",           login:"50% 38%",  thumb:"50% 42%",  prayer:"50% 40%", finish:"50% 42%"},
+  {f:"10_Blue_Mary",              login:"50% 49%",  thumb:"50% 60%",  prayer:"50% 48%", finish:"50% 50%"},
+  /* 11 · 12 는 인물이 오른쪽 위에 치우쳐 있어 기도 배경에서 알이 얼굴에 겹친다.
+     초점을 내리면 얼굴이 위로 잘려 나간다. 기도 배경에서만 뺀다. */
+  {f:"11_Mary_Rosary_White_Gold", login:"100% 50%", thumb:"71% 50%",  prayer:"50% 54%", finish:"50% 61%", no:["prayer"]},
+  {f:"12_Mary_Child_Neutral",     login:"50% 63%",  thumb:"50% 100%", prayer:"50% 59%", finish:"50% 60%", no:["prayer"]},
+  {f:"13_Mosaic_Jesus_Water",     login:"50% 40%",  thumb:"50% 56%",  prayer:"50% 42%", finish:"50% 44%"},
+  {f:"14_Swirl_Jesus_Arms",       login:"50% 27%",  thumb:"50% 50%",  prayer:"50% 34%", finish:"50% 38%"},
+  {f:"15_Pastel_Crowd",           login:"50% 95%",  thumb:"50% 50%",  prayer:"50% 78%", finish:"50% 79%"},
+  {f:"16_Dove_Clouds",            login:"50% 59%",  thumb:"50% 79%",  prayer:"50% 56%", finish:"50% 58%"},
+  {f:"17_Oil_Mary_Tomb",          login:"50% 62%",  thumb:"50% 50%",  prayer:"50% 56%", finish:"50% 58%"}
+];
+
+/* 이번 세션의 뽑기. 페이지를 열 때 한 번 돌고 세션 내내 고정된다 —
+   화면을 오갈 때마다 그림이 바뀌면 여정의 정체성이 깨지기 때문이다.
+   비복원 추출이라 한 화면 안에서 같은 그림이 겹치지 않는다.            */
+var pool = ART.slice();
+for (var i = pool.length - 1; i > 0; i--) {
+  var j = Math.floor(Math.random() * (i + 1)); var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+}
+/* ?art=01,02,07  — 뽑기를 고정하는 진단용 손잡이(시안 대조·재현용). */
+var forced = (location.search.match(/[?&]art=([^&]+)/) || [])[1];
+if (forced) {
+  var head = [];
+  decodeURIComponent(forced).split(",").forEach(function (w) {
+    for (var k = 0; k < ART.length; k++)
+      if (ART[k].f.indexOf(w) === 0 && head.indexOf(ART[k]) < 0) { head.push(ART[k]); return; }
+  });
+  pool = head.concat(pool.filter(function (x) { return head.indexOf(x) < 0; }));
+}
+var used = [];
+function fits(a, slot) { return !a.no || a.no.indexOf(slot) < 0; }
+/* slots 에 적힌 슬롯 전부에서 쓸 수 있는 그림을 하나 집는다. 이미 쓴 그림은
+   다시 집지 않는다 — 한 화면 안에서 같은 그림이 겹치지 않게 하기 위해서다.
+   여정용 그림은 세 슬롯(썸네일·기도 배경·완주)을 모두 통과해야 한다. 그래야
+   홈에서 본 그림이 그 여정의 기도와 완주에서도 같은 그림으로 이어진다. */
+function take(slots) {
+  for (var i = 0; i < pool.length; i++) {
+    var a = pool[i];
+    if (used.indexOf(a) >= 0) continue;
+    var ok = true;
+    for (var k = 0; k < slots.length; k++) if (!fits(a, slots[k])) { ok = false; break; }
+    if (ok) { used.push(a); return a; }
+  }
+  return null;
+}
+var JOURNEY_SLOTS = ["thumb", "prayer", "finish"];
+/* build.mjs 로 만든 자체완결본에서는 그림이 data-URI 로 인라인돼 들어온다.
+   그때는 파일 경로 대신 그 표를 쓴다. 평소에는 상대 경로 그대로. */
+function artUrl(f) {
+  var m = window.__ART_INLINE;
+  return (m && m[f]) ? m[f] : ART_DIR + f + ".jpg";
+}
+function paint(el, art, slot) {
+  if (!el || !art) return;
+  el.style.backgroundImage = "url('" + artUrl(art.f) + "')";
+  el.style.backgroundPosition = art[slot];
+}
+
+/* ── 2. 기도문 ───────────────────────────────────────────────────────────
+   성모송은 전문이다 — 07-candidates 의 후보 시안들이 쓰던 문안과 같다.
+   나머지 기도문은 시안에 없어 앞 판(v4)의 문안을 그대로 가져왔다.       */
+var P = {
+  sign:  {n:"성호경",     a:"성부와 성자와 성령의 이름으로. 아멘.", b:""},
+  creed: {n:"사도신경",   a:"전능하신 천주 성부, 천지의 창조주를 저는 믿나이다.", b:""},
+  our:   {n:"주님의 기도", a:"하늘에 계신 우리 아버지, 아버지의 이름이 거룩히 빛나시며 아버지의 나라가 오시며",
+                          b:"아버지의 뜻이 하늘에서와 같이 땅에서도 이루어지소서."},
+  hail:  {n:"성모송",     a:"은총이 가득하신 마리아님, 기뻐하소서! 주님께서 함께 계시니 여인 중에 복되시며 태중의 아들 예수님 또한 복되시나이다.",
+                          b:"천주의 성모 마리아님, 이제와 저희 죽을 때에 저희 죄인을 위하여 빌어주소서. 아멘."},
+  glory: {n:"영광송",     a:"영광이 성부와 성자와 성령께,", b:"처음과 같이 이제와 항상 영원히. 아멘."},
+  save:  {n:"구원송",     a:"예수님, 저희 죄를 용서하시며 저희를 지옥 불에서 구하시고,",
+                          b:"연옥 영혼을 도우시며 가장 버림받은 영혼을 구원하소서."}
+};
+var SORROW = ["예수님께서 우리를 위하여 피땀 흘리심", "예수님께서 우리를 위하여 매맞으심",
+  "예수님께서 우리를 위하여 가시관 쓰심", "예수님께서 우리를 위하여 십자가 지심",
+  "예수님께서 우리를 위하여 십자가에 못박혀 돌아가심"];
+
+/* 하루는 77단계다 — 시작 기도 7 + 각 단 14 × 5. */
+function buildDay(list) {
+  var q = [], d, i;
+  q.push({p: P.sign,  head: "시작 기도 · 성호경"});
+  q.push({p: P.creed, head: "시작 기도 · 사도신경"});
+  q.push({p: P.our,   head: "시작 기도 · 주님의 기도"});
+  for (i = 0; i < 3; i++) q.push({p: P.hail, head: "시작 기도 · 성모송"});
+  q.push({p: P.glory, head: "시작 기도 · 영광송"});
+  for (d = 1; d <= 5; d++) q = q.concat(buildDecade(d, list));
+  return q;
+}
+function buildDecade(d, list) {
+  var q = [], i;
+  q.push({p: {n:"묵상", a: list[d-1] + "을 묵상합시다.", b:""}, head:"제"+d+"단 · 묵상", dec:d});
+  q.push({p: P.our,   head:"제"+d+"단 · 주님의 기도", dec:d});
+  for (i = 0; i < 10; i++) q.push({p: P.hail, head:"제"+d+"단 · 성모송", dec:d, bead:i});
+  q.push({p: P.glory, head:"제"+d+"단 · 영광송", dec:d});
+  q.push({p: P.save,  head:"제"+d+"단 · 구원송", dec:d});
+  return q;
+}
+
+/* ── 3. 상태 ─────────────────────────────────────────────────────────────
+   화면에 보이는 예시 데이터(지향·날짜·통계)는 전부 시안의 값이다.        */
+function seedDays() {                 // 시안의 54칸이 말하는 그대로
+  var a = [], k;
+  for (k = 0; k < 54; k++) a.push("future");
+  [0,1,2,3,4,5,6, 8,9,10,11,12,13,14, 16,17,18,19,20,21].forEach(function (k) { a[k] = "prayed"; });
+  a[7] = "missed"; a[15] = "missed"; a[22] = "today";
+  return a;
+}
+var J = [
+  {title:"어머니 병환 회복", kind:"청원", mystery:"고통의 신비",
+   group:false, days:seedDays(), step:40, art:null},
+  {title:"아버지 세례를 위해", day:6, meta:"6일째 · 함께 바치기", mystery:"고통의 신비",
+   group:true, myDecade:2, days:null, step:0, art:null}
+];
+
+/* ── 날짜는 days[] 하나에서만 나온다 ─────────────────────────────────────
+   전에는 날짜 번호(J[0].day)와 리본(days[])이 따로 놀아서, 하루를 바치면
+   리본은 24일째를 가리키는데 머리글은 "스물세 번째 날"이라고 말했다.
+   게다가 리본만 저장되고 번호는 저장되지 않아 그 어긋남이 남았다.
+   이제 화면에 나오는 날짜 문구는 전부 아래 세 함수를 거친다.          */
+function dayNo(j) { return j.days ? j.days.indexOf("today") + 1 : j.day; }
+function tally(j) {
+  var d = j.days, done = 0, miss = 0, left = 0, k;
+  for (k = 0; k < 54; k++) {
+    if (d[k] === "prayed" || d[k] === "today") done++;
+    else if (d[k] === "missed") miss++;
+    else left++;
+  }
+  return {done: done, miss: miss, left: left};
+}
+/* 스물세 번째 · 스물네 번째 … 우리말 차례수 */
+var NAT1 = ["", "한", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉"];
+var NAT10 = ["", "열", "스물", "서른", "마흔", "쉰"];
+function ordKo(n) {
+  if (n === 1) return "첫 번째";
+  var t = Math.floor(n / 10), o = n % 10;
+  return (NAT10[t] || "") + (o ? NAT1[o] : "") + " 번째";
+}
+/* 시안이 못박은 대응: 23일째 = 9월 5일. 거기서 하루씩 센다. */
+function dateKo(n) {
+  var d = new Date(2026, 8, 5);           /* 9월 5일 */
+  d.setDate(d.getDate() + (n - 23));
+  return (d.getMonth() + 1) + "월 " + d.getDate() + "일";
+}
+var loginArt = take(["login"]);
+J[0].art = take(JOURNEY_SLOTS); J[1].art = take(JOURNEY_SLOTS);
+
+var S = {
+  screen: "login", back: "login",
+  cur: 0, queue: [], step: 0, running: false, timer: null, phase: "idle",
+  recitation: "교대로", rate: 1, code: "K7M4", kind: 0
+};
+var LS = "mr.v5";
+function save() {
+  try {
+    localStorage.setItem(LS, JSON.stringify({
+      step: J[0].step, recitation: S.recitation, days: J[0].days
+    }));
+  } catch (e) {}
+}
+function load() {
+  try {
+    var d = JSON.parse(localStorage.getItem(LS) || "null");
+    if (!d) return;
+    if (typeof d.step === "number") J[0].step = d.step;
+    if (d.recitation) S.recitation = d.recitation;
+    if (d.days && d.days.length === 54) J[0].days = d.days;
+  } catch (e) {}
+}
+
+/* ── 4. 화면 이동 ────────────────────────────────────────────────────────*/
+var $ = function (id) { return document.getElementById(id); };
+function show(name, back) {
+  if (S.screen === "pray" && name !== "pray") stopEngine();
+  S.screen = name;
+  if (back) S.back = back;
+  var all = document.querySelectorAll(".scr");
+  for (var i = 0; i < all.length; i++) all[i].classList.toggle("on", all[i].id === "s-" + name);
+  if (name === "home") renderHome();
+  if (name === "invite") renderCode();
+  if (name === "pray") renderPray();
+  if (name === "settings") renderSettings();
+  if (name === "journey") renderJourney();
+  if (name === "dayDone") renderDayDone();
+  if (name === "allDone") { renderAll(); }
+  window.scrollTo(0, 0);
+}
+function on(id, fn) { var e = $(id); if (e) e.addEventListener("click", fn); }
+
+/* ── 5. 54칸 리본·격자 ───────────────────────────────────────────────────*/
+var FILL = {prayed:"#82600F", missed:"rgba(31,37,48,.10)", future:"rgba(31,37,48,.10)", today:"#1F2530"};
+function renderRibbon(el, days, h) {
+  if (!el) return;
+  var s = "", k;
+  for (k = 0; k < 54; k++) s += '<div style="height:' + h + 'px;flex:1;background:' + FILL[days[k]] + '"></div>';
+  el.innerHTML = s;
+}
+function renderGrid(el, days, style) {
+  if (!el) return;
+  var s = "", k;
+  for (k = 0; k < 54; k++) s += '<div style="' + style + ';background:' + FILL[days[k]] + '"></div>';
+  el.innerHTML = s;
+}
+
+/* ── 6. 홈 ───────────────────────────────────────────────────────────────*/
+function renderHome() {
+  $("j0-meta").textContent = dayNo(J[0]) + "일째 · " + J[0].kind;
+  paint($("art-j0"), J[0].art, "thumb");
+  paint($("art-j1"), J[1].art, "thumb");
+  renderRibbon($("rib-home"), J[0].days, 22);
+  var q = buildDay(SORROW), st = q[J[0].step] || q[0];
+  var where = J[0].mystery + "<br>";
+  if (st.dec && st.bead != null) where += "제" + st.dec + "단 " + (st.bead + 1) + "번째 알부터 이어서";
+  else if (st.dec) where += "제" + st.dec + "단 " + st.p.n + "부터 이어서";
+  else where += "시작 기도부터 이어서";
+  $("j0-resume").innerHTML = where;
+}
+
+/* ── 7. 초대 코드 ────────────────────────────────────────────────────────
+   여섯 칸 위에 보이지 않는 입력칸이 겹쳐 있다. 그 입력칸을 절대 옮기지
+   않는 것이 중요하다 — 이미 문서에 있는 요소를 appendChild 로 다시 붙이면
+   그것은 '옮기는' 일이고, 포커스를 가진 입력 요소가 옮겨지면 브라우저가
+   포커스를 놓는다. 그러면 한 번 탭에 한 글자밖에 못 넣는다.
+   그래서 칸은 처음 한 번만 만들고, 이후에는 칸의 스타일과 글자만 고친다. */
+var CELL = {
+  cur:  "flex:1;height:76px;border:1px solid #82600F;background:rgba(130,96,15,.06);display:flex;align-items:center;justify-content:center;font:500 28px/1 'Noto Sans KR',sans-serif;color:#82600F",
+  done: "flex:1;height:76px;border:1px solid #1F2530;display:flex;align-items:center;justify-content:center;font:500 28px/1 'Noto Sans KR',sans-serif;color:#1F2530",
+  empty:"flex:1;height:76px;border:1px solid rgba(31,37,48,.22);display:flex;align-items:center;justify-content:center"
+};
+var codeCells = null;
+function renderCode() {
+  var row = $("inv-row"), inp = $("inv-input");
+  if (!row) return;
+  if (!codeCells) {                       /* 칸 만들기는 딱 한 번 */
+    codeCells = [];
+    for (var i = 0; i < 6; i++) {
+      var d = document.createElement("div");
+      row.insertBefore(d, inp);           /* 입력칸은 늘 마지막 자리에 그대로 */
+      codeCells.push(d);
+    }
+  }
+  for (var k = 0; k < 6; k++) {
+    var c = S.code[k] || "", d = codeCells[k];
+    d.style.cssText = c ? (k === S.code.length - 1 ? CELL.cur : CELL.done) : CELL.empty;
+    if (d.textContent !== c) d.textContent = c;
+  }
+  if (inp && inp.value !== S.code) inp.value = S.code;
+}
+
+/* ── 8. 묵주 그림 ────────────────────────────────────────────────────────
+   실 · 큰 알 · 십자가는 시안의 좌표 그대로. 알 열 개의 상태만 바뀐다.    */
+var BEADS = [[42,128],[56,93],[93,74],[133,65],[174,61],[216,61],[257,65],[297,74],[334,93],[348,128]];
+var BRE = 'style="transform-box:fill-box;transform-origin:center;animation:bre 4s ease-in-out infinite"';
+function rosary(doneBeads, curBead) {
+  var s = '' +
+    '<path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="rgba(31,37,48,.22)" stroke-width="1.4"></path>' +
+    '<path d="M42 128 C56 170 147 198 195 210" fill="none" stroke="rgba(31,37,48,.22)" stroke-width="1.4"></path>' +
+    '<path d="M348 128 C334 170 243 198 195 210" fill="none" stroke="rgba(31,37,48,.22)" stroke-width="1.4"></path>' +
+    '<path d="M195 231 L195 252" fill="none" stroke="rgba(31,37,48,.22)" stroke-width="1.4"></path>' +
+    '<path d="M195 252 L195 278 M180 262 L210 262" fill="none" stroke="rgba(31,37,48,.40)" stroke-width="2.4"></path>';
+  /* 큰 알 — 주님의 기도·영광송·구원송·묵상은 이 알에 머문다 */
+  if (curBead < 0) {
+    s += '<circle cx="195" cy="210" r="34" fill="#8A6516" opacity=".14" ' + BRE + '></circle>' +
+         '<circle cx="195" cy="210" r="21" fill="#8A6516" ' + BRE + '></circle>';
+  } else {
+    s += '<circle cx="195" cy="210" r="21" fill="none" stroke="rgba(31,37,48,.34)" stroke-width="1.6"></circle>';
+  }
+  for (var i = 0; i < 10; i++) {
+    var x = BEADS[i][0], y = BEADS[i][1];
+    if (i === curBead) {
+      s += '<circle cx="' + x + '" cy="' + y + '" r="34" fill="#8A6516" opacity=".14" ' + BRE + '></circle>' +
+           '<circle cx="' + x + '" cy="' + y + '" r="18.4" fill="#8A6516" ' + BRE + '></circle>';
+    } else if (i < doneBeads) {
+      s += '<circle cx="' + x + '" cy="' + y + '" r="18.4" fill="#1F2530"></circle>';
+    } else {
+      s += '<circle cx="' + x + '" cy="' + y + '" r="18.4" fill="none" stroke="rgba(31,37,48,.30)" stroke-width="1.6"></circle>';
+    }
+  }
+  if (curBead >= 0) {
+    s += '<text x="' + BEADS[curBead][0] + '" y="' + (BEADS[curBead][1] + 6) + '" text-anchor="middle" ' +
+         'style="font:500 16px \'Noto Sans KR\',sans-serif;fill:#F5F1E6">' + (curBead + 1) + '</text>';
+  }
+  return s;
+}
+
+/* ── 9. 기도 화면 ────────────────────────────────────────────────────────*/
+function renderPray() {
+  var j = J[S.cur], st = S.queue[S.step];
+  if (!st) return;
+  paint($("art-pray"), j.art, "prayer");
+  $("pr-title").textContent = j.title;
+  $("pr-day").textContent = "· " + dayNo(j) + "일째";
+  $("pr-step").textContent = st.head;
+  $("pr-a").textContent = st.p.a;
+  var b = $("pr-b");
+  b.textContent = st.p.b;
+  b.style.display = st.p.b ? "" : "none";
+  var cur = (st.bead != null) ? st.bead : -1;
+  var done = (st.bead != null) ? st.bead : (st.dec ? (st.p === P.glory || st.p === P.save ? 10 : 0) : 0);
+  $("pr-rosary").innerHTML = rosary(done, cur);
+}
+
+var voiceKo = null;
+function pickVoice() {
+  if (!("speechSynthesis" in window)) return;
+  var v = speechSynthesis.getVoices();
+  for (var i = 0; i < v.length; i++) if (/ko/i.test(v[i].lang)) { voiceKo = v[i]; return; }
+}
+if ("speechSynthesis" in window) {
+  pickVoice();
+  speechSynthesis.onvoiceschanged = pickVoice;
+  setTimeout(pickVoice, 900);
+}
+function speak(txt) {
+  return new Promise(function (res) {
+    if (S.recitation === "소리 없이" || !voiceKo || !("speechSynthesis" in window)) {
+      setTimeout(res, Math.min(4200, 380 + txt.length * 66) / S.rate);
+      return;
+    }
+    try { speechSynthesis.cancel(); } catch (e) {}
+    var u = new SpeechSynthesisUtterance(txt);
+    u.voice = voiceKo; u.lang = "ko-KR"; u.rate = 0.92 * S.rate;
+    u.onend = res; u.onerror = res;
+    speechSynthesis.speak(u);
+  });
+}
+/* 받는 절을 소리 내어 바칠 만큼의 사이 */
+function pauseFor(st) {
+  var b = st.p.b || "";
+  if (!b) return Math.round(1600 / S.rate);
+  return Math.round((900 + b.length * 132) / S.rate);
+}
+function startEngine(queue, step) {
+  S.queue = queue; S.step = step || 0; S.running = true;
+  renderPray(); runStep();
+}
+function stopEngine() {
+  S.running = false;
+  clearTimeout(S.timer);
+  if ("speechSynthesis" in window) { try { speechSynthesis.cancel(); } catch (e) {} }
+}
+function runStep() {
+  var st = S.queue[S.step];
+  if (!st) { finishDay(); return; }
+  renderPray();
+  var mine = S.cur === 0;
+  if (mine) { J[0].step = S.step; save(); }
+  if (S.recitation === "소리 없이") {                       /* 탭으로 진행 */
+    S.timer = setTimeout(function () { if (S.running) advance(); }, Math.round(7000 / S.rate));
+    return;
+  }
+  speak(st.p.a).then(function () {
+    if (!S.running) return;
+    if (S.recitation === "전부 소리로" && st.p.b) {
+      speak(st.p.b).then(function () {
+        if (!S.running) return;
+        S.timer = setTimeout(function () { if (S.running) advance(); }, Math.round(700 / S.rate));
+      });
+      return;
+    }
+    if (st.p.b && navigator.vibrate) navigator.vibrate(18);   /* 이제 받으세요 */
+    S.timer = setTimeout(function () { if (S.running) advance(); }, pauseFor(st));
+  });
+}
+function advance() {
+  clearTimeout(S.timer);
+  var prev = (S.queue[S.step] || {}).dec;
+  S.step++;
+  if (S.step >= S.queue.length) { finishDay(); return; }
+  var nd = (S.queue[S.step] || {}).dec;
+  if (navigator.vibrate && nd && nd !== prev) navigator.vibrate([22, 70, 22]);
+  runStep();
+}
+function finishDay() {
+  stopEngine();
+  var j = J[S.cur];
+  if (j.days) {
+    var k = j.days.indexOf("today");
+    if (k >= 0 && k < 53) { j.days[k] = "prayed"; j.days[k + 1] = "today"; }
+    j.step = 0; save();
+    /* 쉰네 날을 다 바치면 여정 완주로 */
+    if (j.days.indexOf("future") < 0 && j.days.indexOf("today") < 0) { show("allDone", "home"); return; }
+  }
+  show("dayDone", "home");
+}
+
+/* ── 9-2. 하루 완주 · 여정 상세 — 날짜 문구를 전부 days[] 에서 끌어온다 ──*/
+function renderDayDone() {
+  var n = dayNo(J[0]), t = tally(J[0]);
+  renderRibbon($("rib-day"), J[0].days, 26);
+  $("cd-head").textContent = dateKo(n) + " · " + ordKo(n) + " 날";
+  $("cd-sum").textContent = "54일 중 " + t.done + "일 바쳤습니다 · 남은 " + t.left + "일";
+}
+function renderJourney() {
+  var n = dayNo(J[0]), t = tally(J[0]);
+  renderGrid($("grid-journey"), J[0].days, "aspect-ratio:1");
+  $("jd-meta").textContent = n + "일째 · " + J[0].kind + " · 7월 14일 시작";
+  $("jd-count").textContent = "54일 중 " + t.done + "일";
+  $("jd-done").textContent = t.done + "일";
+  $("jd-miss").textContent = t.miss + "일";
+}
+
+/* ── 10. 여정 완주 · 설정 ────────────────────────────────────────────────*/
+function renderAll() {
+  paint($("art-finish"), J[0].art, "finish");
+  var full = [], k;
+  for (k = 0; k < 54; k++) full.push("prayed");
+  renderRibbon($("rib-all"), full, 30);
+}
+var RECITS = ["교대로", "전부 소리로", "소리 없이"];
+/* 소리 속도는 시안에 "보통" 하나뿐이고 다른 값이 어디에도 없다. 문구를
+   지어내지 않기 위해 이 줄은 누를 수 없게 두고, 속도는 1로 고정한다.
+   값 목록이 정해지면 그때 되살린다. */
+function renderSettings() {
+  $("set-recit").textContent = S.recitation + " →";
+  /* 시안: 첫 줄만 위쪽 변을 갖고 둘째·셋째 줄은 위쪽 변이 없다. 이 규칙은
+     어느 줄을 고르든 그대로여야 한다 — 고른 줄에만 위쪽 변을 되살리면 위 줄의
+     아래 변과 겹쳐 2px 선이 되고 묶음이 246px 에서 247px 로 자란다.
+     그래서 테두리 색만 선택에 따라 바꾸고, 변의 유무는 줄 번호로만 정한다. */
+  for (var k = 0; k < 3; k++) {
+    var el = $("rec-" + k);
+    if (!el) continue;
+    el.style.border = (RECITS[k] === S.recitation)
+      ? "1px solid #82600F" : "1px solid rgba(31,37,48,.18)";
+    if (k > 0) el.style.borderTop = "none";
+  }
+}
+
+/* ── 11. 배선 ────────────────────────────────────────────────────────────*/
+load();
+paint($("art-login"), loginArt, "login");
+
+on("go-google", function () { show("home", "home"); });
+on("go-apple",  function () { show("home", "home"); });
+on("go-invite1", function () { show("invite", "login"); });
+on("go-invite2", function () { show("invite", "home"); });
+on("inv-close", function () { show(S.back); });
+on("inv-enter", function () { if (S.code.length === 6) show("home", "home"); });
+
+on("go-settings", function () { show("settings", "home"); });
+on("go-new", function () { show("new", "home"); });
+on("j0-row", function () { S.cur = 0; startEngine(buildDay(SORROW), J[0].step); show("pray", "home"); });
+on("j1-row", function () { S.cur = 1; show("assign", "home"); });
+on("rib-home", function (e) { e.stopPropagation(); show("journey", "home"); });
+
+on("new-close", function () { show("home"); });
+on("kind-0", function () { setKind(0); });
+on("kind-1", function () { setKind(1); });
+on("rec-0", function () { setRecit(0); });
+on("rec-1", function () { setRecit(1); });
+on("rec-2", function () { setRecit(2); });
+on("new-start", function () {
+  var name = ($("new-intent").textContent || "").trim() || "어머니 병환 회복";
+  var fresh = {title: name, day: 1, mystery: "고통의 신비", group: false, days: null, step: 0, art: take(JOURNEY_SLOTS)};
+  J[2] = fresh; S.cur = 2;
+  startEngine(buildDay(SORROW), 0); show("pray", "home");
+});
+
+on("as-close", function () { show("home"); });
+on("as-mine", function () { S.cur = 1; startEngine(buildDecade(J[1].myDecade, SORROW), 0); show("pray", "home"); });
+on("as-all",  function () { S.cur = 1; startEngine(buildDay(SORROW), 0); show("pray", "home"); });
+
+on("pr-pause", function () { stopEngine(); show("home"); });
+on("pr-stop",  function () { stopEngine(); if (S.cur === 0) { J[0].step = 0; save(); } show("home"); });
+on("pr-rosary", function () { if (S.recitation === "소리 없이" && S.running) advance(); });
+
+on("cd-back", function () { show("home"); });
+on("rib-day", function () { show("journey", "home"); });
+
+on("jd-back", function () { show("home"); });
+on("jd-resume", function () { S.cur = 0; startEngine(buildDay(SORROW), J[0].step); show("pray", "home"); });
+on("jd-quit", function () { show("home"); });
+on("grid-journey", function () { show("allDone", "home"); });
+
+on("ad-again", function () { show("new", "home"); });
+on("ad-home", function () { show("home"); });
+
+on("set-close", function () { show("home"); });
+on("set-logout", function () { show("login", "login"); });
+on("set-recit", function () {
+  S.recitation = RECITS[(RECITS.indexOf(S.recitation) + 1) % 3]; save(); renderSettings();
+});
+
+function setKind(k) {
+  S.kind = k;
+  $("kind-0").style.cssText = k === 0
+    ? "flex:1;height:80px;border:1px solid #1F2530;background:#1F2530;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px"
+    : "flex:1;height:80px;border:1px solid rgba(31,37,48,.30);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px";
+  $("kind-1").style.cssText = k === 1
+    ? "flex:1;height:80px;border:1px solid #1F2530;background:#1F2530;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px"
+    : "flex:1;height:80px;border:1px solid rgba(31,37,48,.30);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px";
+  var a = $("kind-0").children, b = $("kind-1").children;
+  a[0].style.color = k === 0 ? "#F5F1E6" : "#1F2530"; a[1].style.color = k === 0 ? "#C9C2B0" : "#5C6272";
+  b[0].style.color = k === 1 ? "#F5F1E6" : "#1F2530"; b[1].style.color = k === 1 ? "#C9C2B0" : "#5C6272";
+}
+function setRecit(k) { S.recitation = RECITS[k]; save(); renderSettings(); }
+
+/* 초대 코드 입력 — 보이지 않는 입력칸이 여섯 칸 위에 겹쳐 있다 */
+var inp = $("inv-input");
+if (inp) {
+  inp.addEventListener("input", function () {
+    S.code = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+    renderCode();
+  });
+}
+on("inv-row", function () { if (inp) inp.focus(); });
+
+renderSettings();
+setKind(0);
+show("login", "login");
+window.MR = {S: S, J: J, show: show, art: function () { return {login: loginArt, j0: J[0].art, j1: J[1].art}; }};
+})();
+
+</script>
+</body>
+</html>
+
+</body></html>

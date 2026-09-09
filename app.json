@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "묵주",
+    "slug": "my-rosary-app",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "myrosary",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#EDE7D8",
+    "primaryColor": "#1F2530",
+    "assetBundlePatterns": [
+      "assets/**"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.myrosary.app",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "com.myrosary.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#EDE7D8"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon-placeholder.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#EDE7D8"
+        }
+      ]
+    ]
+  }
+}

@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<title>묵주 — 쪽빛 밤 (Jjok Night) · 화면 열 + 시트 일곱</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>:root{--bg:#10161F;--surface:#18202C;--surface2:#222C3B;--ink:#F0EAD9;--muted:#8E93A3;--accent:#D9AE4C;--accent-bg:rgba(217,174,76,.09);--accent-line:#D9AE4C;--rule:rgba(240,234,217,.14);--rule2:rgba(240,234,217,.30);--faint:rgba(240,234,217,.10);--ash:rgba(240,234,217,.22);--season:#9683B5;--fill:#DCD6C4;--on-fill:#10161F;--on-fill-muted:#3F4757;--bead:#8E93A3;--bead-line:rgba(240,234,217,.34);--thread:rgba(240,234,217,.24);--plate-veil:rgba(16,22,31,.56);--scrim:rgba(6,9,14,.62)}
+
+*{box-sizing:border-box}
+body{margin:0;padding:40px 44px 80px;word-break:keep-all;overflow-wrap:break-word;background:#07090d;font-family:'Noto Sans KR',system-ui,sans-serif}
+h1{margin:0 0 10px;font:500 17px/1.4 'Noto Sans KR';color:#F0EAD9}
+p.lead{margin:0 0 26px;font:400 12.5px/1.8 'Noto Sans KR';color:#9AA0B0;max-width:900px}
+h2{margin:44px 0 4px;font:500 14px/1.5 'Noto Sans KR';color:#F0EAD9;border-top:1px solid rgba(240,234,217,.14);padding-top:20px}
+p.note{margin:0 0 18px;font:400 12px/1.8 'Noto Sans KR';color:#8E93A3;max-width:900px}
+.row{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-start}
+figure{margin:0}
+figcaption{font:400 11.5px/1.5 'Noto Sans KR';color:#A7ACBA;letter-spacing:.04em;margin-top:9px;text-align:center;max-width:390px}
+figcaption b{color:#F0EAD9;font-weight:500}
+
+/* 기기 프레임 — 시안용 목업이며 앱 UI 가 아니다 (라디우스 0 규칙은 화면 안쪽에 적용된다) */
+.frame{width:390px;height:844px;border-radius:42px;overflow:hidden;position:relative;
+  background:var(--bg);color:var(--ink);box-shadow:0 22px 56px rgba(0,0,0,.55)}
+.panel{width:376px;height:274px;background:var(--bg);border:1px solid rgba(240,234,217,.14);
+  display:flex;align-items:center;justify-content:center}
+
+.scr{height:100%;display:flex;flex-direction:column;padding:56px 24px 26px}
+.scr.edge{padding-left:0;padding-right:0}
+.px{padding-left:24px;padding-right:24px}
+.gr{flex:1}
+.sc{flex:1;min-height:0;overflow-y:auto}
+
+.hd{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--rule)}
+.lab{font:400 10.5px/1 'Noto Sans KR';color:var(--muted);letter-spacing:.12em}
+.lab2{font:400 10.5px/1 'Noto Sans KR';color:var(--muted);letter-spacing:.12em}
+.tap{font:400 11px/1 'Noto Sans KR';color:var(--muted)}
+.ser{font-family:'Noto Serif KR',serif;font-weight:400;color:var(--ink)}
+.sub{font:400 12.5px/1.7 'Noto Sans KR';color:var(--muted)}
+.bd{font:400 13px/1.7 'Noto Sans KR';color:var(--ink)}
+.sm{font:400 11px/1.6 'Noto Sans KR';color:var(--muted)}
+.acc{color:var(--accent)}
+.season{color:var(--season)}
+.mono-n{font:700 34px/1 'Noto Sans KR';color:var(--accent)}
+
+.btn{height:88px;display:flex;align-items:center;justify-content:center;font:500 15px/1 'Noto Sans KR';flex:none}
+.btn.p{background:var(--fill);color:var(--on-fill)}
+.btn.o{border:1px solid var(--rule2);color:var(--ink)}
+.btn.t{color:var(--muted);font:400 12.5px/1 'Noto Sans KR'}
+.btn.dis{background:var(--faint);color:var(--muted)}
+.btn2{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;height:88px;flex:1}
+.btn2 .t1{font:500 14px/1 'Noto Sans KR';color:var(--ink)}
+.btn2 .t2{font:400 11px/1 'Noto Sans KR';color:var(--muted)}
+
+/* 고르는 줄 — 88px 터치 영역 (Q-06b) */
+.opt{min-height:88px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:0 16px;border:1px solid var(--rule)}
+.opt + .opt{border-top:none}
+.opt.on{border:1px solid var(--accent-line);background:var(--accent-bg)}
+.opt.on + .opt{border-top:none}
+.opt .n{font:500 14px/1.35 'Noto Sans KR';color:var(--ink)}
+.opt .d{font:400 11px/1.5 'Noto Sans KR';color:var(--muted);margin-top:5px}
+.opt .r{font:400 11px/1 'Noto Sans KR';color:var(--muted);flex:none}
+.opt.on .r{color:var(--accent)}
+
+.zone{padding:18px 0 16px;border-bottom:1px solid var(--rule)}
+.zone:last-child{border-bottom:none}
+
+.ribbon{display:flex;gap:1px}
+.ribbon i{flex:1;display:block}
+.grid54{display:grid;grid-template-columns:repeat(9,1fr);gap:4px}
+.grid54 i{height:22px;display:block}
+
+.plate{flex:none;background-size:cover;background-repeat:no-repeat;box-shadow:inset 0 0 0 2000px var(--plate-veil)}
+.stat{display:flex;align-items:baseline;justify-content:space-between;padding:15px 0;border-top:1px solid var(--rule)}
+.stat .k{font:400 12.5px/1 'Noto Sans KR';color:var(--muted)}
+.stat .v{font:400 14px/1 'Noto Sans KR';color:var(--ink)}
+
+.bar5{display:flex;gap:3px;margin-top:12px}
+.bar5 i{flex:1;height:4px;display:block}
+
+.sheetwrap{position:absolute;inset:0;background:var(--scrim);display:flex;flex-direction:column;justify-content:flex-end}
+.sheet{background:var(--surface);border-top:1px solid var(--rule2);padding:26px 24px 26px}
+.dim{filter:saturate(.9)}
+
+@keyframes bre{0%,100%{opacity:.42;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
+@keyframes pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:.95;transform:scale(1.22)}}
+@media (prefers-reduced-motion:reduce){
+  [style*="animation"]{animation:none !important}
+}
+</style></head>
+<body>
+<h1>묵주 · 쪽빛 밤 (Jjok Night) — 화면 열 + 시트 일곱 (390 × 844)</h1>
+<p class="lead">쪽빛 바탕 #10161F 위 한지 글자 #F0EAD9. 강조는 치자 #D9AE4C 하나. 전례색 자색은 대비 실측으로 #9683B5 로 올렸다. 라디우스 0, 그림자 0, 구역을 나누는 것은 카드가 아니라 얇은 괘선. 모든 주 조작의 터치 영역은 88px이다(결정 큐 Q-06b).<br>
+이 파일과 <code>screens-day.html</code>은 <b>같은 마크업</b>에서 나왔고 다른 것은 맨 위 CSS 변수 한 벌뿐이다. 조립기는 <code>build.mjs</code>, 값·규칙·판단 요청은 <code>README.md</code>에 있다.</p>
+<h2>L 로그인</h2><p class="note">계정이 필수이므로(FR-32) 로그인 화면에는 초대 코드 진입점을 두지 않는다. 프로토타입에 있던 그 한 줄은 결정 1-1에 따라 홈으로 옮겼다.</p><div class="row"><figure><div class="frame">
+<div class="scr" style="padding:0 0 26px">
+  <div class="plate" style="height:340px;background-image:url('../product/prototype/assets/01_Mary_Single.jpg');background-position:50% 16%"></div>
+  <div style="padding:34px 24px 0;display:flex;flex-direction:column;flex:1">
+    <div class="lab">54일 기도</div>
+    <div class="ser" style="font-size:38px;line-height:1.25;margin-top:16px">묵주</div>
+    <div class="bd" style="margin-top:16px">하나의 지향을 쉰네 날 동안 바칩니다.<br>오늘 어디까지 바쳤는지는 앱이 기억합니다.</div>
+    
+    <div class="gr"></div>
+    <div class="btn p">구글로 계속</div>
+    <div class="btn o" style="margin-top:12px">Apple로 계속</div>
+    <div class="sm" style="text-align:center;margin-top:20px">계정은 여정과 자리를 기기 사이에 맞추는 데만 씁니다.<br>계속하면 이용약관과 개인정보 처리방침에 동의합니다.<br>바람 문구는 서버에서 암호화해 보관합니다.</div>
+  </div>
+</div></div><figcaption><b>L-1</b> 기본</figcaption></figure><figure><div class="frame">
+<div class="scr" style="padding:0 0 26px">
+  <div class="plate" style="height:340px;background-image:url('../product/prototype/assets/01_Mary_Single.jpg');background-position:50% 16%"></div>
+  <div style="padding:34px 24px 0;display:flex;flex-direction:column;flex:1">
+    <div class="lab">54일 기도</div>
+    <div class="ser" style="font-size:38px;line-height:1.25;margin-top:16px">묵주</div>
+    <div class="bd" style="margin-top:16px">하나의 지향을 쉰네 날 동안 바칩니다.<br>오늘 어디까지 바쳤는지는 앱이 기억합니다.</div>
+    <div class="sm acc" style="margin-top:18px">로그인이 되지 않았습니다. 다시 시도해 주세요.<br>연결이 필요합니다</div>
+    <div class="gr"></div>
+    <div class="btn dis">구글로 계속</div>
+    <div class="btn dis" style="margin-top:12px">Apple로 계속</div>
+    <div class="sm" style="text-align:center;margin-top:20px">계정은 여정과 자리를 기기 사이에 맞추는 데만 씁니다.<br>계속하면 이용약관과 개인정보 처리방침에 동의합니다.<br>바람 문구는 서버에서 암호화해 보관합니다.</div>
+  </div>
+</div></div><figcaption><b>L-2</b> 연결 없음 · 로그인 실패</figcaption></figure></div>
+<h2>A 홈 — 여정 목록</h2><p class="note">카드 한 줄을 누르면 곧 기도다. 카드 오른쪽의 “자세히”만 여정 상세로 간다.</p><div class="row"><figure><div class="frame">
+<div class="scr">
+  
+<div class="hd">
+  <div class="lab">내 기도 · 둘</div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="none" stroke="var(--muted)" stroke-width="1.1"/><text x="10" y="14.5" text-anchor="middle" style="font:400 11px 'Noto Sans KR';fill:var(--muted)">i</text></svg>
+    <span class="tap" style="letter-spacing:.1em">설정</span>
+  </div>
+</div>
+  <div class="sc">
+<div style="padding:24px 0 22px;border-bottom:1px solid var(--rule)">
+  <div style="display:flex;gap:16px;align-items:flex-start">
+    <div class="plate"  style="width:96px;height:124px;background-image:url('../product/prototype/assets/02_Mary_and_Child.jpg');background-position:50% 20%"></div>
+    <div style="flex:1;min-width:0">
+      <div class="ser" style="font-size:24px;line-height:1.3">어머니 병환 회복</div>
+      <div style="font:500 12px/1 'Noto Sans KR';color:var(--accent);letter-spacing:.06em;margin-top:10px">23일째 · 청원</div>
+      <div style="font:400 12.5px/1.6 'Noto Sans KR';color:var(--ink);margin-top:12px">고통의 신비<br>제3단 4번째 알부터 이어서</div>
+      <div class="sm" style="margin-top:6px">어제 저녁</div>
+    </div>
+  </div>
+  <div class="ribbon"><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:9px">
+    <span class="sm">7월 14일 시작 · 9월 5일 마칠 날</span><span class="tap">자세히</span>
+  </div>
+</div>
+<div style="padding:24px 0 22px;border-bottom:1px solid var(--rule)">
+  <div style="display:flex;gap:16px;align-items:flex-start">
+    <div class="plate" style="width:96px;height:124px;background-image:url('../product/prototype/assets/07_Relief_Holy_Family.jpg');background-position:50% 30%"></div>
+    <div style="flex:1;min-width:0">
+      <div class="ser" style="font-size:24px;line-height:1.3">아버지 세례를 위해</div>
+      <div style="font:500 12px/1 'Noto Sans KR';color:var(--accent);letter-spacing:.06em;margin-top:10px">6일째 · 함께 바치기</div>
+      <div style="font:400 12.5px/1.6 'Noto Sans KR';color:var(--ink);margin-top:12px">오늘 바쳤습니다</div>
+      <div class="sm" style="margin-top:6px">내 몫 제2단 · 오늘 다섯 중 셋</div>
+    </div>
+  </div>
+  <div class="ribbon"><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:9px">
+    <span class="sm">7월 31일 시작 · 9월 22일 마칠 날</span><span class="tap">자세히</span>
+  </div>
+</div></div>
+  <div class="btn p" style="margin-top:14px">새 기도</div>
+  <div class="btn t">초대 코드로 들어가기</div>
+</div></div><figcaption><b>A-1</b> 기본 — 혼자 여정과 조 여정</figcaption></figure><figure><div class="frame">
+<div class="scr">
+  
+<div class="hd">
+  <div class="lab">내 기도 · 넷</div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="none" stroke="var(--muted)" stroke-width="1.1"/><text x="10" y="14.5" text-anchor="middle" style="font:400 11px 'Noto Sans KR';fill:var(--muted)">i</text></svg>
+    <span class="tap" style="letter-spacing:.1em">설정</span>
+  </div>
+</div>
+  <div class="sm" style="padding:12px 0 0">연결되면 맞춰 둡니다.</div>
+  <div class="sm acc" style="padding:6px 0 12px;border-bottom:1px solid var(--rule)">이 기기에 한국어 음성이 없어 소리 없이 진행됩니다. 진동과 받는 사이는 그대로 동작합니다.</div>
+  <div class="sc">
+    <div style="padding:22px 0 20px;border-bottom:1px solid var(--rule)">
+      <div style="display:flex;gap:16px;align-items:flex-start">
+        <div class="plate" style="width:74px;height:96px;background-image:url('../product/prototype/assets/02_Mary_and_Child.jpg');background-position:50% 20%"></div>
+        <div style="flex:1;min-width:0">
+          <div class="ser" style="font-size:24px;line-height:1.3">어머니 병환 회복</div>
+          <div style="font:500 12px/1 'Noto Sans KR';color:var(--accent);margin-top:10px">23일째 · 청원</div>
+          <div class="bd" style="margin-top:12px">오늘 바쳤습니다</div>
+        </div>
+      </div>
+      <div class="ribbon"><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--accent)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i><i style="height:18px;background:var(--faint)"></i></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:9px">
+        <span class="sm">7월 14일 시작 · 9월 5일 마칠 날</span><span class="tap">자세히</span>
+      </div>
+    </div>
+    <div style="padding:22px 0 20px;border-bottom:1px solid var(--rule);opacity:.44">
+      <div style="display:flex;gap:16px;align-items:flex-start">
+        <div class="plate" style="width:74px;height:96px;background-image:url('../product/prototype/assets/01_Mary_Single.jpg');background-position:50% 16%"></div>
+        <div style="flex:1;min-width:0">
+          <div class="ser" style="font-size:24px;line-height:1.3">형의 취업을 위하여</div>
+          <div class="sm" style="margin-top:12px">3일 뒤에 시작합니다<br>8월 8일</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:22px 0 20px;border-bottom:1px solid var(--rule)">
+      <div class="lab2" style="margin-bottom:12px">마침</div>
+      <div style="display:flex;gap:16px;align-items:flex-start">
+        <div class="plate" style="width:74px;height:96px;background-image:url('../product/prototype/assets/07_Relief_Holy_Family.jpg');background-position:50% 30%"></div>
+        <div style="flex:1;min-width:0">
+          <div class="ser" style="font-size:22px;line-height:1.3">할머니를 위하여</div>
+          <div class="sm" style="margin-top:12px">5월 8일 ~ 6월 30일 · 51일</div>
+        </div>
+      </div>
+      <div class="ribbon"><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--faint)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--faint)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--faint)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i><i style="height:14px;background:var(--accent)"></i></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:9px"><span class="tap">자세히</span></div>
+    </div>
+  </div>
+  <div class="btn p" style="margin-top:14px">새 기도</div>
+  <div class="btn t">초대 코드로 들어가기</div>
+</div></div><figcaption><b>A-2</b> 오늘 바쳤음 · 시작 전 · 마침 · 연결 없음 · 음성 없음</figcaption></figure><figure><div class="frame">
+<div class="scr">
+  
+<div class="hd">
+  <div class="lab">내 기도 · 없음</div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="none" stroke="var(--muted)" stroke-width="1.1"/><text x="10" y="14.5" text-anchor="middle" style="font:400 11px 'Noto Sans KR';fill:var(--muted)">i</text></svg>
+    <span class="tap" style="letter-spacing:.1em">설정</span>
+  </div>
+</div>
+  <div class="gr" style="display:flex;flex-direction:column;justify-content:center">
+    <div class="ser" style="font-size:26px;line-height:1.45">아직 바치는<br>기도가 없습니다.</div>
+    <div class="bd" style="margin-top:18px">바람 하나를 적고 시작해 보세요.<br>54일이든 하루든, 끊겨도 그 자리가 남습니다.</div>
+  </div>
+  <div class="btn p">새 기도</div>
+  <div class="btn t">초대 코드로 들어가기</div>
+</div></div><figcaption><b>A-3</b> 빈 홈 — 이것이 정상 상태다</figcaption></figure></div>
+<h2>N 새 기도</h2><p class="note">프로토타입의 네 구역을 잇고 PRD가 요구하던 것을 그 안에 채웠다. 구역 목록만 스크롤하고 아래의 요약 두 줄과 “시작하기”는 고정이다.</p><div class="row"><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">새 기도</div><div class="tap">닫기</div></div></div>
+  <div class="sc px">
+<div class="zone">
+  <div class="lab2">① 무엇을 위하여</div>
+  <div class="ser" style="font-size:23px;line-height:1.3;margin-top:12px">어머니 병환 회복<span class="acc">|</span></div>
+       <div style="display:flex;justify-content:space-between;margin-top:10px">
+         <span class="sm">쉰네 날 동안 · 나만 봅니다</span><span class="sm">9 / 24</span>
+       </div>
+</div>
+<div class="zone">
+  <div class="lab2">② 어떤 형식으로</div>
+  <div style="margin-top:12px">
+    <div class="opt on"><div><div class="n">54일 기도</div><div class="d">27일 청원, 27일 감사. 하루에 다섯 단.</div></div><div class="r">기본</div></div>
+    <div class="opt"><div><div class="n">9일 기도</div><div class="d">아홉 날, 하루에 다섯 단.</div></div></div>
+    <div class="opt"><div><div class="n">날마다</div><div class="d">끝나는 날을 정하지 않습니다.</div></div></div>
+  </div>
+  
+<div style="margin-top:14px">
+  <div style="display:flex;gap:3px">
+    <div style="flex:27;height:12px;background:var(--accent)"></div>
+    <div style="flex:27;height:12px;background:var(--ash)"></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:7px">
+    <span class="sm">1일째부터 청원 27일</span><span class="sm">28일째부터 감사 27일</span>
+  </div>
+  <div class="sm" style="margin-top:8px">앱이 날짜에 따라 스스로 바꿉니다. 고르지 않아도 됩니다.</div>
+</div>
+  <div style="display:flex;gap:10px;margin-top:18px">
+    <div class="btn2" style="border:1px solid var(--accent-line);background:var(--accent-bg)">
+      <span class="t1">혼자</span><span class="t2">나 혼자 다섯 단</span></div>
+    <div class="btn2" style="border:1px solid var(--rule)">
+      <span class="t1">함께 바치기</span><span class="t2">다섯이 한 단씩</span></div>
+  </div>
+  <div class="sm" style="margin-top:10px">다섯이 한 단씩 나눕니다. 초대 코드로 모입니다.</div>
+</div></div>
+  
+<div style="flex:none;border-top:1px solid var(--rule);padding:16px 24px 0">
+  <div class="bd">9월 27일에 마칩니다.</div>
+  <div class="sm" style="margin-top:6px">첫날은 환희의 신비입니다</div>
+  <div class="btn p" style="margin-top:14px">시작하기</div>
+</div>
+</div></div><figcaption><b>N-1</b> 구역 ①② (스크롤 위) — 청원/감사는 <u>추천안</u>인 리본 표시</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">새 기도</div><div class="tap">닫기</div></div></div>
+  <div class="sc px">
+<div class="zone">
+  <div class="lab2">③ 낭송</div>
+  <div style="margin-top:12px">
+    <div class="opt on"><div><div class="n">교대로</div><div class="d">앞은 소리가 읽고 뒤는 내가 받습니다</div></div><div class="r">기본</div></div>
+    <div class="opt"><div><div class="n">전부 소리로</div><div class="d">처음부터 끝까지 읽어 줍니다</div></div></div>
+    <div class="opt"><div><div class="n">소리 없이</div><div class="d">진동으로만 넘어갑니다</div></div></div>
+  </div>
+</div>
+<div class="zone">
+  <div class="lab2">④ 묵주와 기도문</div>
+  <div style="margin-top:12px">
+    <div class="opt"><div><div class="n">묵주</div><div class="d">나무</div></div><div class="r">고르기</div></div>
+    <div class="opt"><div><div class="n">기도문 판본</div><div class="d">가톨릭 기도서</div></div><div class="r">고르기</div></div>
+  </div>
+  <div class="sm" style="margin-top:10px">이 여정에만 적용됩니다. 설정의 값은 다음 기도의 기본값으로 남습니다.</div>
+</div></div>
+  
+<div style="flex:none;border-top:1px solid var(--rule);padding:16px 24px 0">
+  <div class="bd">9월 27일에 마칩니다.</div>
+  <div class="sm" style="margin-top:6px">첫날은 환희의 신비입니다</div>
+  <div class="btn p" style="margin-top:14px">시작하기</div>
+</div>
+</div></div><figcaption><b>N-2</b> 구역 ③ 낭송 (스크롤 가운데)</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">새 기도</div><div class="tap">닫기</div></div></div>
+  <div class="sc px">
+<div class="zone">
+  <div class="lab2">④ 묵주와 기도문</div>
+  <div style="margin-top:12px">
+    <div class="opt"><div><div class="n">묵주</div><div class="d">나무</div></div><div class="r">고르기</div></div>
+    <div class="opt"><div><div class="n">기도문 판본</div><div class="d">가톨릭 기도서</div></div><div class="r">고르기</div></div>
+  </div>
+  <div class="sm" style="margin-top:10px">이 여정에만 적용됩니다. 설정의 값은 다음 기도의 기본값으로 남습니다.</div>
+</div>
+<div class="zone">
+  <div class="lab2">⑤ 언제부터</div>
+  <div style="margin-top:12px">
+    <div class="opt"><div><div class="n">시작일</div><div class="d">오늘 · 8월 5일</div></div><div class="r">고르기</div></div>
+  </div>
+  <div class="sm" style="margin-top:10px">지난 날을 고르면 그 날들은 비어 있는 채로 시작합니다.</div>
+</div></div>
+  
+<div style="flex:none;border-top:1px solid var(--rule);padding:16px 24px 0">
+  <div class="bd">9월 27일에 마칩니다.</div>
+  <div class="sm" style="margin-top:6px">첫날은 환희의 신비입니다</div>
+  <div class="btn p" style="margin-top:14px">시작하기</div>
+</div>
+</div></div><figcaption><b>N-3</b> 구역 ④⑤ (스크롤 아래)</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">새 기도</div><div class="tap">닫기</div></div></div>
+  <div class="sc px">
+<div class="zone">
+  <div class="lab2">① 무엇을 위하여</div>
+  <div class="ser" style="font-size:23px;line-height:1.3;margin-top:12px">어머니 병환 회복<span class="acc">|</span></div>
+       <div style="display:flex;justify-content:space-between;margin-top:10px">
+         <span class="sm">쉰네 날 동안 · 나만 봅니다</span><span class="sm">9 / 24</span>
+       </div>
+</div>
+<div class="zone">
+  <div class="lab2">② 어떤 형식으로</div>
+  <div style="margin-top:12px">
+    <div class="opt on"><div><div class="n">54일 기도</div><div class="d">27일 청원, 27일 감사. 하루에 다섯 단.</div></div><div class="r">기본</div></div>
+    <div class="opt"><div><div class="n">9일 기도</div><div class="d">아홉 날, 하루에 다섯 단.</div></div></div>
+    <div class="opt"><div><div class="n">날마다</div><div class="d">끝나는 날을 정하지 않습니다.</div></div></div>
+  </div>
+  
+<div class="sm" style="margin-top:16px">
+  1일째부터 27일까지 청원, 28일째부터 감사로 앱이 스스로 바꿉니다. 고르지 않아도 됩니다.
+</div>
+  <div style="display:flex;gap:10px;margin-top:18px">
+    <div class="btn2" style="border:1px solid var(--accent-line);background:var(--accent-bg)">
+      <span class="t1">혼자</span><span class="t2">나 혼자 다섯 단</span></div>
+    <div class="btn2" style="border:1px solid var(--rule)">
+      <span class="t1">함께 바치기</span><span class="t2">다섯이 한 단씩</span></div>
+  </div>
+  <div class="sm" style="margin-top:10px">다섯이 한 단씩 나눕니다. 초대 코드로 모입니다.</div>
+</div></div>
+  
+<div style="flex:none;border-top:1px solid var(--rule);padding:16px 24px 0">
+  <div class="bd">9월 27일에 마칩니다.</div>
+  <div class="sm" style="margin-top:6px">첫날은 환희의 신비입니다</div>
+  <div class="btn p" style="margin-top:14px">시작하기</div>
+</div>
+</div></div><figcaption><b>N-4</b> 청원/감사 <u>대안</u> — 문장 한 줄</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">새 기도</div><div class="tap">닫기</div></div></div>
+  <div class="sc px">
+<div class="zone">
+  <div class="lab2">① 무엇을 위하여</div>
+  <div class="ser" style="font-size:23px;line-height:1.3;margin-top:12px;color:var(--muted)">누구를, 무엇을 위해 바치나요</div>
+       <div class="sm acc" style="margin-top:10px">바람을 한 줄 적어 주세요.</div>
+</div>
+<div class="zone">
+  <div class="lab2">② 어떤 형식으로</div>
+  <div style="margin-top:12px">
+    <div class="opt on"><div><div class="n">54일 기도</div><div class="d">27일 청원, 27일 감사. 하루에 다섯 단.</div></div><div class="r">기본</div></div>
+    <div class="opt"><div><div class="n">9일 기도</div><div class="d">아홉 날, 하루에 다섯 단.</div></div></div>
+    <div class="opt"><div><div class="n">날마다</div><div class="d">끝나는 날을 정하지 않습니다.</div></div></div>
+  </div>
+  
+<div style="margin-top:14px">
+  <div style="display:flex;gap:3px">
+    <div style="flex:27;height:12px;background:var(--accent)"></div>
+    <div style="flex:27;height:12px;background:var(--ash)"></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;margin-top:7px">
+    <span class="sm">1일째부터 청원 27일</span><span class="sm">28일째부터 감사 27일</span>
+  </div>
+  <div class="sm" style="margin-top:8px">앱이 날짜에 따라 스스로 바꿉니다. 고르지 않아도 됩니다.</div>
+</div>
+  <div style="display:flex;gap:10px;margin-top:18px">
+    <div class="btn2" style="border:1px solid var(--accent-line);background:var(--accent-bg)">
+      <span class="t1">혼자</span><span class="t2">나 혼자 다섯 단</span></div>
+    <div class="btn2" style="border:1px solid var(--rule);opacity:.45">
+      <span class="t1">함께 바치기</span><span class="t2">다섯이 한 단씩</span></div>
+  </div>
+  <div class="sm" style="margin-top:10px"><span class="acc">조는 연결된 뒤 만들 수 있습니다.</span></div>
+</div></div>
+  
+<div style="flex:none;border-top:1px solid var(--rule);padding:16px 24px 0">
+  <div class="bd">9월 27일에 마칩니다.</div>
+  <div class="sm" style="margin-top:6px">첫날은 환희의 신비입니다</div>
+  <div class="btn dis" style="margin-top:14px">시작하기</div>
+</div>
+</div></div><figcaption><b>N-5</b> 바람 비어 있음 · 연결 없어 함께 바치기 불가</figcaption></figure></div>
+<h2>I 초대 코드 입력 (새 화면 · 결정 1-1)</h2><p class="note">진입점은 홈의 “초대 코드로 들어가기” 하나뿐이다.</p><div class="row"><figure><div class="frame">
+<div class="scr">
+  <div class="hd"><div class="lab">초대 코드</div><div class="tap">닫기</div></div>
+  <div class="ser" style="font-size:28px;line-height:1.4;margin-top:34px">받은 여섯 자리를<br>넣어 주세요</div>
+  <div style="display:flex;gap:8px;margin-top:30px"><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--rule2);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)"></div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--rule2);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)"></div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--rule2);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)"></div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--rule2);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)"></div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--rule2);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)"></div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--rule2);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)"></div></div>
+  <div class="sm" style="margin-top:14px">대소문자를 가리지 않습니다. 붙여넣어도 됩니다.</div>
+  
+  <div class="gr"></div>
+  <div class="btn dis">들어가기</div>
+</div></div><figcaption><b>I-1</b> 빈 칸</figcaption></figure><figure><div class="frame">
+<div class="scr">
+  <div class="hd"><div class="lab">초대 코드</div><div class="tap">닫기</div></div>
+  <div class="ser" style="font-size:28px;line-height:1.4;margin-top:34px">받은 여섯 자리를<br>넣어 주세요</div>
+  <div style="display:flex;gap:8px;margin-top:30px"><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--ink);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)">K</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--ink);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)">7</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--ink);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)">M</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--accent-line);
+      background:var(--accent-bg);
+      font:500 28px/1 'Noto Sans KR';color:var(--accent)">4</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--rule2);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)"></div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--rule2);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)"></div></div>
+  <div class="sm" style="margin-top:14px">대소문자를 가리지 않습니다. 붙여넣어도 됩니다.</div>
+  
+  <div class="gr"></div>
+  <div class="btn dis">들어가기</div>
+</div></div><figcaption><b>I-2</b> 입력 중</figcaption></figure><figure><div class="frame">
+<div class="scr">
+  <div class="hd"><div class="lab">초대 코드</div><div class="tap">닫기</div></div>
+  <div class="ser" style="font-size:28px;line-height:1.4;margin-top:34px">받은 여섯 자리를<br>넣어 주세요</div>
+  <div style="display:flex;gap:8px;margin-top:30px"><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--ink);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)">K</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--ink);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)">7</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--ink);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)">M</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--ink);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)">4</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--ink);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)">2</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--ink);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--ink)">B</div></div>
+  <div class="sm" style="margin-top:14px">대소문자를 가리지 않습니다. 붙여넣어도 됩니다.</div>
+  
+    <div style="margin-top:32px;padding:22px 20px;border:1px solid var(--rule)">
+      <div class="lab2">들어갈 여정</div>
+      <div class="ser" style="font-size:22px;line-height:1.35;margin-top:12px">아버지 세례를 위해</div>
+      <div class="bd" style="margin-top:10px">6일째 · 다섯 사람 중 넷이 들어와 있습니다<br><span class="sm">이모 · 김요한 · 박마리아 · 나</span></div>
+    </div>
+  <div class="gr"></div>
+  <div class="btn p">들어가기</div>
+</div></div><figcaption><b>I-3</b> 여섯 칸 채움 + 여정 미리보기</figcaption></figure><figure><div class="frame">
+<div class="scr">
+  <div class="hd"><div class="lab">초대 코드</div><div class="tap">닫기</div></div>
+  <div class="ser" style="font-size:28px;line-height:1.4;margin-top:34px">받은 여섯 자리를<br>넣어 주세요</div>
+  <div style="display:flex;gap:8px;margin-top:30px"><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--accent-line);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--accent)">K</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--accent-line);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--accent)">7</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--accent-line);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--accent)">M</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--accent-line);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--accent)">4</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--accent-line);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--accent)">2</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--accent-line);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--accent)">B</div></div>
+  <div class="sm" style="margin-top:14px"><span class="acc">이 코드의 기도를 찾지 못했습니다.</span></div>
+  
+  <div class="gr"></div>
+  <div class="btn dis">들어가기</div>
+</div></div><figcaption><b>I-4</b> 코드를 찾지 못함</figcaption></figure><figure><div class="frame">
+<div class="scr">
+  <div class="hd"><div class="lab">초대 코드</div><div class="tap">닫기</div></div>
+  <div class="ser" style="font-size:28px;line-height:1.4;margin-top:34px">받은 여섯 자리를<br>넣어 주세요</div>
+  <div style="display:flex;gap:8px;margin-top:30px"><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--accent-line);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--accent)">K</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--accent-line);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--accent)">7</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--accent-line);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--accent)">M</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--accent-line);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--accent)">4</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--accent-line);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--accent)">2</div><div style="flex:1;height:88px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--accent-line);
+      
+      font:500 28px/1 'Noto Sans KR';color:var(--accent)">B</div></div>
+  <div class="sm" style="margin-top:14px"><span class="acc">이 기도는 다섯 명이 다 모였습니다.</span></div>
+  
+  <div class="gr"></div>
+  <div class="btn dis">들어가기</div>
+</div></div><figcaption><b>I-5</b> 정원이 다 참</figcaption></figure></div>
+<h2>G 함께 바치기 배정 (새 화면 · 결정 1-3)</h2><p class="note">“다섯 단 모두 혼자 바치기”는 조 진척 계산에 새 경우를 만들므로(Q-03) 확인 시트를 반드시 거친다.</p><div class="row"><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">함께 바치기</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc">
+    <div class="px" style="padding-top:26px">
+      <div class="ser" style="font-size:26px;line-height:1.35">오늘 내 몫은<br>제2단입니다</div>
+      <div class="sm" style="margin-top:14px">아버지 세례를 위해 · 6일째<br>다섯 사람이 한 단씩 나누어 하루를 채웁니다.</div>
+    </div>
+    <div style="margin-top:22px;border-top:1px solid var(--rule)">
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:400 22px/1 'Noto Sans KR';color:var(--muted)">제1단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">이모</div>
+  <div class="sm">바쳤습니다</div>
+</div>
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule);background:var(--accent-bg);border-left:2px solid var(--accent-line)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:500 22px/1 'Noto Sans KR';color:var(--accent)">제2단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">나</div>
+  <div class="sm">아직</div>
+</div>
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:400 22px/1 'Noto Sans KR';color:var(--muted)">제3단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">김요한</div>
+  <div class="sm">바쳤습니다</div>
+</div>
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:400 22px/1 'Noto Sans KR';color:var(--muted)">제4단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">박마리아</div>
+  <div class="sm">아직</div>
+</div>
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:400 22px/1 'Noto Sans KR';color:var(--muted)">제5단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">아직 아무도</div>
+  <div class="sm">빈자리</div>
+</div>
+    </div>
+    <div class="px sm" style="padding-top:16px">오늘 다섯 중 둘 · 남은 단은 자정까지 기다립니다</div>
+  </div>
+  <div class="px" style="flex:none;padding-top:14px">
+    <div class="btn p">내 몫 바치기</div>
+    <div class="btn t">다섯 단 모두 혼자 바치기</div>
+  </div>
+</div></div><figcaption><b>G-1</b> 오늘 배정을 받은 상태</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">함께 바치기</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc">
+    <div class="px" style="padding-top:26px">
+      <div class="ser" style="font-size:26px;line-height:1.35">오늘 배정을 아직<br>받지 못했습니다</div>
+      <div class="sm" style="margin-top:14px">연결이 없어 어제와 같은 단을 바칩니다.<br>연결되면 서버 배정과 맞춥니다.</div>
+    </div>
+    <div style="margin-top:22px;border-top:1px solid var(--rule)">
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:400 22px/1 'Noto Sans KR';color:var(--muted)">제1단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">이모</div>
+  <div class="sm">바쳤습니다</div>
+</div>
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule);background:var(--accent-bg);border-left:2px solid var(--accent-line)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:500 22px/1 'Noto Sans KR';color:var(--accent)">제2단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">나</div>
+  <div class="sm">어제와 같은 단</div>
+</div>
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:400 22px/1 'Noto Sans KR';color:var(--muted)">제3단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">김요한</div>
+  <div class="sm">바쳤습니다</div>
+</div>
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:400 22px/1 'Noto Sans KR';color:var(--muted)">제4단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">박마리아</div>
+  <div class="sm">아직</div>
+</div>
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:400 22px/1 'Noto Sans KR';color:var(--muted)">제5단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">아직 아무도</div>
+  <div class="sm">빈자리</div>
+</div>
+    </div>
+    <div class="px sm" style="padding-top:16px">오늘 다섯 중 둘 · 남은 단은 자정까지 기다립니다</div>
+  </div>
+  <div class="px" style="flex:none;padding-top:14px">
+    <div class="btn p">내 몫 바치기</div>
+    <div class="btn t">다섯 단 모두 혼자 바치기</div>
+  </div>
+</div></div><figcaption><b>G-2</b> 오프라인 — 배정을 받지 못함</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">함께 바치기</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc">
+    <div class="px" style="padding-top:26px">
+      <div class="ser" style="font-size:26px;line-height:1.35">오늘 내 몫은<br>제2단입니다</div>
+      <div class="sm" style="margin-top:14px">아버지 세례를 위해 · 6일째<br>다섯 사람이 한 단씩 나누어 하루를 채웁니다.</div>
+    </div>
+    <div style="margin-top:22px;border-top:1px solid var(--rule)">
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:400 22px/1 'Noto Sans KR';color:var(--muted)">제1단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">이모</div>
+  <div class="sm">바쳤습니다</div>
+</div>
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule);background:var(--accent-bg);border-left:2px solid var(--accent-line)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:500 22px/1 'Noto Sans KR';color:var(--accent)">제2단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">나</div>
+  <div class="sm">아직</div>
+</div>
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:400 22px/1 'Noto Sans KR';color:var(--muted)">제3단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">김요한</div>
+  <div class="sm">바쳤습니다</div>
+</div>
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:400 22px/1 'Noto Sans KR';color:var(--muted)">제4단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">박마리아</div>
+  <div class="sm">아직</div>
+</div>
+      
+<div style="min-height:64px;display:flex;align-items:center;gap:14px;padding:0 16px;
+  border-bottom:1px solid var(--rule)">
+  <div style="width:74px;flex:none;white-space:nowrap;font:400 22px/1 'Noto Sans KR';color:var(--muted)">제5단</div>
+  <div style="flex:1;font:400 14px/1.4 'Noto Sans KR';color:var(--ink)">아직 아무도</div>
+  <div class="sm">빈자리</div>
+</div>
+    </div>
+    <div class="px sm" style="padding-top:16px">오늘 다섯 중 둘 · 남은 단은 자정까지 기다립니다</div>
+  </div>
+  <div class="px" style="flex:none;padding-top:14px">
+    <div class="btn p">내 몫 바치기</div>
+    <div class="btn t">다섯 단 모두 혼자 바치기</div>
+  </div>
+</div><div class="sheetwrap"><div class="sheet"><div class="hd" style="padding-bottom:14px;margin-bottom:6px"><div class="lab">다섯 단 모두 혼자 바치기</div><div class="tap">닫기</div></div>
+  
+  <div class="ser" style="font-size:22px;line-height:1.45">오늘 다섯 단을<br>혼자 바칩니다.</div>
+  <div class="sm" style="margin-top:12px">오늘 하루가 다 채워집니다. 다른 조원이 오늘 자기 단을 바쳐도 그 기록은 개인 기록으로 남습니다. 내일 배정은 그대로입니다.</div>
+  <div style="display:flex;gap:12px;margin-top:22px">
+    <div class="btn o" style="flex:1">혼자 바치기</div>
+    <div class="btn p" style="flex:1">두기</div>
+  </div></div></div></div><figcaption><b>G-3</b> 다섯 단 모두 혼자 바치기 확인</figcaption></figure></div>
+<h2>B 기도 — 알의 다섯 상태</h2><p class="note">화면 안에 고르는 조작이 하나도 없다. 나가는 길은 둘뿐이고, 멈춤 상태에서만 그 둘이 바뀐다.</p><div class="row"><figure><div class="frame">
+<div class="scr edge">
+  <div class="px">
+    <div class="hd" style="padding-bottom:12px">
+      <div style="font:400 12.5px/1.4 'Noto Sans KR';color:var(--ink)">어머니 병환 회복 <span class="sm">· 23일째</span></div>
+      <div class="lab season" style="letter-spacing:.16em">제3단 · 성모송</div>
+    </div>
+    <div class="bar5"><i style="background:var(--ash)"></i><i style="background:var(--ash)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i></div>
+    <div style="height:14px"></div>
+  </div>
+  <div class="plate" style="height:132px;background-image:url('../product/prototype/assets/06_Side_Jesus.jpg');background-position:50% 22%"></div>
+  <div style="flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center">
+    <svg width="340" height="243" viewBox="0 0 390 281"><path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M42 128 C56 170 147 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M348 128 C334 170 243 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 231 L195 252" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 252 L195 278 M180 262 L210 262" fill="none" stroke="var(--rule2)" stroke-width="2.4"/><circle cx="195" cy="210" r="21" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="42" cy="128" r="18.4" fill="var(--bead)" /><circle cx="56" cy="93" r="18.4" fill="var(--bead)" /><circle cx="93" cy="74" r="18.4" fill="var(--bead)" /><circle cx="133" cy="65" r="18.4" fill="var(--accent)" /><circle cx="133" cy="65" r="24" fill="none" stroke="var(--rule)" stroke-width="2.2"/><circle cx="133" cy="65" r="24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="butt" stroke-dasharray="93.5 150.8" transform="rotate(-90 133 65)"/><text x="133" y="66" text-anchor="middle" style="font:500 15px 'Noto Sans KR';fill:var(--surface)">4</text><text x="133" y="77" text-anchor="middle" style="font:400 9px 'Noto Sans KR';fill:var(--surface);opacity:.85">/ 10</text><circle cx="174" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="216" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="257" cy="65" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="297" cy="74" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="334" cy="93" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="348" cy="128" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/></svg>
+  </div>
+  <div style="flex:none;height:236px;overflow:hidden;padding:16px 24px 0;border-top:1px solid var(--rule);display:flex;flex-direction:column;justify-content:flex-start"><div class="ser" style="font-size:26px;line-height:1.7">은총이 가득하신 마리아님, 기뻐하소서!</div>
+         <div style="margin-top:12px"><div style="font:400 15px/1.6 'Noto Sans KR';color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">천주의 성모 마리아님, 이제와 저희 죽을 때에 저희 죄인을 위하여 빌어주소서. 아멘.</div></div></div>
+  <div class="px" style="display:flex;gap:12px;margin-top:16px">
+    <div class="btn2" style="border:1px solid var(--rule2)"><span class="t1">잠시 멈춤</span><span class="t2">자리가 남습니다</span></div>
+         <div class="btn2" style="border:1px solid var(--rule2)"><span class="t1" style="color:var(--muted)">여기서 끝내기</span><span class="t2">오늘 처음부터</span></div>
+  </div>
+</div></div><figcaption><b>B-1</b> 읽는 중 — 테두리가 시계 방향으로 차오른다</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px">
+    <div class="hd" style="padding-bottom:12px">
+      <div style="font:400 12.5px/1.4 'Noto Sans KR';color:var(--ink)">어머니 병환 회복 <span class="sm">· 23일째</span></div>
+      <div class="lab season" style="letter-spacing:.16em">제3단 · 성모송</div>
+    </div>
+    <div class="bar5"><i style="background:var(--ash)"></i><i style="background:var(--ash)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i></div>
+    <div style="height:14px"></div>
+  </div>
+  <div class="plate" style="height:132px;background-image:url('../product/prototype/assets/06_Side_Jesus.jpg');background-position:50% 22%"></div>
+  <div style="flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center">
+    <svg width="340" height="243" viewBox="0 0 390 281"><path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M42 128 C56 170 147 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M348 128 C334 170 243 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 231 L195 252" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 252 L195 278 M180 262 L210 262" fill="none" stroke="var(--rule2)" stroke-width="2.4"/><circle cx="195" cy="210" r="21" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="42" cy="128" r="18.4" fill="var(--bead)" /><circle cx="56" cy="93" r="18.4" fill="var(--bead)" /><circle cx="93" cy="74" r="18.4" fill="var(--bead)" /><circle cx="133" cy="65" r="34" fill="var(--accent)" opacity=".14" style="transform-box:fill-box;transform-origin:center;animation:bre 4s ease-in-out infinite"/><circle cx="133" cy="65" r="18.4" fill="var(--accent)" style="transform-box:fill-box;transform-origin:center;animation:bre 4s ease-in-out infinite"/><text x="133" y="66" text-anchor="middle" style="font:500 15px 'Noto Sans KR';fill:var(--surface)">4</text><text x="133" y="77" text-anchor="middle" style="font:400 9px 'Noto Sans KR';fill:var(--surface);opacity:.85">/ 10</text><circle cx="174" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="216" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="257" cy="65" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="297" cy="74" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="334" cy="93" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="348" cy="128" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/></svg>
+  </div>
+  <div style="flex:none;height:236px;overflow:hidden;padding:16px 24px 0;border-top:1px solid var(--rule);display:flex;flex-direction:column;justify-content:flex-start"><div style="font:400 15px/1.6 'Noto Sans KR';color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">은총이 가득하신 마리아님, 기뻐하소서!</div>
+       <div class="ser acc" style="font-size:21px;line-height:1.7;margin-top:12px">천주의 성모 마리아님, 이제와 저희 죽을 때에 저희 죄인을 위하여 빌어주소서. 아멘.</div></div>
+  <div class="px" style="display:flex;gap:12px;margin-top:16px">
+    <div class="btn2" style="border:1px solid var(--rule2)"><span class="t1">잠시 멈춤</span><span class="t2">자리가 남습니다</span></div>
+         <div class="btn2" style="border:1px solid var(--rule2)"><span class="t1" style="color:var(--muted)">여기서 끝내기</span><span class="t2">오늘 처음부터</span></div>
+  </div>
+</div></div><figcaption><b>B-2</b> 내 차례 — 4초 호흡</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px">
+    <div class="hd" style="padding-bottom:12px">
+      <div style="font:400 12.5px/1.4 'Noto Sans KR';color:var(--ink)">어머니 병환 회복 <span class="sm">· 23일째</span></div>
+      <div class="lab season" style="letter-spacing:.16em">제3단 · 성모송</div>
+    </div>
+    <div class="bar5"><i style="background:var(--ash)"></i><i style="background:var(--ash)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i></div>
+    <div style="height:14px"></div>
+  </div>
+  <div class="plate" style="height:132px;background-image:url('../product/prototype/assets/06_Side_Jesus.jpg');background-position:50% 22%"></div>
+  <div style="flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center">
+    <svg width="340" height="243" viewBox="0 0 390 281"><path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M42 128 C56 170 147 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M348 128 C334 170 243 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 231 L195 252" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 252 L195 278 M180 262 L210 262" fill="none" stroke="var(--rule2)" stroke-width="2.4"/><circle cx="195" cy="210" r="21" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="42" cy="128" r="18.4" fill="var(--bead)" /><circle cx="56" cy="93" r="18.4" fill="var(--bead)" /><circle cx="93" cy="74" r="18.4" fill="var(--bead)" /><circle cx="133" cy="65" r="26" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity=".55"/><circle cx="133" cy="65" r="18.4" fill="var(--accent)" /><text x="133" y="66" text-anchor="middle" style="font:500 15px 'Noto Sans KR';fill:var(--surface)">4</text><text x="133" y="77" text-anchor="middle" style="font:400 9px 'Noto Sans KR';fill:var(--surface);opacity:.85">/ 10</text><circle cx="174" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="216" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="257" cy="65" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="297" cy="74" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="334" cy="93" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="348" cy="128" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/></svg>
+  </div>
+  <div style="flex:none;height:236px;overflow:hidden;padding:16px 24px 0;border-top:1px solid var(--rule);display:flex;flex-direction:column;justify-content:flex-start"><div style="font:400 15px/1.6 'Noto Sans KR';color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">은총이 가득하신 마리아님, 기뻐하소서!</div>
+       <div class="ser acc" style="font-size:21px;line-height:1.7;margin-top:12px">천주의 성모 마리아님, 이제와 저희 죽을 때에 저희 죄인을 위하여 빌어주소서. 아멘.</div></div>
+  <div class="px" style="display:flex;gap:12px;margin-top:16px">
+    <div class="btn2" style="border:1px solid var(--rule2)"><span class="t1">잠시 멈춤</span><span class="t2">자리가 남습니다</span></div>
+         <div class="btn2" style="border:1px solid var(--rule2)"><span class="t1" style="color:var(--muted)">여기서 끝내기</span><span class="t2">오늘 처음부터</span></div>
+  </div>
+</div></div><figcaption><b>B-3</b> 진동 진행(읽지 않기) — 한 번 반짝</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px">
+    <div class="hd" style="padding-bottom:12px">
+      <div style="font:400 12.5px/1.4 'Noto Sans KR';color:var(--ink)">어머니 병환 회복 <span class="sm">· 23일째</span></div>
+      <div class="lab season" style="letter-spacing:.16em">제4단 · 신비 선포</div>
+    </div>
+    <div class="bar5"><i style="background:var(--ash)"></i><i style="background:var(--ash)"></i><i style="background:var(--ash)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint)"></i></div>
+    <div style="height:14px"></div>
+  </div>
+  <div class="plate" style="height:132px;background-image:url('../product/prototype/assets/06_Side_Jesus.jpg');background-position:50% 22%"></div>
+  <div style="flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center">
+    <svg width="340" height="243" viewBox="0 0 390 281"><path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M42 128 C56 170 147 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M348 128 C334 170 243 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 231 L195 252" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 252 L195 278 M180 262 L210 262" fill="none" stroke="var(--rule2)" stroke-width="2.4"/><circle cx="195" cy="210" r="40" fill="var(--accent)" opacity=".14" style="transform-box:fill-box;transform-origin:center;animation:pulse 1.6s ease-in-out infinite"/><circle cx="195" cy="210" r="26" fill="var(--accent)" style="transform-box:fill-box;transform-origin:center;animation:pulse 1.6s ease-in-out infinite"/><circle cx="42" cy="128" r="18.4" fill="var(--bead)" /><circle cx="56" cy="93" r="18.4" fill="var(--bead)" /><circle cx="93" cy="74" r="18.4" fill="var(--bead)" /><circle cx="133" cy="65" r="18.4" fill="var(--bead)" /><circle cx="174" cy="61" r="18.4" fill="var(--bead)" /><circle cx="216" cy="61" r="18.4" fill="var(--bead)" /><circle cx="257" cy="65" r="18.4" fill="var(--bead)" /><circle cx="297" cy="74" r="18.4" fill="var(--bead)" /><circle cx="334" cy="93" r="18.4" fill="var(--bead)" /><circle cx="348" cy="128" r="18.4" fill="var(--bead)" /></svg>
+  </div>
+  <div style="flex:none;height:236px;overflow:hidden;padding:16px 24px 0;border-top:1px solid var(--rule);display:flex;flex-direction:column;justify-content:flex-start"><div class="ser" style="font-size:26px;line-height:1.7">고통의 신비 제4단</div>
+         <div class="sub" style="margin-top:12px">예수님께서 우리를 위하여 십자가 지심</div></div>
+  <div class="px" style="display:flex;gap:12px;margin-top:16px">
+    <div class="btn2" style="border:1px solid var(--rule2)"><span class="t1">잠시 멈춤</span><span class="t2">자리가 남습니다</span></div>
+         <div class="btn2" style="border:1px solid var(--rule2)"><span class="t1" style="color:var(--muted)">여기서 끝내기</span><span class="t2">오늘 처음부터</span></div>
+  </div>
+</div></div><figcaption><b>B-4</b> 단 전환 — 주님의 기도 알로 초점이 옮겨 가며 확장 맥동</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px">
+    <div class="hd" style="padding-bottom:12px">
+      <div style="font:400 12.5px/1.4 'Noto Sans KR';color:var(--ink)">어머니 병환 회복 <span class="sm">· 23일째</span></div>
+      <div class="lab season" style="letter-spacing:.16em">제3단 · 성모송</div>
+    </div>
+    <div class="bar5"><i style="background:var(--ash)"></i><i style="background:var(--ash)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i></div>
+    <div style="height:14px"></div>
+  </div>
+  <div class="plate" style="height:132px;background-image:url('../product/prototype/assets/06_Side_Jesus.jpg');background-position:50% 22%"></div>
+  <div style="flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center">
+    <svg width="340" height="243" viewBox="0 0 390 281" opacity=".38"><path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M42 128 C56 170 147 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M348 128 C334 170 243 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 231 L195 252" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 252 L195 278 M180 262 L210 262" fill="none" stroke="var(--rule2)" stroke-width="2.4"/><circle cx="195" cy="210" r="21" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="42" cy="128" r="18.4" fill="var(--bead)" /><circle cx="56" cy="93" r="18.4" fill="var(--bead)" /><circle cx="93" cy="74" r="18.4" fill="var(--bead)" /><circle cx="133" cy="65" r="18.4" fill="var(--accent)" /><text x="133" y="66" text-anchor="middle" style="font:500 15px 'Noto Sans KR';fill:var(--surface)">4</text><text x="133" y="77" text-anchor="middle" style="font:400 9px 'Noto Sans KR';fill:var(--surface);opacity:.85">/ 10</text><circle cx="174" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="216" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="257" cy="65" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="297" cy="74" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="334" cy="93" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="348" cy="128" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/></svg>
+  </div>
+  <div style="flex:none;height:236px;overflow:hidden;padding:16px 24px 0;border-top:1px solid var(--rule);display:flex;flex-direction:column;justify-content:flex-start;opacity:.38"><div class="ser" style="font-size:26px;line-height:1.7">은총이 가득하신 마리아님, 기뻐하소서!</div>
+         <div style="margin-top:12px"><div style="font:400 15px/1.6 'Noto Sans KR';color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">천주의 성모 마리아님, 이제와 저희 죽을 때에 저희 죄인을 위하여 빌어주소서. 아멘.</div></div></div>
+  <div class="px" style="display:flex;gap:12px;margin-top:16px">
+    <div class="btn2" style="border:1px solid var(--accent-line);background:var(--accent-bg)"><span class="t1">이어서 바치기</span><span class="t2">제3단 4번째 알</span></div>
+         <div class="btn2" style="border:1px solid var(--rule2)"><span class="t1">홈으로</span><span class="t2">자리가 남습니다</span></div>
+  </div>
+</div></div><figcaption><b>B-5</b> 멈춤 — 호흡이 멎고 흐려진다. 나가는 길이 바뀐다</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px">
+    <div class="hd" style="padding-bottom:12px">
+      <div style="font:400 12.5px/1.4 'Noto Sans KR';color:var(--ink)">아버지 세례를 위해 <span class="sm">· 6일째</span></div>
+      <div class="lab season" style="letter-spacing:.16em">제2단 · 성모송</div>
+    </div>
+    <div class="bar5"><i style="background:var(--faint)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i></div>
+    <div style="height:14px"></div>
+  </div>
+  <div class="plate" style="height:132px;background-image:url('../product/prototype/assets/06_Side_Jesus.jpg');background-position:50% 22%"></div>
+  <div style="flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center">
+    <svg width="340" height="243" viewBox="0 0 390 281"><path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M42 128 C56 170 147 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M348 128 C334 170 243 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 231 L195 252" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 252 L195 278 M180 262 L210 262" fill="none" stroke="var(--rule2)" stroke-width="2.4"/><circle cx="195" cy="210" r="21" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="42" cy="128" r="18.4" fill="var(--bead)" /><circle cx="56" cy="93" r="18.4" fill="var(--bead)" /><circle cx="93" cy="74" r="18.4" fill="var(--bead)" /><circle cx="133" cy="65" r="18.4" fill="var(--bead)" /><circle cx="174" cy="61" r="18.4" fill="var(--bead)" /><circle cx="216" cy="61" r="34" fill="var(--accent)" opacity=".14" style="transform-box:fill-box;transform-origin:center;animation:bre 4s ease-in-out infinite"/><circle cx="216" cy="61" r="18.4" fill="var(--accent)" style="transform-box:fill-box;transform-origin:center;animation:bre 4s ease-in-out infinite"/><text x="216" y="62" text-anchor="middle" style="font:500 15px 'Noto Sans KR';fill:var(--surface)">6</text><text x="216" y="73" text-anchor="middle" style="font:400 9px 'Noto Sans KR';fill:var(--surface);opacity:.85">/ 10</text><circle cx="257" cy="65" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="297" cy="74" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="334" cy="93" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="348" cy="128" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/></svg>
+  </div>
+  <div style="flex:none;height:236px;overflow:hidden;padding:16px 24px 0;border-top:1px solid var(--rule);display:flex;flex-direction:column;justify-content:flex-start"><div style="font:400 15px/1.6 'Noto Sans KR';color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">은총이 가득하신 마리아님, 기뻐하소서!</div>
+       <div class="ser acc" style="font-size:21px;line-height:1.7;margin-top:12px">천주의 성모 마리아님, 이제와 저희 죽을 때에 저희 죄인을 위하여 빌어주소서. 아멘.</div></div>
+  <div class="px" style="display:flex;gap:12px;margin-top:16px">
+    <div class="btn2" style="border:1px solid var(--rule2)"><span class="t1">잠시 멈춤</span><span class="t2">자리가 남습니다</span></div>
+         <div class="btn2" style="border:1px solid var(--rule2)"><span class="t1" style="color:var(--muted)">여기서 끝내기</span><span class="t2">오늘 처음부터</span></div>
+  </div>
+</div></div><figcaption><b>B-6</b> 조 기도 — 5단 막대에 내 단만 강조, 나머지 넷은 조원 몫</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px">
+    <div class="hd" style="padding-bottom:12px">
+      <div style="font:400 25px/1.35 'Noto Sans KR';color:var(--ink)">어머니 병환 회복</div>
+    </div>
+    <div class="lab season" style="font-size:21px;letter-spacing:.1em;margin-top:12px">제3단 · 성모송</div>
+    <div class="bar5"><i style="background:var(--ash)"></i><i style="background:var(--ash)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i></div>
+  </div>
+  <div style="flex:none;height:140px;display:flex;align-items:center;justify-content:center;overflow:hidden">
+    <svg width="340" height="132" viewBox="0 0 390 196"><path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M42 128 C50 166 130 182 195 182 C260 182 340 166 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><circle cx="42" cy="128" r="18.4" fill="var(--bead)" /><circle cx="56" cy="93" r="18.4" fill="var(--bead)" /><circle cx="93" cy="74" r="18.4" fill="var(--bead)" /><circle cx="133" cy="65" r="34" fill="var(--accent)" opacity=".14" style="transform-box:fill-box;transform-origin:center;animation:bre 4s ease-in-out infinite"/><circle cx="133" cy="65" r="18.4" fill="var(--accent)" style="transform-box:fill-box;transform-origin:center;animation:bre 4s ease-in-out infinite"/><text x="133" y="66" text-anchor="middle" style="font:500 15px 'Noto Sans KR';fill:var(--surface)">4</text><text x="133" y="77" text-anchor="middle" style="font:400 9px 'Noto Sans KR';fill:var(--surface);opacity:.85">/ 10</text><circle cx="174" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="216" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="257" cy="65" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="297" cy="74" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="334" cy="93" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="348" cy="128" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/></svg>
+  </div>
+  <div style="flex:1;min-height:0;overflow:hidden;padding:16px 24px 0;border-top:1px solid var(--rule)">
+    <div style="font:400 30px/1.6 'Noto Sans KR';color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">은총이 가득하신…</div>
+    <div class="ser acc" style="font-size:42px;line-height:1.65;margin-top:14px">천주의 성모 마리아님,</div>
+    <div class="sm" style="font-size:20px;margin-top:16px">구절 단위로 넘어갑니다</div>
+  </div>
+  <div class="px" style="display:flex;gap:12px;margin-top:16px">
+    <div class="btn2" style="border:1px solid var(--rule2);height:104px"><span class="t1" style="font-size:22px">잠시 멈춤</span></div>
+    <div class="btn2" style="border:1px solid var(--rule);height:104px"><span class="t1" style="font-size:22px;color:var(--muted)">여기서 끝내기</span></div>
+  </div>
+</div></div><figcaption><b>B-7</b> 시스템 글자 200% — 도판을 접고 기도문이 구절 단위가 된다</figcaption></figure></div>
+<h2>C 하루 완주 · C′ 여정 완주</h2><p class="note">축하 어휘를 쓰지 않는다. 빈 날은 빈 채로 남기고 말을 붙이지 않는다.</p><div class="row"><figure><div class="frame">
+<div class="scr">
+  <div class="lab" style="padding-bottom:16px;border-bottom:1px solid var(--rule)">8월 5일 · 스물세 번째 날</div>
+  <div class="ser" style="font-size:34px;line-height:1.35;margin:44px 0 18px">다 바쳤습니다</div>
+  <div class="bd">어머니 병환 회복을 위하여 · 23일째<br>고통의 신비 다섯 단</div>
+  
+  <div style="margin-top:30px"><div class="ribbon"><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i></div></div>
+  <div class="sm" style="margin-top:10px">54일 중 21일 바쳤습니다 · 남은 31일</div>
+  <div class="gr"></div>
+  <div class="stat"><span class="k">성모송</span><span class="v">50번</span></div>
+  <div class="stat"><span class="k">걸린 시간</span><span class="v">18분</span></div>
+  <div class="stat"><span class="k">이어서</span><span class="v">2번</span></div>
+  <div class="btn p" style="margin-top:26px">돌아가기</div>
+</div></div><figcaption><b>C-1</b> 하루 완주</figcaption></figure><figure><div class="frame">
+<div class="scr">
+  <div class="lab" style="padding-bottom:16px;border-bottom:1px solid var(--rule)">8월 5일 · 스물세 번째 날</div>
+  <div class="ser" style="font-size:34px;line-height:1.35;margin:44px 0 18px">다 바쳤습니다</div>
+  <div class="bd">어머니 병환 회복을 위하여 · 23일째<br>고통의 신비 제2단</div>
+  <div class="sm" style="margin-top:14px">오늘 다섯 중 셋이 바쳐졌습니다</div>
+  <div style="margin-top:30px"><div class="ribbon"><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--accent)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i><i style="height:26px;background:var(--faint)"></i></div></div>
+  <div class="sm" style="margin-top:10px">54일 중 21일 바쳤습니다 · 남은 31일</div>
+  <div class="gr"></div>
+  <div class="stat"><span class="k">성모송</span><span class="v">10번</span></div>
+  <div class="stat"><span class="k">걸린 시간</span><span class="v">5분</span></div>
+  <div class="stat"><span class="k">이어서</span><span class="v">2번</span></div>
+  <div class="btn p" style="margin-top:26px">돌아가기</div>
+</div></div><figcaption><b>C-2</b> 하루 완주 — 조 기도</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="plate" style="height:248px;background-image:url('../product/prototype/assets/02_Mary_and_Child.jpg');background-position:50% 18%"></div>
+  <div class="px" style="display:flex;flex-direction:column;flex:1;padding-top:30px">
+    <div class="lab">9월 5일 · 쉰네 번째 날</div>
+    <div class="ser" style="font-size:36px;line-height:1.35;margin-top:16px">쉰네 날을<br>다 바쳤습니다</div>
+    <div class="bd" style="margin-top:16px">어머니 병환 회복을 위하여</div>
+    <div style="margin-top:24px"><div class="ribbon"><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--faint)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--faint)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--faint)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i><i style="height:30px;background:var(--accent)"></i></div></div>
+    <div class="gr"></div>
+    <div class="stat"><span class="k">첫날</span><span class="v">7월 14일</span></div>
+    <div class="stat"><span class="k">마지막 날</span><span class="v">9월 5일</span></div>
+    <div class="stat"><span class="k">바친 날</span><span class="v">54일 중 51일</span></div>
+    <div class="btn p" style="margin-top:22px">돌아가기</div>
+  </div>
+</div></div><figcaption><b>C′</b> 여정 완주 (쉰네 날째)</figcaption></figure></div>
+<h2>D 여정 상세</h2><p class="note">기도로 들어가는 자리가 아니다. 그것은 홈 카드다. 아래의 두 조작은 스크롤과 무관하게 고정이다.</p><div class="row"><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">여정</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc px">
+    
+    <div style="padding:22px 0 18px;border-bottom:1px solid var(--rule)">
+      <div class="ser" style="font-size:27px;line-height:1.3">어머니 병환 회복</div>
+      <div class="sm" style="margin-top:12px">54일 기도 · 7월 14일 ~ 9월 5일<br>가톨릭 기도서 · 나무 묵주</div>
+    </div>
+    <div style="padding:18px 0">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <span class="mono-n">23</span><span class="bd">일째 · 청원 · 남은 31일</span>
+      </div>
+      <div style="margin-top:16px"><div class="grid54"><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint);box-shadow:inset 0 0 0 2px var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i></div></div>
+      <div class="sm" style="margin-top:12px">채운 칸은 바친 날, 빈 칸은 바치지 않은 날입니다. 테두리 칸이 오늘입니다.<br>칸을 누르면 그날의 기록이 열립니다.</div>
+    </div>
+    <div style="border-top:1px solid var(--rule)">
+      <div class="stat"><span class="k">바친 날</span><span class="v">20일</span></div>
+      <div class="stat"><span class="k">바치지 않은 날</span><span class="v">2일</span></div>
+    </div>
+  </div>
+  
+  <div class="px" style="flex:none;border-top:1px solid var(--rule);padding-top:14px">
+    <div class="btn o">오늘 처음부터</div>
+    <div class="btn t">이 여정 지우기</div>
+  </div>
+</div></div><figcaption><b>D-1</b> 혼자 여정 (스크롤 위)</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">여정</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc px">
+    
+    <div style="padding:18px 0 10px;border-top:1px solid var(--rule)">
+      <div class="stat"><span class="k">바친 날</span><span class="v">20일</span></div>
+      <div class="stat"><span class="k">바치지 않은 날</span><span class="v">2일</span></div>
+      <div class="stat"><span class="k">성모송</span><span class="v">1,000번</span></div>
+      <div class="stat"><span class="k">감사로 바뀌는 날</span><span class="v">28일째 · 8월 10일</span></div>
+      <div class="stat"><span class="k">마치는 날</span><span class="v">9월 5일</span></div>
+    </div>
+    <div class="sm" style="padding-bottom:10px">지난 기록은 칸을 눌러 하나씩 볼 수 있습니다.</div>
+  </div>
+  
+  <div class="px" style="flex:none;border-top:1px solid var(--rule);padding-top:14px">
+    <div class="btn o">오늘 처음부터</div>
+    <div class="btn t">이 여정 지우기</div>
+  </div>
+</div></div><figcaption><b>D-2</b> 혼자 여정 (스크롤 아래) — 기록</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">함께 바치는 여정</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc px">
+    
+    <div style="padding:22px 0 18px;border-bottom:1px solid var(--rule)">
+      <div class="ser" style="font-size:27px;line-height:1.3">아버지 세례를 위해</div>
+      <div class="sm" style="margin-top:12px">54일 기도 · 7월 31일 ~ 9월 22일<br>가톨릭 기도서 · 나무 묵주</div>
+    </div>
+    <div style="padding:18px 0">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <span class="mono-n">6</span><span class="bd">일째 · 청원 · 남은 48일</span>
+      </div>
+      <div style="margin-top:16px"><div class="grid54"><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint);box-shadow:inset 0 0 0 2px var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i></div></div>
+      <div class="sm" style="margin-top:12px">채운 칸은 바친 날, 빈 칸은 바치지 않은 날입니다. 테두리 칸이 오늘입니다.<br>칸을 누르면 그날의 기록이 열립니다.</div>
+    </div>
+    <div style="border-top:1px solid var(--rule)">
+      <div class="stat"><span class="k">바친 날</span><span class="v">5일</span></div>
+      <div class="stat"><span class="k">바치지 않은 날</span><span class="v">0일</span></div>
+    </div>
+  </div>
+  
+  <div class="px" style="flex:none;border-top:1px solid var(--rule);padding-top:14px">
+    <div class="btn o">오늘 처음부터</div>
+    <div class="btn t">조에서 나가기</div>
+  </div>
+</div></div><figcaption><b>D-3</b> 조 여정 (스크롤 위)</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">함께 바치는 여정</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc px">
+    
+    <div style="padding:22px 0 4px">
+      <div class="lab2">조</div>
+      <div style="margin-top:12px">
+        <div class="opt"><div><div class="n">초대 코드 K7M42B</div><div class="d">아는 사람만 들어옵니다</div></div><div class="r">나누기</div></div>
+        <div class="opt"><div><div class="n">조원 4 / 5</div><div class="d">이모 · 김요한 · 박마리아 · 나</div></div></div>
+        <div class="opt"><div><div class="n">오늘 배정</div><div class="d">내 몫 제2단 · 오늘 다섯 중 셋</div></div><div class="r">보기</div></div>
+      </div>
+      <div class="sm" style="margin-top:10px">누가 아직 바치지 않았는지는 적지 않습니다.</div>
+    </div>
+    <div style="padding:14px 0 10px;border-top:1px solid var(--rule)">
+      <div class="stat"><span class="k">바친 날</span><span class="v">5일</span></div>
+      <div class="stat"><span class="k">바치지 않은 날</span><span class="v">0일</span></div>
+      <div class="stat"><span class="k">성모송</span><span class="v">50번</span></div>
+      <div class="stat"><span class="k">감사로 바뀌는 날</span><span class="v">28일째 · 8월 27일</span></div>
+      <div class="stat"><span class="k">마치는 날</span><span class="v">9월 22일</span></div>
+    </div>
+    
+  </div>
+  
+  <div class="px" style="flex:none;border-top:1px solid var(--rule);padding-top:14px">
+    <div class="btn o">오늘 처음부터</div>
+    <div class="btn t">조에서 나가기</div>
+  </div>
+</div></div><figcaption><b>D-4</b> 조 여정 (스크롤 아래) — 초대 코드·조원·오늘 배정</figcaption></figure></div>
+<h2>E 설정</h2><p class="note">묶음 셋으로 위계를 준다. 한 화면에 다 담기지 않으므로 스크롤 위/아래 두 장으로 보인다.</p><div class="row"><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">설정</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc px">
+    <div class="zone">
+      <div class="lab2">바치는 방식</div>
+      <div style="margin-top:12px">
+        <div class="opt"><div><div class="n">전부 읽기</div><div class="d">앱이 처음부터 끝까지 읽습니다</div></div></div>
+        <div class="opt on"><div><div class="n">교대</div><div class="d">앞 절은 앱이, 뒷 절은 직접 바칩니다</div></div><div class="r">기본</div></div>
+        <div class="opt"><div><div class="n">읽지 않기</div><div class="d">소리 없이 진동으로만 넘어갑니다</div></div></div>
+      </div>
+      <div style="margin-top:12px">
+        <div class="opt"><div><div class="n">받는 사이</div><div class="d">보통</div></div><div class="r">고르기</div></div>
+        <div class="opt"><div><div class="n">손 없이 조작</div><div class="d">폰을 흔들면 다음 알로, 이어폰 버튼으로 앞뒤로</div></div><div class="r">꺼짐</div></div>
+      </div>
+      <div class="sm" style="margin-top:10px">켜면 흔들기와 이어폰 버튼을 씁니다. 음량 버튼은 V1에서 쓰지 않습니다.</div>
+    </div>
+    <div class="zone">
+      <div class="lab2">보이는 것</div>
+      <div style="margin-top:12px">
+        <div class="opt"><div><div class="n">묵주</div><div class="d">나무</div></div><div class="r">고르기</div></div>
+        <div class="opt"><div><div class="n">기본 기도문 판본</div><div class="d">가톨릭 기도서</div></div><div class="r">고르기</div></div>
+      </div>
+    </div>
+  </div>
+</div></div><figcaption><b>E-1</b> 바치는 방식</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">설정</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc px">
+    <div class="zone">
+      <div class="lab2">보이는 것</div>
+      <div style="margin-top:12px">
+        <div class="opt"><div><div class="n">묵주</div><div class="d">나무</div></div><div class="r">고르기</div></div>
+        <div class="opt"><div><div class="n">기본 기도문 판본</div><div class="d">가톨릭 기도서</div></div><div class="r">고르기</div></div>
+      </div>
+      <div class="sm" style="margin-top:10px">새로 만드는 기도에 적용됩니다.</div>
+      <div style="display:flex;margin-top:14px">
+        <div class="btn2" style="border:1px solid var(--rule);box-shadow:inset 0 0 0 1px var(--accent-line);background:var(--accent-bg);position:relative;z-index:1"><span class="t1">기기 따름</span></div>
+        <div class="btn2" style="border:1px solid var(--rule);margin-left:-1px"><span class="t1">밤</span></div>
+        <div class="btn2" style="border:1px solid var(--rule);margin-left:-1px"><span class="t1">낮</span></div>
+      </div>
+    </div>
+    <div class="zone">
+      <div class="lab2">계정</div>
+      <div style="margin-top:12px">
+        <div class="opt" style="min-height:64px"><div><div class="n">김건우</div><div class="d">구글 계정 · 연결됨 · 마지막 맞춤 방금</div></div></div>
+        <div class="opt"><div><div class="n">로그아웃</div><div class="d">이 기기에서 나갑니다</div></div></div>
+        <div class="opt"><div><div class="n">계정 삭제</div><div class="d">서버의 모든 기도와 기록이 지워집니다</div></div></div>
+        <div class="opt"><div><div class="n">소개</div><div class="d">이 시제품이 무엇을 검증하는지</div></div><div class="r">보기</div></div>
+      </div>
+    </div>
+  </div>
+</div></div><figcaption><b>E-2</b> 보이는 것 · 계정</figcaption></figure></div>
+<h2>시트 일곱</h2><p class="note">S1은 결번이다(Q-01). 시트는 언제나 부모 화면 위에 뜬다.</p><div class="row"><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">설정</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc px">
+    <div class="zone">
+      <div class="lab2">바치는 방식</div>
+      <div style="margin-top:12px">
+        <div class="opt"><div><div class="n">전부 읽기</div><div class="d">앱이 처음부터 끝까지 읽습니다</div></div></div>
+        <div class="opt on"><div><div class="n">교대</div><div class="d">앞 절은 앱이, 뒷 절은 직접 바칩니다</div></div><div class="r">기본</div></div>
+        <div class="opt"><div><div class="n">읽지 않기</div><div class="d">소리 없이 진동으로만 넘어갑니다</div></div></div>
+      </div>
+      <div style="margin-top:12px">
+        <div class="opt"><div><div class="n">받는 사이</div><div class="d">보통</div></div><div class="r">고르기</div></div>
+        <div class="opt"><div><div class="n">손 없이 조작</div><div class="d">폰을 흔들면 다음 알로, 이어폰 버튼으로 앞뒤로</div></div><div class="r">꺼짐</div></div>
+      </div>
+      <div class="sm" style="margin-top:10px">켜면 흔들기와 이어폰 버튼을 씁니다. 음량 버튼은 V1에서 쓰지 않습니다.</div>
+    </div>
+    <div class="zone">
+      <div class="lab2">보이는 것</div>
+      <div style="margin-top:12px">
+        <div class="opt"><div><div class="n">묵주</div><div class="d">나무</div></div><div class="r">고르기</div></div>
+        <div class="opt"><div><div class="n">기본 기도문 판본</div><div class="d">가톨릭 기도서</div></div><div class="r">고르기</div></div>
+      </div>
+    </div>
+  </div>
+</div><div class="sheetwrap"><div class="sheet"><div class="hd" style="padding-bottom:14px;margin-bottom:6px"><div class="lab">받는 사이</div><div class="tap">닫기</div></div>
+  <div class="opt"><div><div class="n">느리게</div><div class="d">천천히 바침</div></div></div>
+  <div class="opt on"><div><div class="n">보통</div><div class="d">기본</div></div><div class="r">선택</div></div>
+  <div class="opt"><div><div class="n">빠르게</div><div class="d">익숙한 분</div></div></div></div></div></div><figcaption><b>S2</b> 받는 사이</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">여정</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc px">
+    
+    <div style="padding:22px 0 18px;border-bottom:1px solid var(--rule)">
+      <div class="ser" style="font-size:27px;line-height:1.3">어머니 병환 회복</div>
+      <div class="sm" style="margin-top:12px">54일 기도 · 7월 14일 ~ 9월 5일<br>가톨릭 기도서 · 나무 묵주</div>
+    </div>
+    <div style="padding:18px 0">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <span class="mono-n">23</span><span class="bd">일째 · 청원 · 남은 31일</span>
+      </div>
+      <div style="margin-top:16px"><div class="grid54"><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint);box-shadow:inset 0 0 0 2px var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i></div></div>
+      <div class="sm" style="margin-top:12px">채운 칸은 바친 날, 빈 칸은 바치지 않은 날입니다. 테두리 칸이 오늘입니다.<br>칸을 누르면 그날의 기록이 열립니다.</div>
+    </div>
+    <div style="border-top:1px solid var(--rule)">
+      <div class="stat"><span class="k">바친 날</span><span class="v">20일</span></div>
+      <div class="stat"><span class="k">바치지 않은 날</span><span class="v">2일</span></div>
+    </div>
+  </div>
+  
+  <div class="px" style="flex:none;border-top:1px solid var(--rule);padding-top:14px">
+    <div class="btn o">오늘 처음부터</div>
+    <div class="btn t">이 여정 지우기</div>
+  </div>
+</div><div class="sheetwrap"><div class="sheet"><div class="hd" style="padding-bottom:14px;margin-bottom:6px"><div class="lab">오늘 처음부터</div><div class="tap">닫기</div></div>
+  
+  <div class="ser" style="font-size:22px;line-height:1.45">오늘 자리를 지우고<br>처음부터 바칩니다.</div>
+  <div class="sm" style="margin-top:12px">지금까지 바친 오늘의 자리가 사라집니다. 지난 날의 기록은 그대로 있습니다.</div>
+  <div style="display:flex;gap:12px;margin-top:22px">
+    <div class="btn o" style="flex:1">처음부터</div>
+    <div class="btn p" style="flex:1">아니요, 이어서</div>
+  </div></div></div></div><figcaption><b>S3</b> 오늘 처음부터</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">설정</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc px">
+    <div class="zone">
+      <div class="lab2">보이는 것</div>
+      <div style="margin-top:12px">
+        <div class="opt"><div><div class="n">묵주</div><div class="d">나무</div></div><div class="r">고르기</div></div>
+        <div class="opt"><div><div class="n">기본 기도문 판본</div><div class="d">가톨릭 기도서</div></div><div class="r">고르기</div></div>
+      </div>
+      <div class="sm" style="margin-top:10px">새로 만드는 기도에 적용됩니다.</div>
+      <div style="display:flex;margin-top:14px">
+        <div class="btn2" style="border:1px solid var(--rule);box-shadow:inset 0 0 0 1px var(--accent-line);background:var(--accent-bg);position:relative;z-index:1"><span class="t1">기기 따름</span></div>
+        <div class="btn2" style="border:1px solid var(--rule);margin-left:-1px"><span class="t1">밤</span></div>
+        <div class="btn2" style="border:1px solid var(--rule);margin-left:-1px"><span class="t1">낮</span></div>
+      </div>
+    </div>
+    <div class="zone">
+      <div class="lab2">계정</div>
+      <div style="margin-top:12px">
+        <div class="opt" style="min-height:64px"><div><div class="n">김건우</div><div class="d">구글 계정 · 연결됨 · 마지막 맞춤 방금</div></div></div>
+        <div class="opt"><div><div class="n">로그아웃</div><div class="d">이 기기에서 나갑니다</div></div></div>
+        <div class="opt"><div><div class="n">계정 삭제</div><div class="d">서버의 모든 기도와 기록이 지워집니다</div></div></div>
+        <div class="opt"><div><div class="n">소개</div><div class="d">이 시제품이 무엇을 검증하는지</div></div><div class="r">보기</div></div>
+      </div>
+    </div>
+  </div>
+</div><div class="sheetwrap"><div class="sheet"><div class="hd" style="padding-bottom:14px;margin-bottom:6px"><div class="lab">기도문 판본</div><div class="tap">닫기</div></div>
+  <div style="min-height:88px;padding:16px;border:1px solid var(--accent-line);background:var(--accent-bg)">
+    <div style="display:flex;justify-content:space-between"><span class="opt-n" style="font:500 14px/1 'Noto Sans KR';color:var(--ink)">가톨릭 기도서</span><span class="sm acc">선택</span></div>
+    <div class="ser" style="font-size:15px;line-height:1.6;margin-top:8px;color:var(--muted)">은총이 가득하신 마리아님, 기뻐하소서!</div>
+  </div>
+  <div style="min-height:88px;padding:16px;border:1px solid var(--rule);border-top:none">
+    <div style="font:500 14px/1 'Noto Sans KR';color:var(--ink)">옛 기도서</div>
+    <div class="ser" style="font-size:15px;line-height:1.6;margin-top:8px;color:var(--muted)">은총을 가득히 입으신 마리아여, 기뻐하소서.</div>
+  </div>
+  <div class="sm" style="margin-top:12px">진행 중인 여정의 문구는 바뀌지 않습니다.<br>판본 목록과 사용 권한은 아직 확정되지 않았습니다(D-4).</div></div></div></div><figcaption><b>S4</b> 기도문 판본</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">설정</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc px">
+    <div class="zone">
+      <div class="lab2">보이는 것</div>
+      <div style="margin-top:12px">
+        <div class="opt"><div><div class="n">묵주</div><div class="d">나무</div></div><div class="r">고르기</div></div>
+        <div class="opt"><div><div class="n">기본 기도문 판본</div><div class="d">가톨릭 기도서</div></div><div class="r">고르기</div></div>
+      </div>
+      <div class="sm" style="margin-top:10px">새로 만드는 기도에 적용됩니다.</div>
+      <div style="display:flex;margin-top:14px">
+        <div class="btn2" style="border:1px solid var(--rule);box-shadow:inset 0 0 0 1px var(--accent-line);background:var(--accent-bg);position:relative;z-index:1"><span class="t1">기기 따름</span></div>
+        <div class="btn2" style="border:1px solid var(--rule);margin-left:-1px"><span class="t1">밤</span></div>
+        <div class="btn2" style="border:1px solid var(--rule);margin-left:-1px"><span class="t1">낮</span></div>
+      </div>
+    </div>
+    <div class="zone">
+      <div class="lab2">계정</div>
+      <div style="margin-top:12px">
+        <div class="opt" style="min-height:64px"><div><div class="n">김건우</div><div class="d">구글 계정 · 연결됨 · 마지막 맞춤 방금</div></div></div>
+        <div class="opt"><div><div class="n">로그아웃</div><div class="d">이 기기에서 나갑니다</div></div></div>
+        <div class="opt"><div><div class="n">계정 삭제</div><div class="d">서버의 모든 기도와 기록이 지워집니다</div></div></div>
+        <div class="opt"><div><div class="n">소개</div><div class="d">이 시제품이 무엇을 검증하는지</div></div><div class="r">보기</div></div>
+      </div>
+    </div>
+  </div>
+</div><div class="sheetwrap"><div class="sheet"><div class="hd" style="padding-bottom:14px;margin-bottom:6px"><div class="lab">묵주 고르기</div><div class="tap">닫기</div></div>
+  <div style="display:flex;gap:10px">
+    
+      <div style="flex:1;min-height:88px;padding:14px 0;display:flex;flex-direction:column;align-items:center;gap:10px;
+        border:1px solid var(--accent-line);background:var(--accent-bg);">
+        <svg width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="var(--bead)" /></svg>
+        <span style="font:500 13px/1 'Noto Sans KR';color:var(--ink)">나무</span>
+      </div>
+      <div style="flex:1;min-height:88px;padding:14px 0;display:flex;flex-direction:column;align-items:center;gap:10px;
+        border:1px solid var(--rule);">
+        <svg width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="var(--bead)" /><circle cx="20" cy="20" r="15" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="14" cy="13" r="5" fill="var(--surface)" opacity="0.72"/></svg>
+        <span style="font:500 13px/1 'Noto Sans KR';color:var(--ink)">진주</span>
+      </div>
+      <div style="flex:1;min-height:88px;padding:14px 0;display:flex;flex-direction:column;align-items:center;gap:10px;
+        border:1px solid var(--rule);">
+        <svg width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="var(--bead)" opacity="0.28" /><circle cx="20" cy="20" r="15" fill="none" stroke="var(--bead)" stroke-width="1.6"/></svg>
+        <span style="font:500 13px/1 'Noto Sans KR';color:var(--ink)">유리</span>
+      </div>
+  </div>
+  <div class="sm" style="margin-top:14px">어느 묵주를 골라도 알의 다섯 상태를 그대로 보여 줍니다.</div>
+  <div style="margin-top:10px;display:flex;justify-content:center"><div style="width:340px">
+    <svg width="340" height="86" viewBox="0 0 360 86"><g><circle cx="44" cy="44" r="18.4" fill="var(--accent)" /></g><circle cx="44" cy="44" r="24" fill="none" stroke="var(--rule)" stroke-width="2.2"/>
+            <circle cx="44" cy="44" r="24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-dasharray="93.5 150.8" transform="rotate(-90 44 44)"/><circle cx="112" cy="44" r="34" fill="var(--accent)" opacity=".2"/><g><circle cx="112" cy="44" r="18.4" fill="var(--accent)" /></g><circle cx="180" cy="44" r="26" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity=".55"/><g><circle cx="180" cy="44" r="18.4" fill="var(--accent)" /></g><circle cx="248" cy="44" r="30" fill="var(--accent)" opacity=".2"/><g transform="translate(248 44) scale(1.3) translate(-248 -44)"><circle cx="248" cy="44" r="18.4" fill="var(--accent)" /></g><g opacity=".38"><circle cx="316" cy="44" r="18.4" fill="var(--bead)" /></g></svg>
+    <div style="display:flex"><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">읽는 중</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">내 차례</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">진동</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">단 전환</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">멈춤</div></div>
+  </div></div></div></div></div><figcaption><b>S5</b> 묵주 고르기</figcaption></figure><figure><div class="frame">
+<div class="scr">
+  
+<div class="hd">
+  <div class="lab">내 기도 · 둘</div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="none" stroke="var(--muted)" stroke-width="1.1"/><text x="10" y="14.5" text-anchor="middle" style="font:400 11px 'Noto Sans KR';fill:var(--muted)">i</text></svg>
+    <span class="tap" style="letter-spacing:.1em">설정</span>
+  </div>
+</div>
+  <div class="sc">
+<div style="padding:24px 0 22px;border-bottom:1px solid var(--rule)">
+  <div style="display:flex;gap:16px;align-items:flex-start">
+    <div class="plate"  style="width:96px;height:124px;background-image:url('../product/prototype/assets/02_Mary_and_Child.jpg');background-position:50% 20%"></div>
+    <div style="flex:1;min-width:0">
+      <div class="ser" style="font-size:24px;line-height:1.3">어머니 병환 회복</div>
+      <div style="font:500 12px/1 'Noto Sans KR';color:var(--accent);letter-spacing:.06em;margin-top:10px">23일째 · 청원</div>
+      <div style="font:400 12.5px/1.6 'Noto Sans KR';color:var(--ink);margin-top:12px">고통의 신비<br>제3단 4번째 알부터 이어서</div>
+      <div class="sm" style="margin-top:6px">어제 저녁</div>
+    </div>
+  </div>
+  <div class="ribbon"><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:9px">
+    <span class="sm">7월 14일 시작 · 9월 5일 마칠 날</span><span class="tap">자세히</span>
+  </div>
+</div>
+<div style="padding:24px 0 22px;border-bottom:1px solid var(--rule)">
+  <div style="display:flex;gap:16px;align-items:flex-start">
+    <div class="plate" style="width:96px;height:124px;background-image:url('../product/prototype/assets/07_Relief_Holy_Family.jpg');background-position:50% 30%"></div>
+    <div style="flex:1;min-width:0">
+      <div class="ser" style="font-size:24px;line-height:1.3">아버지 세례를 위해</div>
+      <div style="font:500 12px/1 'Noto Sans KR';color:var(--accent);letter-spacing:.06em;margin-top:10px">6일째 · 함께 바치기</div>
+      <div style="font:400 12.5px/1.6 'Noto Sans KR';color:var(--ink);margin-top:12px">오늘 바쳤습니다</div>
+      <div class="sm" style="margin-top:6px">내 몫 제2단 · 오늘 다섯 중 셋</div>
+    </div>
+  </div>
+  <div class="ribbon"><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:9px">
+    <span class="sm">7월 31일 시작 · 9월 22일 마칠 날</span><span class="tap">자세히</span>
+  </div>
+</div></div>
+  <div class="btn p" style="margin-top:14px">새 기도</div>
+  <div class="btn t">초대 코드로 들어가기</div>
+</div><div class="sheetwrap"><div class="sheet"><div class="hd" style="padding-bottom:14px;margin-bottom:6px"><div class="lab">여정 지우기</div><div class="tap">닫기</div></div>
+    
+  <div class="ser" style="font-size:22px;line-height:1.45">이 기도를 지웁니다.<br>기록도 함께 지워집니다.</div>
+  <div class="sm" style="margin-top:12px">되돌릴 수 없습니다.</div>
+  <div style="display:flex;gap:12px;margin-top:22px">
+    <div class="btn o" style="flex:1">지우기</div>
+    <div class="btn p" style="flex:1">두기</div>
+  </div></div></div></div><figcaption><b>S6-가</b> 여정 지우기 (혼자)</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">함께 바치는 여정</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc px">
+    
+    <div style="padding:22px 0 18px;border-bottom:1px solid var(--rule)">
+      <div class="ser" style="font-size:27px;line-height:1.3">아버지 세례를 위해</div>
+      <div class="sm" style="margin-top:12px">54일 기도 · 7월 31일 ~ 9월 22일<br>가톨릭 기도서 · 나무 묵주</div>
+    </div>
+    <div style="padding:18px 0">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <span class="mono-n">6</span><span class="bd">일째 · 청원 · 남은 48일</span>
+      </div>
+      <div style="margin-top:16px"><div class="grid54"><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint);box-shadow:inset 0 0 0 2px var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i></div></div>
+      <div class="sm" style="margin-top:12px">채운 칸은 바친 날, 빈 칸은 바치지 않은 날입니다. 테두리 칸이 오늘입니다.<br>칸을 누르면 그날의 기록이 열립니다.</div>
+    </div>
+    <div style="border-top:1px solid var(--rule)">
+      <div class="stat"><span class="k">바친 날</span><span class="v">5일</span></div>
+      <div class="stat"><span class="k">바치지 않은 날</span><span class="v">0일</span></div>
+    </div>
+  </div>
+  
+  <div class="px" style="flex:none;border-top:1px solid var(--rule);padding-top:14px">
+    <div class="btn o">오늘 처음부터</div>
+    <div class="btn t">조에서 나가기</div>
+  </div>
+</div><div class="sheetwrap"><div class="sheet"><div class="hd" style="padding-bottom:14px;margin-bottom:6px"><div class="lab">조 해산</div><div class="tap">닫기</div></div>
+    
+  <div class="ser" style="font-size:22px;line-height:1.45">조를 해산합니다.</div>
+  <div class="sm" style="margin-top:12px">조원 모두의 카드에서 이 기도가 사라집니다.</div>
+  <div style="display:flex;gap:12px;margin-top:22px">
+    <div class="btn o" style="flex:1">해산</div>
+    <div class="btn p" style="flex:1">두기</div>
+  </div></div></div></div><figcaption><b>S6-나</b> 조 해산 (만든 사람)</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">함께 바치는 여정</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc px">
+    
+    <div style="padding:22px 0 18px;border-bottom:1px solid var(--rule)">
+      <div class="ser" style="font-size:27px;line-height:1.3">아버지 세례를 위해</div>
+      <div class="sm" style="margin-top:12px">54일 기도 · 7월 31일 ~ 9월 22일<br>가톨릭 기도서 · 나무 묵주</div>
+    </div>
+    <div style="padding:18px 0">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <span class="mono-n">6</span><span class="bd">일째 · 청원 · 남은 48일</span>
+      </div>
+      <div style="margin-top:16px"><div class="grid54"><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--accent)"></i><i style="background:var(--faint);box-shadow:inset 0 0 0 2px var(--accent)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i><i style="background:var(--faint)"></i></div></div>
+      <div class="sm" style="margin-top:12px">채운 칸은 바친 날, 빈 칸은 바치지 않은 날입니다. 테두리 칸이 오늘입니다.<br>칸을 누르면 그날의 기록이 열립니다.</div>
+    </div>
+    <div style="border-top:1px solid var(--rule)">
+      <div class="stat"><span class="k">바친 날</span><span class="v">5일</span></div>
+      <div class="stat"><span class="k">바치지 않은 날</span><span class="v">0일</span></div>
+    </div>
+  </div>
+  
+  <div class="px" style="flex:none;border-top:1px solid var(--rule);padding-top:14px">
+    <div class="btn o">오늘 처음부터</div>
+    <div class="btn t">조에서 나가기</div>
+  </div>
+</div><div class="sheetwrap"><div class="sheet"><div class="hd" style="padding-bottom:14px;margin-bottom:6px"><div class="lab">조에서 나가기</div><div class="tap">닫기</div></div>
+    
+  <div class="ser" style="font-size:22px;line-height:1.45">조에서 나옵니다.</div>
+  <div class="sm" style="margin-top:12px">남은 조원에게 단이 다시 배정됩니다.</div>
+  <div style="display:flex;gap:12px;margin-top:22px">
+    <div class="btn o" style="flex:1">나가기</div>
+    <div class="btn p" style="flex:1">두기</div>
+  </div></div></div></div><figcaption><b>S6-다</b> 조에서 나가기 (조원)</figcaption></figure><figure><div class="frame">
+<div class="scr">
+  
+<div class="hd">
+  <div class="lab">내 기도 · 둘</div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="none" stroke="var(--muted)" stroke-width="1.1"/><text x="10" y="14.5" text-anchor="middle" style="font:400 11px 'Noto Sans KR';fill:var(--muted)">i</text></svg>
+    <span class="tap" style="letter-spacing:.1em">설정</span>
+  </div>
+</div>
+  <div class="sc">
+<div style="padding:24px 0 22px;border-bottom:1px solid var(--rule)">
+  <div style="display:flex;gap:16px;align-items:flex-start">
+    <div class="plate"  style="width:96px;height:124px;background-image:url('../product/prototype/assets/02_Mary_and_Child.jpg');background-position:50% 20%"></div>
+    <div style="flex:1;min-width:0">
+      <div class="ser" style="font-size:24px;line-height:1.3">어머니 병환 회복</div>
+      <div style="font:500 12px/1 'Noto Sans KR';color:var(--accent);letter-spacing:.06em;margin-top:10px">23일째 · 청원</div>
+      <div style="font:400 12.5px/1.6 'Noto Sans KR';color:var(--ink);margin-top:12px">고통의 신비<br>제3단 4번째 알부터 이어서</div>
+      <div class="sm" style="margin-top:6px">어제 저녁</div>
+    </div>
+  </div>
+  <div class="ribbon"><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:9px">
+    <span class="sm">7월 14일 시작 · 9월 5일 마칠 날</span><span class="tap">자세히</span>
+  </div>
+</div>
+<div style="padding:24px 0 22px;border-bottom:1px solid var(--rule)">
+  <div style="display:flex;gap:16px;align-items:flex-start">
+    <div class="plate" style="width:96px;height:124px;background-image:url('../product/prototype/assets/07_Relief_Holy_Family.jpg');background-position:50% 30%"></div>
+    <div style="flex:1;min-width:0">
+      <div class="ser" style="font-size:24px;line-height:1.3">아버지 세례를 위해</div>
+      <div style="font:500 12px/1 'Noto Sans KR';color:var(--accent);letter-spacing:.06em;margin-top:10px">6일째 · 함께 바치기</div>
+      <div style="font:400 12.5px/1.6 'Noto Sans KR';color:var(--ink);margin-top:12px">오늘 바쳤습니다</div>
+      <div class="sm" style="margin-top:6px">내 몫 제2단 · 오늘 다섯 중 셋</div>
+    </div>
+  </div>
+  <div class="ribbon"><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--accent)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i><i style="height:22px;background:var(--faint)"></i></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:9px">
+    <span class="sm">7월 31일 시작 · 9월 22일 마칠 날</span><span class="tap">자세히</span>
+  </div>
+</div></div>
+  <div class="btn p" style="margin-top:14px">새 기도</div>
+  <div class="btn t">초대 코드로 들어가기</div>
+</div><div class="sheetwrap"><div class="sheet"><div class="hd" style="padding-bottom:14px;margin-bottom:6px"><div class="lab">소개</div><div class="tap">닫기</div></div>
+  <div class="ser" style="font-size:22px;line-height:1.45">이 시제품이 무엇을<br>검증하는지</div>
+  <div class="bd" style="margin-top:14px">교대로 바치는 낭송이 실제로 편한지, 끊긴 자리에서 이어 바치는 것이 도움이 되는지를 봅니다.</div>
+  <div class="sm" style="margin-top:14px">아직 아닌 것 — 기도문 공식 판본, 배경 성화의 최종 이미지, 알림. 셋은 검증 뒤에 채웁니다.</div>
+  <div class="btn o" style="margin-top:22px">닫기</div></div></div></div><figcaption><b>S7</b> 소개</figcaption></figure><figure><div class="frame">
+<div class="scr edge">
+  <div class="px"><div class="hd"><div class="lab">설정</div><div class="tap">돌아가기</div></div></div>
+  <div class="sc px">
+    <div class="zone">
+      <div class="lab2">보이는 것</div>
+      <div style="margin-top:12px">
+        <div class="opt"><div><div class="n">묵주</div><div class="d">나무</div></div><div class="r">고르기</div></div>
+        <div class="opt"><div><div class="n">기본 기도문 판본</div><div class="d">가톨릭 기도서</div></div><div class="r">고르기</div></div>
+      </div>
+      <div class="sm" style="margin-top:10px">새로 만드는 기도에 적용됩니다.</div>
+      <div style="display:flex;margin-top:14px">
+        <div class="btn2" style="border:1px solid var(--rule);box-shadow:inset 0 0 0 1px var(--accent-line);background:var(--accent-bg);position:relative;z-index:1"><span class="t1">기기 따름</span></div>
+        <div class="btn2" style="border:1px solid var(--rule);margin-left:-1px"><span class="t1">밤</span></div>
+        <div class="btn2" style="border:1px solid var(--rule);margin-left:-1px"><span class="t1">낮</span></div>
+      </div>
+    </div>
+    <div class="zone">
+      <div class="lab2">계정</div>
+      <div style="margin-top:12px">
+        <div class="opt" style="min-height:64px"><div><div class="n">김건우</div><div class="d">구글 계정 · 연결됨 · 마지막 맞춤 방금</div></div></div>
+        <div class="opt"><div><div class="n">로그아웃</div><div class="d">이 기기에서 나갑니다</div></div></div>
+        <div class="opt"><div><div class="n">계정 삭제</div><div class="d">서버의 모든 기도와 기록이 지워집니다</div></div></div>
+        <div class="opt"><div><div class="n">소개</div><div class="d">이 시제품이 무엇을 검증하는지</div></div><div class="r">보기</div></div>
+      </div>
+    </div>
+  </div>
+</div><div class="sheetwrap"><div class="sheet"><div class="hd" style="padding-bottom:14px;margin-bottom:6px"><div class="lab">계정 삭제</div><div class="tap">닫기</div></div>
+  
+  <div class="ser" style="font-size:22px;line-height:1.45">계정을 지웁니다.</div>
+  <div class="sm" style="margin-top:12px">서버의 모든 기도와 기록이 지워집니다. 조에 있었으면 조에서 빠집니다.</div>
+  <div style="display:flex;gap:12px;margin-top:22px">
+    <div class="btn o" style="flex:1">지우기</div>
+    <div class="btn p" style="flex:1">두기</div>
+  </div></div></div></div><figcaption><b>계정 삭제 확인</b></figcaption></figure></div>
+<h2>묵주 그림의 나머지 알 — 대안 셋 (D-E · 공방장 판단 필요)</h2><p class="note">어느 안이든 지금 알의 지름은 32.1px(화면 폭의 8.2%)로 FR-26을 넘는다. 추천과 근거는 README에 있다.</p><div class="row"><figure><div class="panel"><svg width="320" height="236" viewBox="0 0 390 281"><path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M42 128 C56 170 147 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M348 128 C334 170 243 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 231 L195 252" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 252 L195 278 M180 262 L210 262" fill="none" stroke="var(--rule2)" stroke-width="2.4"/><circle cx="195" cy="210" r="21" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="42" cy="128" r="18.4" fill="var(--bead)" /><circle cx="56" cy="93" r="18.4" fill="var(--bead)" /><circle cx="93" cy="74" r="18.4" fill="var(--bead)" /><circle cx="133" cy="65" r="34" fill="var(--accent)" opacity=".14"/><circle cx="133" cy="65" r="18.4" fill="var(--accent)" /><text x="133" y="66" text-anchor="middle" style="font:500 15px 'Noto Sans KR';fill:var(--surface)">4</text><text x="133" y="77" text-anchor="middle" style="font:400 9px 'Noto Sans KR';fill:var(--surface);opacity:.85">/ 10</text><circle cx="174" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="216" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="257" cy="65" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="297" cy="74" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="334" cy="93" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="348" cy="128" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/></svg></div><figcaption><b>안 1</b> 지금 방식 유지 — 현재 단 열 알과 큰 알만 실제 크기, 나머지는 실선 <b>(추천)</b></figcaption></figure><figure><div class="panel"><svg width="320" height="236" viewBox="0 0 390 281">
+  <path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M42 128 C56 170 147 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M348 128 C334 170 243 198 195 210" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 231 L195 252" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M195 252 L195 278 M180 262 L210 262" fill="none" stroke="var(--rule2)" stroke-width="2.4"/><circle cx="195" cy="210" r="21" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="42" cy="128" r="18.4" fill="var(--bead)" /><circle cx="56" cy="93" r="18.4" fill="var(--bead)" /><circle cx="93" cy="74" r="18.4" fill="var(--bead)" /><circle cx="133" cy="65" r="34" fill="var(--accent)" opacity=".14"/><circle cx="133" cy="65" r="18.4" fill="var(--accent)" /><text x="133" y="66" text-anchor="middle" style="font:500 15px 'Noto Sans KR';fill:var(--surface)">4</text><text x="133" y="77" text-anchor="middle" style="font:400 9px 'Noto Sans KR';fill:var(--surface);opacity:.85">/ 10</text><circle cx="174" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="216" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="257" cy="65" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="297" cy="74" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="334" cy="93" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="348" cy="128" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/>
+  <path d="M42 128 C20 118 8 112 2 108" fill="none" stroke="var(--thread)" stroke-width="1.4" opacity=".55"/>
+  <path d="M348 128 C370 118 382 112 388 108" fill="none" stroke="var(--thread)" stroke-width="1.4" opacity=".55"/>
+  <circle cx="16" cy="112" r="9" fill="none" stroke="var(--bead-line)" stroke-width="1.2" opacity=".5"/>
+  <circle cx="374" cy="112" r="9" fill="none" stroke="var(--bead-line)" stroke-width="1.2" opacity=".5"/>
+</svg></div><figcaption><b>안 2</b> 이어지는 실 — 고리 좌우로 실과 작은 알이 흘러나가 “더 큰 묵주의 한 토막”임을 알린다</figcaption></figure><figure><div class="panel"><div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+  <svg width="190" height="72" viewBox="0 0 190 72"><ellipse cx="95" cy="34" rx="78" ry="26" fill="none" stroke="var(--thread)" stroke-width="1"/><circle cx="95.0" cy="8.0" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="104.8" cy="8.2" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="114.4" cy="8.8" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="123.7" cy="9.8" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="132.6" cy="11.2" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="140.8" cy="13.0" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="148.4" cy="15.0" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="155.1" cy="17.4" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="160.9" cy="20.1" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="165.6" cy="22.9" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="169.2" cy="26.0" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="171.6" cy="29.1" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="172.8" cy="32.4" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="172.8" cy="35.6" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="171.6" cy="38.9" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="169.2" cy="42.0" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="165.6" cy="45.1" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="160.9" cy="47.9" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="155.1" cy="50.6" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="148.4" cy="53.0" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="140.8" cy="55.0" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="132.6" cy="56.8" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="123.7" cy="58.2" r="3.1" fill="var(--bead)" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="114.4" cy="59.2" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="104.8" cy="59.8" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="95.0" cy="60.0" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="85.2" cy="59.8" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="75.6" cy="59.2" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="66.3" cy="58.2" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="57.4" cy="56.8" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="49.2" cy="55.0" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="41.6" cy="53.0" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="34.9" cy="50.6" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="29.1" cy="47.9" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="24.4" cy="45.1" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="20.8" cy="42.0" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="18.4" cy="38.9" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="17.2" cy="35.6" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="17.2" cy="32.4" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="18.4" cy="29.1" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="20.8" cy="26.0" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="24.4" cy="22.9" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="29.1" cy="20.1" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="34.9" cy="17.4" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="41.6" cy="15.0" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="49.2" cy="13.0" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="57.4" cy="11.2" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="66.3" cy="9.8" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="75.6" cy="8.8" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="85.2" cy="8.2" r="3.1" fill="none" stroke="var(--bead-line)" stroke-width=".8"/><circle cx="114.4" cy="59.2" r="5.4" fill="var(--accent)"/></svg>
+  <svg width="300" height="118" viewBox="0 0 390 196"><path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M42 128 C50 166 130 182 195 182 C260 182 340 166 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><circle cx="42" cy="128" r="18.4" fill="var(--bead)" /><circle cx="56" cy="93" r="18.4" fill="var(--bead)" /><circle cx="93" cy="74" r="18.4" fill="var(--bead)" /><circle cx="133" cy="65" r="34" fill="var(--accent)" opacity=".14"/><circle cx="133" cy="65" r="18.4" fill="var(--accent)" /><text x="133" y="66" text-anchor="middle" style="font:500 15px 'Noto Sans KR';fill:var(--surface)">4</text><text x="133" y="77" text-anchor="middle" style="font:400 9px 'Noto Sans KR';fill:var(--surface);opacity:.85">/ 10</text><circle cx="174" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="216" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="257" cy="65" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="297" cy="74" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="334" cy="93" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="348" cy="128" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/></svg>
+</div></div><figcaption><b>안 3</b> 작은 전체 + 큰 현재 — 위에 59알 전체, 아래에 현재 단</figcaption></figure></div>
+<h2>묵주 3종 (D-F)</h2><p class="note">색을 늘리지 않고 형태로만 가른다. 각 재질이 알의 다섯 상태(읽는 중 · 내 차례 · 진동 · 단 전환 · 멈춤)를 그대로 표현한다.</p><div class="row"><figure><div class="panel"><div style="display:flex;flex-direction:column;align-items:center;gap:16px">
+  <svg width="300" height="118" viewBox="0 0 390 196"><path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M42 128 C50 166 130 182 195 182 C260 182 340 166 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><circle cx="42" cy="128" r="18.4" fill="var(--bead)" /><circle cx="56" cy="93" r="18.4" fill="var(--bead)" /><circle cx="93" cy="74" r="18.4" fill="var(--bead)" /><circle cx="133" cy="65" r="34" fill="var(--accent)" opacity=".14"/><circle cx="133" cy="65" r="18.4" fill="var(--accent)" /><text x="133" y="66" text-anchor="middle" style="font:500 15px 'Noto Sans KR';fill:var(--surface)">4</text><text x="133" y="77" text-anchor="middle" style="font:400 9px 'Noto Sans KR';fill:var(--surface);opacity:.85">/ 10</text><circle cx="174" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="216" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="257" cy="65" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="297" cy="74" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="334" cy="93" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="348" cy="128" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.6"/></svg>
+  <div style="width:340px">
+    <svg width="340" height="86" viewBox="0 0 360 86"><g><circle cx="44" cy="44" r="18.4" fill="var(--accent)" /></g><circle cx="44" cy="44" r="24" fill="none" stroke="var(--rule)" stroke-width="2.2"/>
+            <circle cx="44" cy="44" r="24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-dasharray="93.5 150.8" transform="rotate(-90 44 44)"/><circle cx="112" cy="44" r="34" fill="var(--accent)" opacity=".2"/><g><circle cx="112" cy="44" r="18.4" fill="var(--accent)" /></g><circle cx="180" cy="44" r="26" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity=".55"/><g><circle cx="180" cy="44" r="18.4" fill="var(--accent)" /></g><circle cx="248" cy="44" r="30" fill="var(--accent)" opacity=".2"/><g transform="translate(248 44) scale(1.3) translate(-248 -44)"><circle cx="248" cy="44" r="18.4" fill="var(--accent)" /></g><g opacity=".38"><circle cx="316" cy="44" r="18.4" fill="var(--bead)" /></g></svg>
+    <div style="display:flex"><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">읽는 중</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">내 차례</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">진동</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">단 전환</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">멈춤</div></div>
+  </div>
+</div></div><figcaption><b>나무</b> — 채운 원</figcaption></figure><figure><div class="panel"><div style="display:flex;flex-direction:column;align-items:center;gap:16px">
+  <svg width="300" height="118" viewBox="0 0 390 196"><path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M42 128 C50 166 130 182 195 182 C260 182 340 166 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><circle cx="42" cy="128" r="18.4" fill="var(--bead)" /><circle cx="42" cy="128" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="36" cy="121" r="5" fill="var(--surface)" opacity="0.72"/><circle cx="56" cy="93" r="18.4" fill="var(--bead)" /><circle cx="56" cy="93" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="50" cy="86" r="5" fill="var(--surface)" opacity="0.72"/><circle cx="93" cy="74" r="18.4" fill="var(--bead)" /><circle cx="93" cy="74" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="87" cy="67" r="5" fill="var(--surface)" opacity="0.72"/><circle cx="133" cy="65" r="34" fill="var(--accent)" opacity=".14"/><circle cx="133" cy="65" r="18.4" fill="var(--accent)" /><circle cx="133" cy="65" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="127" cy="58" r="5" fill="var(--surface)" opacity="0.72"/><text x="133" y="66" text-anchor="middle" style="font:500 15px 'Noto Sans KR';fill:var(--surface)">4</text><text x="133" y="77" text-anchor="middle" style="font:400 9px 'Noto Sans KR';fill:var(--surface);opacity:.85">/ 10</text><circle cx="174" cy="61" r="18.4" fill="var(--faint)" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="174" cy="61" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="168" cy="54" r="5" fill="var(--surface)" opacity="0.5"/><circle cx="216" cy="61" r="18.4" fill="var(--faint)" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="216" cy="61" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="210" cy="54" r="5" fill="var(--surface)" opacity="0.5"/><circle cx="257" cy="65" r="18.4" fill="var(--faint)" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="257" cy="65" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="251" cy="58" r="5" fill="var(--surface)" opacity="0.5"/><circle cx="297" cy="74" r="18.4" fill="var(--faint)" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="297" cy="74" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="291" cy="67" r="5" fill="var(--surface)" opacity="0.5"/><circle cx="334" cy="93" r="18.4" fill="var(--faint)" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="334" cy="93" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="328" cy="86" r="5" fill="var(--surface)" opacity="0.5"/><circle cx="348" cy="128" r="18.4" fill="var(--faint)" stroke="var(--bead-line)" stroke-width="1.6"/><circle cx="348" cy="128" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="342" cy="121" r="5" fill="var(--surface)" opacity="0.5"/></svg>
+  <div style="width:340px">
+    <svg width="340" height="86" viewBox="0 0 360 86"><g><circle cx="44" cy="44" r="18.4" fill="var(--accent)" /><circle cx="44" cy="44" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="38" cy="37" r="5" fill="var(--surface)" opacity="0.72"/></g><circle cx="44" cy="44" r="24" fill="none" stroke="var(--rule)" stroke-width="2.2"/>
+            <circle cx="44" cy="44" r="24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-dasharray="93.5 150.8" transform="rotate(-90 44 44)"/><circle cx="112" cy="44" r="34" fill="var(--accent)" opacity=".2"/><g><circle cx="112" cy="44" r="18.4" fill="var(--accent)" /><circle cx="112" cy="44" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="106" cy="37" r="5" fill="var(--surface)" opacity="0.72"/></g><circle cx="180" cy="44" r="26" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity=".55"/><g><circle cx="180" cy="44" r="18.4" fill="var(--accent)" /><circle cx="180" cy="44" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="174" cy="37" r="5" fill="var(--surface)" opacity="0.72"/></g><circle cx="248" cy="44" r="30" fill="var(--accent)" opacity=".2"/><g transform="translate(248 44) scale(1.3) translate(-248 -44)"><circle cx="248" cy="44" r="18.4" fill="var(--accent)" /><circle cx="248" cy="44" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="242" cy="37" r="5" fill="var(--surface)" opacity="0.72"/></g><g opacity=".38"><circle cx="316" cy="44" r="18.4" fill="var(--bead)" /><circle cx="316" cy="44" r="18.4" fill="none" stroke="var(--surface)" stroke-width="1.6" opacity=".5"/><circle cx="310" cy="37" r="5" fill="var(--surface)" opacity="0.72"/></g></svg>
+    <div style="display:flex"><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">읽는 중</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">내 차례</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">진동</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">단 전환</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">멈춤</div></div>
+  </div>
+</div></div><figcaption><b>진주</b> — 채운 원 + 빛점</figcaption></figure><figure><div class="panel"><div style="display:flex;flex-direction:column;align-items:center;gap:16px">
+  <svg width="300" height="118" viewBox="0 0 390 196"><path d="M42 128 C34 56 125 46 195 48 C265 46 356 56 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><path d="M42 128 C50 166 130 182 195 182 C260 182 340 166 348 128" fill="none" stroke="var(--thread)" stroke-width="1.4"/><circle cx="42" cy="128" r="18.4" fill="var(--bead)" opacity="0.28" /><circle cx="42" cy="128" r="18.4" fill="none" stroke="var(--bead)" stroke-width="1.6"/><circle cx="56" cy="93" r="18.4" fill="var(--bead)" opacity="0.28" /><circle cx="56" cy="93" r="18.4" fill="none" stroke="var(--bead)" stroke-width="1.6"/><circle cx="93" cy="74" r="18.4" fill="var(--bead)" opacity="0.28" /><circle cx="93" cy="74" r="18.4" fill="none" stroke="var(--bead)" stroke-width="1.6"/><circle cx="133" cy="65" r="34" fill="var(--accent)" opacity=".14"/><circle cx="133" cy="65" r="18.4" fill="var(--accent)" opacity="0.72" /><circle cx="133" cy="65" r="18.4" fill="none" stroke="var(--accent)" stroke-width="1.6"/><text x="133" y="66" text-anchor="middle" style="font:500 15px 'Noto Sans KR';fill:var(--surface)">4</text><text x="133" y="77" text-anchor="middle" style="font:400 9px 'Noto Sans KR';fill:var(--surface);opacity:.85">/ 10</text><circle cx="174" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.4"/><circle cx="174" cy="61" r="12.399999999999999" fill="none" stroke="var(--bead-line)" stroke-width="1"/><circle cx="216" cy="61" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.4"/><circle cx="216" cy="61" r="12.399999999999999" fill="none" stroke="var(--bead-line)" stroke-width="1"/><circle cx="257" cy="65" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.4"/><circle cx="257" cy="65" r="12.399999999999999" fill="none" stroke="var(--bead-line)" stroke-width="1"/><circle cx="297" cy="74" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.4"/><circle cx="297" cy="74" r="12.399999999999999" fill="none" stroke="var(--bead-line)" stroke-width="1"/><circle cx="334" cy="93" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.4"/><circle cx="334" cy="93" r="12.399999999999999" fill="none" stroke="var(--bead-line)" stroke-width="1"/><circle cx="348" cy="128" r="18.4" fill="none" stroke="var(--bead-line)" stroke-width="1.4"/><circle cx="348" cy="128" r="12.399999999999999" fill="none" stroke="var(--bead-line)" stroke-width="1"/></svg>
+  <div style="width:340px">
+    <svg width="340" height="86" viewBox="0 0 360 86"><g><circle cx="44" cy="44" r="18.4" fill="var(--accent)" opacity="0.72" /><circle cx="44" cy="44" r="18.4" fill="none" stroke="var(--accent)" stroke-width="1.6"/></g><circle cx="44" cy="44" r="24" fill="none" stroke="var(--rule)" stroke-width="2.2"/>
+            <circle cx="44" cy="44" r="24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-dasharray="93.5 150.8" transform="rotate(-90 44 44)"/><circle cx="112" cy="44" r="34" fill="var(--accent)" opacity=".2"/><g><circle cx="112" cy="44" r="18.4" fill="var(--accent)" opacity="0.72" /><circle cx="112" cy="44" r="18.4" fill="none" stroke="var(--accent)" stroke-width="1.6"/></g><circle cx="180" cy="44" r="26" fill="none" stroke="var(--accent)" stroke-width="1.6" opacity=".55"/><g><circle cx="180" cy="44" r="18.4" fill="var(--accent)" opacity="0.72" /><circle cx="180" cy="44" r="18.4" fill="none" stroke="var(--accent)" stroke-width="1.6"/></g><circle cx="248" cy="44" r="30" fill="var(--accent)" opacity=".2"/><g transform="translate(248 44) scale(1.3) translate(-248 -44)"><circle cx="248" cy="44" r="18.4" fill="var(--accent)" opacity="0.72" /><circle cx="248" cy="44" r="18.4" fill="none" stroke="var(--accent)" stroke-width="1.6"/></g><g opacity=".38"><circle cx="316" cy="44" r="18.4" fill="var(--bead)" opacity="0.28" /><circle cx="316" cy="44" r="18.4" fill="none" stroke="var(--bead)" stroke-width="1.6"/></g></svg>
+    <div style="display:flex"><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">읽는 중</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">내 차례</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">진동</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">단 전환</div><div style="flex:1;text-align:center;font:400 10px/1.4 'Noto Sans KR';color:var(--muted)">멈춤</div></div>
+  </div>
+</div></div><figcaption><b>유리</b> — 반투명 + 이중 테두리</figcaption></figure></div>
+<h2>성화 슬롯 (D-J)</h2><p class="note">신비 4종마다 갈아 끼우는 고정 높이 도판이다. 점선은 <b>이목구비가 들어와야 하는 자리</b>다 — 그림은 이목구비가 이 틀 안에 오도록 잘라 넣고(도판의 background-position 으로 맞춘다), 묵주·글자·그라디언트는 이 안에 두지 않는다(FR-23). 아래 넉 장은 저작권 미확정 목업이라 신비에 맞는 그림이 아니며 자리만 채운 것이다.</p><div class="row"><figure><div style="display:flex;gap:14px;flex-wrap:wrap">
+  
+  <figure><div style="width:180px;height:132px;position:relative;overflow:hidden;background:var(--bg)">
+    <div class="plate" style="height:132px;background-image:url('../product/prototype/assets/02_Mary_and_Child.jpg');background-position:50% 22%"></div>
+    <div style="position:absolute;left:24%;top:14%;width:52%;height:46%;border:1px dashed var(--accent)"></div>
+  </div><figcaption style="max-width:180px">환희의 신비</figcaption></figure>
+  <figure><div style="width:180px;height:132px;position:relative;overflow:hidden;background:var(--bg)">
+    <div class="plate" style="height:132px;background-image:url('../product/prototype/assets/06_Side_Jesus.jpg');background-position:50% 22%"></div>
+    <div style="position:absolute;left:24%;top:14%;width:52%;height:46%;border:1px dashed var(--accent)"></div>
+  </div><figcaption style="max-width:180px">고통의 신비</figcaption></figure>
+  <figure><div style="width:180px;height:132px;position:relative;overflow:hidden;background:var(--bg)">
+    <div class="plate" style="height:132px;background-image:url('../product/prototype/assets/01_Mary_Single.jpg');background-position:50% 22%"></div>
+    <div style="position:absolute;left:24%;top:14%;width:52%;height:46%;border:1px dashed var(--accent)"></div>
+  </div><figcaption style="max-width:180px">영광의 신비</figcaption></figure>
+  <figure><div style="width:180px;height:132px;position:relative;overflow:hidden;background:var(--bg)">
+    <div class="plate" style="height:132px;background-image:url('../product/prototype/assets/07_Relief_Holy_Family.jpg');background-position:50% 22%"></div>
+    <div style="position:absolute;left:24%;top:14%;width:52%;height:46%;border:1px dashed var(--accent)"></div>
+  </div><figcaption style="max-width:180px">빛의 신비</figcaption></figure>
+</div><figcaption>네 신비의 슬롯 — 자산은 저작권 미확정 목업(D-1)</figcaption></figure></div>
+</body></html>
