@@ -53,7 +53,13 @@ export async function installDeviceStubs(page: Page): Promise<void> {
     if (synth) {
       synth.getVoices = () => [voice];
       synth.speak = (utterance) => {
-        calls.speech.push(String(utterance.text ?? ''));
+        const text = String(utterance.text ?? '');
+        // 공백뿐인 낭송은 기도문이 아니라 **소리 엔진을 깨우는 것**이다. 브라우저는 사용자가
+        // 누른 조작에서 곧바로 이어진 소리만 내보내므로, 앱은 기도로 들어가는 단추를 누른
+        // 자리에서 들리지 않는 낭송 하나를 먼저 내보내 자격을 얻는다(`primeSpeech`). 그것을
+        // 낭송으로 세면 하루의 낭송 수가 한 번 더 세어져, 단계 하나가 두 번 낭송된 것처럼
+        // 보인다. 실제로 그런 오진이 한 번 있었다.
+        if (text.trim() !== '') calls.speech.push(text);
         setTimeout(() => utterance.onend?.({}), 0);
       };
       synth.cancel = () => {};
