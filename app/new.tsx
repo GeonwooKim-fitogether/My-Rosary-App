@@ -38,6 +38,7 @@ import {
 } from '../src/theme';
 import { ChoiceRow, ChoiceSheet } from '../src/ui/Sheet';
 import { PrimaryButton, ScreenHeader } from '../src/ui/Screen';
+import { primeSpeech } from '../src/prayer/channels';
 
 /** 형식 셋. 설명은 06-screen-spec 화면 N 의 문구 표 그대로다. */
 const FORMAT_CHOICES: ReadonlyArray<{
@@ -91,6 +92,10 @@ export default function NewJourneyScreen() {
       setMissingTitle(true);
       return;
     }
+    // 누른 이 자리에서 소리 엔진을 깨운다. 브라우저는 사용자가 누른 조작에서 곧바로
+    // 이어진 소리만 내보내는데, 기도 화면은 뜬 뒤에 기다림이 두 번 끼어 자격이 끊긴다.
+    primeSpeech();
+
     const journey = addJourney(
       { title: wish, format, kind, recitation, startDate: today },
       today,

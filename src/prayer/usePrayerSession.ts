@@ -14,7 +14,7 @@ import { useKeepAwake } from 'expo-keep-awake';
 import type { MysteryKey, PaceKey, RecitationMode } from '../domain/types';
 import { currentJourney, dayNumber, mysteryOf, type Journey } from '../journey/session';
 import { positionStore } from '../storage/asyncStore';
-import { createDeviceChannels, hasKoreanVoice } from './channels';
+import { createDeviceChannels, koreanVoiceStatus } from './channels';
 import { useRemoteCommands, useShakeToAdvance } from './handsfree';
 import { createRunner, type Runner } from './runner';
 import { sectionMoves, type SectionMove } from './sections';
@@ -51,6 +51,13 @@ export interface PrayerSession {
   mystery: MysteryKey;
   /** 실제로 쓰이고 있는 낭송 방식. 음성이 없어 낮춰졌으면 고른 것과 다르다. */
   mode: RecitationMode;
+  /**
+   * 한국어 음성이 **없다고 확인돼** 읽지 않기로 낮춰졌는가.
+   *
+   * 낮추는 일 자체는 PRD §8 이 정한 옳은 처리인데, 그것을 화면에 적지 않으면 쓰는 사람에게는
+   * 앱이 까닭 없이 벙어리가 된 것으로 보인다. 그래서 낮췄다는 사실을 밖으로 내보낸다.
+   */
+  voiceMissing: boolean;
   /** 잠시 멈춤 — 자리를 남기고 멈춘다 (FR-18). */
   pause(): void;
   /** 멈춘 자리에서 이어서. */
@@ -109,6 +116,8 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
 
   // 큐는 신비가 정해져야 만들어진다. 처음에는 오늘 날짜로 어림해 두고, 저장된 자리를
   // 읽어 본 뒤(이어가기면 저장된 신비가 이긴다) 확정된 큐로 갈아 끼운다.
+  /** 한국어 음성이 없어 읽지 않기로 낮춰졌는가. 화면이 그 사실을 적을 수 있게 내보낸다. */
+  const [voiceMissing, setVoiceMissing] = useState(false);
   const [queue, setQueue] = useState<RunStep[]>(() => buildDayQueue(mysteryOf(journey)));
   const queueRef = useRef(queue);
   queueRef.current = queue;
@@ -138,10 +147,14 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
       elapsedRef.current = resumable?.elapsedMs ?? 0;
       visitedRef.current = new Set(resumable?.visited ?? []);
 
-      // 3. 기기에 한국어 음성이 있는가. 없으면 읽지 않기로 낮춘다 (PRD §8).
-      const effectiveMode: RecitationMode =
-        requestedMode === 'silent' || (await hasKoreanVoice()) ? requestedMode : 'silent';
+      // 3. 기기에 한국어 음성이 있는가. **없다고 확인됐을 때만** 읽지 않기로 낮춘다 (PRD §8).
+      //    목록을 받지 못해 모르는 경우에는 낮추지 않고 일단 읽어 본다 — 브라우저는 음성
+      //    목록을 뒤늦게 채우므로, 모른다는 것을 없다는 것으로 읽으면 멀쩡한 기기에서
+      //    소리가 통째로 사라진다.
+      const voice = requestedMode === 'silent' ? 'yes' : await koreanVoiceStatus();
+      const effectiveMode: RecitationMode = voice === 'no' ? 'silent' : requestedMode;
       if (cancelled) return;
+      setVoiceMissing(voice === 'no' && requestedMode !== 'silent');
 
       const runQueue = buildDayQueue(todaysMystery);
       queueRef.current = runQueue;
@@ -266,6 +279,7 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
     running,
     mystery,
     mode,
+    voiceMissing,
     pause,
     resume,
     advance,

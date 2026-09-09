@@ -35,6 +35,7 @@ import { positionStore } from '../src/storage/asyncStore';
 import type { PrayerPosition } from '../src/storage/position';
 import { type as type1, type2, useThemedStyles, type Theme } from '../src/theme';
 import { ConfirmSheet } from '../src/ui/Sheet';
+import { primeSpeech } from '../src/prayer/channels';
 import {
   DayGrid,
   OutlineButton,
@@ -161,7 +162,10 @@ export default function JourneyDetailScreen() {
           label="오늘 이어서 바치기"
           // 이 화면을 갈아 끼우고 기도로 간다. 기도 화면의 `잠시 멈춤` 이 홈으로 나가는 단추라,
           // 상세 위에 쌓으면 홈이 아니라 상세로 되돌아오게 된다.
-          onPress={() => router.replace({ pathname: '/pray', params: { id: journey.id } })}
+          onPress={() => {
+            primeSpeech();
+            router.replace({ pathname: '/pray', params: { id: journey.id } });
+          }}
           testID="journey-resume"
         />
       )}
@@ -187,6 +191,7 @@ export default function JourneyDetailScreen() {
         confirmLabel="처음부터"
         cancelLabel="아니요, 이어서"
         onConfirm={() => {
+          primeSpeech();
           setRestartSheet(false);
           void positionStore.clear().then(() => {
             setPosition(null);

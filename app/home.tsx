@@ -40,6 +40,7 @@ import {
   type Theme,
 } from '../src/theme';
 import { PrimaryButton, QuietButton, Ribbon, ScreenBody, ScreenHeader } from '../src/ui/Screen';
+import { primeSpeech } from '../src/prayer/channels';
 
 export default function HomeScreen() {
   const { ready, journeys } = useAppState();
@@ -139,6 +140,10 @@ function JourneyCard({
 
   const openPrayer = () => {
     if (status === 'notStarted') return;
+    // 누른 이 자리에서 소리 엔진을 깨운다. 브라우저는 사용자가 누른 조작에서 곧바로
+    // 이어진 소리만 내보내는데, 기도 화면은 뜬 뒤에 기다림이 두 번 끼어 자격이 끊긴다.
+    primeSpeech();
+
     if (status === 'ended') {
       router.push({ pathname: '/journey', params: { id: journey.id } });
       return;
