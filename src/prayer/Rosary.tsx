@@ -23,14 +23,20 @@
  *
  * ── 알의 상태는 넷이다 (디자인 시스템 §4-2 · FR-15) ─────────────────────────────
  *
- * 1. **이미 바친 알** — 그 재질의 빛깔로 채운다.
+ * 1. **이미 바친 알** — 그 재질의 빛깔로 채우고, 알 둘레에 빛무리를 두르고 알 자신도
+ *    환하게 밝힌다.
  * 2. **지금 바치는 알** — 치자색으로 채우고 부풀리고 4초 주기로 숨을 쉰다. 이 색만은
  *    **재질을 따르지 않는다** — 재질이 아니라 상태를 말하는 색이기 때문이고, 그래야 어느
  *    묵주를 골라도 "지금 어디인가"가 같은 세기로 보인다.
- * 3. **아직 안 바친 알** — 그 재질의 빛깔로 테만 두른다.
+ * 3. **아직 안 바친 알** — 같은 빛깔로 **똑같이 꽉 차게** 채우되, 빛무리 없이 차분하게
+ *    둔다.
  * 4. **알이 아닌 자리** — 성호경·사도신경은 십자가가, 시작 기도의 영광송은 중심 메달이
  *    같은 방식으로 빛난다. 알에 머물지 않는 기도를 아무 데도 표시하지 않으면 그 사이에
  *    그림이 죽어 버린다.
+ *
+ * 1번과 3번이 **같은 알**이라는 것이 2026-09-10 에 바뀐 것이다(`decisions.md` 결정 10).
+ * 그전에는 안 바친 알이 테만 두른 빈 동그라미여서 진행이 한눈에 보였지만, 실제 묵주는
+ * 기도한다고 알이 채워지지 않는다. 그래서 채우기가 하던 일을 빛이 넘겨받았다.
  *
  * 숨쉬기는 v5 의 `@keyframes bre`(4초 주기로 크기 1 → 1.12, 투명도 .42 → 1)를 옮겼다.
  * 시안은 CSS 의 `transform: scale()` 로 키웠지만 여기서는 반지름을 직접 키운다 —
@@ -53,13 +59,13 @@ import Svg, {
 import { fonts, useTheme } from '../theme';
 import type { RosaryKey } from '../storage/settings';
 import {
+  Bead,
   BeadContact,
+  BeadGlow,
   BeadGradients,
   BeadShading,
   Cross,
-  DoneBead,
   Medal,
-  PendingBead,
   SHADING,
   gradientIds,
 } from './beadPaint';
@@ -287,7 +293,7 @@ export function Rosary({ done, current, focus, label, rosary }: RosaryPlacement 
       testID="rosary"
     >
       <Defs>
-        <BeadGradients prefix={PREFIX} material={material} accent={colors.accentFill} />
+        <BeadGradients prefix={PREFIX} material={material} accent={colors.accentFill} mode={mode} />
       </Defs>
 
       {/*
@@ -365,25 +371,45 @@ export function Rosary({ done, current, focus, label, rosary }: RosaryPlacement 
         prefix={PREFIX}
       />
 
+      {/*
+        이미 바친 알들의 빛무리 — 알보다 **먼저 한꺼번에** 깐다.
+
+        빛무리는 이웃 알까지 덮을 만큼 넓다. 알을 하나 그리고 그 위에 다음 알의 빛무리를
+        얹으면 앞의 알이 흰빛에 씻겨 색을 잃으므로, 빛은 빛끼리 겹쳐 하나의 띠를 이루게
+        하고 알은 그 띠 위에 온전히 올라서게 한다. 알 사이가 좁아 빛무리끼리 실제로
+        겹치며, 그래서 바친 구간이 낱낱의 점이 아니라 **이어진 빛의 띠**로 읽힌다.
+      */}
+      <G>
+        {BEADS.map((bead, i) =>
+          i < done && i !== current ? (
+            <BeadGlow
+              key={i}
+              cx={bead.x}
+              cy={bead.y}
+              r={bead.big ? BEAD_RADIUS.big : BEAD_RADIUS.small}
+              prefix={PREFIX}
+              mode={mode}
+            />
+          ) : null,
+        )}
+      </G>
+
       {/* 알 쉰아홉. 지금 알은 이웃 위에 얹혀야 하므로 여기서 빼고 맨 나중에 그린다. */}
       {BEADS.map((bead, i) => {
         if (i === current) return null;
         const r = bead.big ? BEAD_RADIUS.big : BEAD_RADIUS.small;
-        if (i < done) {
-          return (
-            <G key={i}>
-              <DoneBead
-                cx={bead.x}
-                cy={bead.y}
-                r={r}
-                fill={bead.big ? material.bigBead : material.bead}
-                material={material}
-                prefix={PREFIX}
-              />
-            </G>
-          );
-        }
-        return <PendingBead key={i} cx={bead.x} cy={bead.y} r={r} material={material} />;
+        return (
+          <Bead
+            key={i}
+            cx={bead.x}
+            cy={bead.y}
+            r={r}
+            fill={bead.big ? material.bigBead : material.bead}
+            material={material}
+            prefix={PREFIX}
+            lit={i < done}
+          />
+        );
       })}
 
       {/* 지금 바치는 알 — 이웃보다 세 배 넘게 부풀어 맨 위에 얹힌다. */}

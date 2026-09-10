@@ -20,10 +20,23 @@
  * 반투명하게 그리면 화면에 나타나는 색이 바탕과 섞여 표의 값과 달라지므로, 알은 아직 안
  * 바친 것도 이미 바친 것도 온전한 짙기로 그린다(`BEAD_OPACITY`). 그래서 여기서 재는 값이
  * 곧 화면에 나타나는 값이다.
+ *
+ * ── 2026-09-10 에 더해진 것 — 빛이 진행을 말한다 (`decisions.md` 결정 10) ────────
+ *
+ * 알의 상태를 말하는 수단이 **채우기에서 빛으로** 바뀌면서, 이 시험이 재야 할 것이 하나
+ * 늘었다. 그전에는 "채웠는가 테만 둘렀는가"가 갈랐으므로 잴 것이 없었다 — 눈으로 봐도
+ * 흑백처럼 갈리는 차이였기 때문이다. 이제는 정도의 차이가 갈리므로, **정말 밝아지는
+ * 방향인가**를 값으로 못 박아야 한다. 아래 마지막 묶음이 그 일을 한다.
  */
 import { dayColors, nightColors } from '../theme/tokens';
 import { ROSARY_CHOICES, ROSARY_NAMES, DEFAULT_SETTINGS, parseSettings } from '../storage/settings';
-import { BEAD_OPACITY, ROSARY_MATERIALS, materialFor } from './rosaryMaterials';
+import {
+  BEAD_GLOW,
+  BEAD_OPACITY,
+  BEAD_SHADING,
+  ROSARY_MATERIALS,
+  materialFor,
+} from './rosaryMaterials';
 
 /** sRGB 한 통로의 선형 값 (WCAG 정의). */
 function channel(value: number): number {
@@ -154,5 +167,47 @@ describe('넷 다 두 벌에서 읽힌다', () => {
       }
       expect(contrast(colors.onAccentFill, colors.accentFill)).toBeGreaterThanOrEqual(4.5);
     }
+  });
+});
+
+describe('이미 바친 알은 채우기가 아니라 빛으로 갈린다 (결정 10 · FR-15)', () => {
+  it('빛무리의 색이 그 벌의 바탕보다 밝다 — 이것이 "환해진다"가 성립하는 조건이다', () => {
+    for (const [name, background] of VELS) {
+      const mode = name === '낮' ? 'day' : 'night';
+      const glow = BEAD_GLOW[mode];
+      // 바탕보다 어두운 빛은 빛이 아니라 그늘이다.
+      expect(luminance(glow.color)).toBeGreaterThan(luminance(background));
+      // 짙기와 크기가 0 이면 빛무리를 그리지 않는 것과 같다.
+      expect(glow.opacity).toBeGreaterThan(0);
+      expect(glow.radius).toBeGreaterThan(1);
+    }
+  });
+
+  it('밝은 한지 위에서 쓸 수 있는 가장 밝은 빛에 가깝다 — 낮이 어려운 쪽이다', () => {
+    // 한지(#EDE7D8)와 흰빛의 밝기 차는 작아, 낮 벌의 빛은 흰빛에 바짝 붙어 있어야 한다.
+    // 이 값이 아래로 내려가면 낮 벌에서 경계가 먼저 사라진다.
+    const day = BEAD_GLOW.day;
+    expect(luminance(day.color)).toBeGreaterThanOrEqual(0.95);
+    // 밝기 차가 작은 만큼 낮이 밤보다 더 두껍게 발라야 같은 만큼 보인다.
+    expect(day.opacity).toBeGreaterThan(BEAD_GLOW.night.opacity);
+  });
+
+  it('바친 알이 안 바친 알보다 실제로 밝아진다 — 빛은 세게, 그늘과 테는 옅게', () => {
+    const { lit, unlit } = BEAD_SHADING;
+    expect(lit.light).toBeGreaterThan(unlit.light);
+    expect(lit.shade).toBeLessThan(unlit.shade);
+    expect(lit.rim).toBeLessThan(unlit.rim);
+    expect(lit.contact).toBeLessThanOrEqual(unlit.contact);
+  });
+
+  it('알을 밝히는 일이 색을 씻어 낼 만큼 세지는 않다', () => {
+    // 빛을 1 에 가깝게 얹으면 알이 하얗게 떠 재질의 빛깔을 잃는다. 렌더해 보고 정한 상한이다.
+    expect(BEAD_SHADING.lit.light).toBeLessThanOrEqual(0.7);
+  });
+
+  it('지금 바치는 알의 값은 결정 9 에서 맞춰 놓은 그대로다', () => {
+    // 지금 알은 치자색과 큰 크기와 숨쉬기로 이미 따로 서 있다. 여기에 손을 대면
+    // 금 묵주에서 겨우 맞춰 놓은 균형(결정 9 의 9-4)이 흔들린다.
+    expect(BEAD_SHADING.current).toEqual({ light: 0.26, shade: 0.24, rim: 0.45, contact: 0.1 });
   });
 });

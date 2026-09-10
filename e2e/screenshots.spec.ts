@@ -28,6 +28,8 @@ const ROSARY_FULL = 'docs/plan/rosary-full';
 const PRAYER_ORDER = 'docs/plan/prayer-order';
 /** 늘어진 묵주 모양과 재질 넷 (`decisions.md` 결정 8·9) 을 찍어 두는 자리. */
 const MATERIALS = 'docs/plan/rosary-materials';
+/** 알을 다 채우고 진행을 빛으로 말하게 된 뒤 (`decisions.md` 결정 10) 를 찍어 두는 자리. */
+const LIT = 'docs/plan/rosary-lit';
 
 /** 설정 화면에서 묵주를 골라 온다. 사용자가 하는 그대로다. */
 async function chooseRosary(page: import('@playwright/test').Page, key: string) {
@@ -307,4 +309,60 @@ test('결정 8·9 · 늘어진 묵주 모양과 재질 넷을 여섯 장으로 �
   await expect(page.getByTestId('new-rosary')).toContainText('금');
   await page.waitForTimeout(200);
   await page.screenshot({ path: `${MATERIALS}/new-rosary-row.png` });
+});
+
+/**
+ * 결정 10 — 알을 다 채우고 진행을 빛으로 말하게 된 뒤의 여섯 장.
+ *
+ * 여기서 눈으로 확인하는 것은 셋이며, 사진마다 이 셋을 차례로 묻는다.
+ *
+ * 1. **알이 실제 묵주처럼 꽉 차 보이는가.** 아직 안 바친 알이 빈 동그라미로 남아 있으면
+ *    안 된다 — 알 쉰아홉이 모두 같은 빛깔로 채워져 있어야 한다.
+ * 2. **어디까지 바쳤는지 경계가 눈에 보이는가.** 이미 바친 알들의 빛무리가 겹쳐 이어진
+ *    빛의 띠를 이루고, 그 띠가 끝나는 자리가 지금 알이어야 한다.
+ * 3. **지금 알이 곧바로 찾아지는가.** 큰 치자색 알 하나가 여전히 화면에서 가장 먼저 눈에
+ *    들어와야 하고, 바친 알들의 빛에 묻히지 않아야 한다.
+ *
+ * 재질 넷을 낮 벌에서 모두 찍는 이유는 넷의 사정이 서로 다르기 때문이다. 금과 은은 알 자체가
+ * 이미 밝아 "더 밝아짐"의 여지가 좁고, 나무와 붉은 장미는 알이 어두워 빛무리가 더 잘 보인다.
+ * 가장 어려운 쪽에서 값이 서야 넷 모두에서 선다. 밤 벌 한 장을 더 찍는 것은 밝은 바탕과
+ * 어두운 바탕에서 "빛난다"가 정반대로 어려워지기 때문이고, 고르는 시트 한 장을 더 찍는 것은
+ * 미리보기가 기도 화면과 같은 규칙을 그리는지 보기 위해서다.
+ */
+test('결정 10 · 다 채운 알과 빛으로 말하는 진행을 여섯 장으로 찍는다', async ({ page }) => {
+  await openApp(page);
+  await enterHome(page);
+
+  for (const key of ['rose', 'wood', 'silver', 'gold']) {
+    await chooseRosary(page, key);
+    await enterPrayerFromHome(page);
+    await moveToThirdDecadeFourthBead(page);
+    await page.waitForTimeout(400);
+    await page.screenshot({ path: `${LIT}/pray-${key}-day.png` });
+    await page.getByTestId('pray-pause').click();
+    await expect(page.getByTestId('home-screen')).toBeVisible();
+  }
+
+  // 밤 벌 — 기본값인 붉은 장미로 되돌려 찍는다.
+  await chooseRosary(page, 'rose');
+  await page.getByTestId('home-settings').click();
+  await page.getByTestId('settings-theme').click();
+  await page.getByTestId('sheet-choice-night').click();
+  await expect(page.getByTestId('settings-theme-value')).toHaveText('밤 →');
+  await page.getByTestId('settings-close').click();
+  await enterPrayerFromHome(page);
+  await moveToThirdDecadeFourthBead(page);
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${LIT}/pray-rose-night.png` });
+
+  // 고르는 시트의 미리보기 — 낮으로 되돌려 찍는다.
+  await page.getByTestId('pray-pause').click();
+  await expect(page.getByTestId('home-screen')).toBeVisible();
+  await page.getByTestId('home-settings').click();
+  await page.getByTestId('settings-theme').click();
+  await page.getByTestId('sheet-choice-day').click();
+  await page.getByTestId('settings-rosary').click();
+  await expect(page.getByTestId('rosary-preview')).toBeVisible();
+  await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${LIT}/sheet-rosary.png` });
 });

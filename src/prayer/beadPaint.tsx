@@ -13,11 +13,21 @@
  *
  * 재질이 바꾸는 것은 그 빛이 **얼마나 좁게 맺히는가**다(`RosaryMaterial.sheen`). 금속은
  * 좁고 또렷하게, 나무는 넓고 무디게 맺힌다. 그 하나로 사진의 금속 구슬과 나무 알이 갈린다.
+ *
+ * ── 상태를 말하는 것은 채우기가 아니라 빛이다 (2026-09-10, `decisions.md` 결정 10) ──
+ *
+ * 알 쉰아홉은 **언제나 같은 모습의 꽉 찬 알**이다. 아직 안 바친 알을 빈 동그라미로 그리던
+ * 방식은 없앴다 — 실제 묵주는 기도한다고 알이 채워지지 않기 때문이다. 어디까지 바쳤는가는
+ * 이미 바친 알이 **환해지는 것**으로만 말한다. 그 환해짐을 만드는 값(빛무리의 색·짙기·
+ * 크기와 상태별 빛의 세기)은 `rosaryMaterials.ts` 의 `BEAD_GLOW` 와 `BEAD_SHADING` 이
+ * 갖고 있고, 이 파일은 그 값을 도형으로 옮기기만 한다.
  */
 import type { ReactNode } from 'react';
 import { Animated } from 'react-native';
 import { Circle, Ellipse, Path, RadialGradient, Stop } from 'react-native-svg';
+import { BEAD_GLOW, BEAD_SHADING } from './rosaryMaterials';
 import type { RosaryMaterial } from './rosaryMaterials';
+import type { ThemeMode } from '../theme';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -27,17 +37,12 @@ export type Radius = number | Animated.AnimatedInterpolation<number>;
 /**
  * 상태마다 빛과 그늘을 얼마나 얹는가.
  *
- * 세 상태가 한눈에 갈라지는 것이 이 그림의 일이므로, 입체를 주되 상태의 차이를
- * 잡아먹지 않는 선에서 멈춘다.
- *
- * 지금 알의 테(`current.rim`)를 0.3 에서 0.45 로 올린 것은 금 묵주 때문이다. 금 알의
- * 빛깔이 지금 알의 치자색과 가까워, 테가 옅으면 지금 알이 "큰 금 알"로도 보였다. 테를
- * 짙게 하니 알의 가장자리가 또렷해져 어느 재질에서도 따로 떨어져 보인다.
+ * 값 자체는 `rosaryMaterials.ts` 의 `BEAD_SHADING` 이 갖는다. 값을 그 파일에 둔 이유는
+ * 시험 때문이다 — 그 파일은 화면 없이 읽히므로, "바친 알이 정말 더 밝은가"를 렌더 없이
+ * 못 박을 수 있다. 여기서는 그 표를 그대로 다시 내보내, 그리는 쪽이 붓 하나만 들여다보면
+ * 되게 한다.
  */
-export const SHADING = {
-  done: { light: 0.34, shade: 0.4, rim: 0.5, contact: 0.1 },
-  current: { light: 0.26, shade: 0.24, rim: 0.45, contact: 0.1 },
-} as const;
+export const SHADING = BEAD_SHADING;
 
 export type Shading = (typeof SHADING)[keyof typeof SHADING];
 
@@ -49,10 +54,8 @@ export const RATIO = {
   /** 알 아래 그림자가 밀리는 거리. 빛이 왼쪽 위에서 오므로 오른쪽 아래로 밀린다. */
   contactX: 1.6 / 18.4,
   contactY: 2.2 / 18.4,
-  /** 채워진 알에 두르는 테의 굵기. */
+  /** 알에 두르는 테의 굵기. 상태와 무관하게 같고, 짙기만 상태가 정한다. */
   rim: 0.9 / 18.4,
-  /** 아직 안 바친 알의 테 굵기. */
-  pendingRim: 2.4 / 18.4,
 } as const;
 
 /** 아주 작은 알에서도 테가 사라지지 않게 하는 바닥값. */
@@ -66,6 +69,7 @@ export function gradientIds(prefix: string) {
     light: `${prefix}Light`,
     shade: `${prefix}Shade`,
     halo: `${prefix}Halo`,
+    glow: `${prefix}Glow`,
   };
 }
 
@@ -80,15 +84,19 @@ export function BeadGradients({
   prefix,
   material,
   accent,
+  mode,
 }: {
   prefix: string;
   material: RosaryMaterial;
   /** 지금 알과 그 빛무리에 쓰는 치자색. 재질과 무관한 **상태의 색**이다. */
   accent: string;
+  /** 낮인가 밤인가. 이미 바친 알을 두르는 빛의 색이 벌마다 다르다. */
+  mode: ThemeMode;
 }): ReactNode {
   const id = gradientIds(prefix);
   const reach = 0.8 - 0.45 * material.sheen;
   const spread = 0.05 + 0.26 * (1 - material.sheen);
+  const glow = BEAD_GLOW[mode];
   return (
     <>
       {/* 왼쪽 위에서 오는 빛. */}
@@ -113,7 +121,52 @@ export function BeadGradients({
         <Stop offset="0.8" stopColor={accent} stopOpacity={0.52} />
         <Stop offset="1" stopColor={accent} stopOpacity={0} />
       </RadialGradient>
+      {/*
+        이미 바친 알을 두르는 빛. 알이 덮는 안쪽(반지름의 54% 까지)은 온전한 짙기로 두고
+        그 바깥부터 사라지게 해, 알의 가장자리에서 빛이 새어 나오는 것처럼 보이게 한다.
+        중간 정지점(0.78)을 둔 것은 빛이 알에 바짝 붙어 있게 하려는 것이다 — 그 정지점이
+        없으면 빛이 고르게 옅어져 안개처럼 퍼지고, 그러면 알이 아니라 화면이 뿌예진다.
+      */}
+      <RadialGradient id={id.glow} cx="50%" cy="50%" r="50%">
+        <Stop offset="0" stopColor={glow.color} stopOpacity={1} />
+        <Stop offset="0.54" stopColor={glow.color} stopOpacity={1} />
+        <Stop offset="0.78" stopColor={glow.color} stopOpacity={0.5} />
+        <Stop offset="1" stopColor={glow.color} stopOpacity={0} />
+      </RadialGradient>
     </>
+  );
+}
+
+/**
+ * 이미 바친 알 밑에 까는 빛무리.
+ *
+ * **알보다 먼저, 그리고 알 쉰아홉을 그리기 전에 한꺼번에** 그린다. 빛무리는 이웃 알까지
+ * 덮을 만큼 넓은데, 알을 하나 그리고 그 위에 다음 알의 빛무리를 얹으면 앞의 알이 흰빛에
+ * 씻겨 색을 잃기 때문이다. 빛은 빛끼리 겹쳐야 띠가 되고, 알은 그 띠 위에 온전히 올라선다.
+ */
+export function BeadGlow({
+  cx,
+  cy,
+  r,
+  prefix,
+  mode,
+}: {
+  cx: number;
+  cy: number;
+  r: number;
+  prefix: string;
+  mode: ThemeMode;
+}): ReactNode {
+  const id = gradientIds(prefix);
+  const glow = BEAD_GLOW[mode];
+  return (
+    <Circle
+      cx={cx}
+      cy={cy}
+      r={r * glow.radius}
+      fill={`url(#${id.glow})`}
+      opacity={glow.opacity}
+    />
   );
 }
 
@@ -184,14 +237,24 @@ export function BeadContact({
   );
 }
 
-/** 이미 바친 알 — 재질의 빛깔로 채우고 빛과 그늘을 얹는다. */
-export function DoneBead({
+/**
+ * 알 하나 — 재질의 빛깔로 채우고 빛과 그늘을 얹는다.
+ *
+ * **이미 바친 알과 아직 안 바친 알이 이 함수 하나로 그려진다.** 둘의 채우는 색도, 크기도,
+ * 자리도 같다. 갈리는 것은 `lit` 이 고르는 빛과 그늘의 세기뿐이며, 바친 알은 빛을 더 받고
+ * 그늘을 덜 져서 환해진다. 그 바깥의 빛무리는 `BeadGlow` 가 따로, 그리고 먼저 그린다.
+ *
+ * 그전까지 아직 안 바친 알은 테만 두른 빈 동그라미였다(2026-09-09 까지의 `PendingBead`).
+ * 공방장이 그 방식을 뒤집은 경위는 `decisions.md` 결정 10 에 있다.
+ */
+export function Bead({
   cx,
   cy,
   r,
   fill,
   material,
   prefix,
+  lit,
 }: {
   cx: number;
   cy: number;
@@ -199,57 +262,24 @@ export function DoneBead({
   fill: string;
   material: RosaryMaterial;
   prefix: string;
+  /** 이미 바친 알인가. */
+  lit: boolean;
 }): ReactNode {
+  const shading = lit ? SHADING.lit : SHADING.unlit;
   return (
     <>
-      <BeadContact cx={cx} cy={cy} r={r} base={r} shading={SHADING.done} shade={material.shade} />
+      <BeadContact cx={cx} cy={cy} r={r} base={r} shading={shading} shade={material.shade} />
       <Circle cx={cx} cy={cy} r={r} fill={fill} />
       <BeadShading
         cx={cx}
         cy={cy}
         r={r}
         base={r}
-        shading={SHADING.done}
+        shading={shading}
         shade={material.shade}
         prefix={prefix}
       />
     </>
-  );
-}
-
-/**
- * 아직 안 바친 알 — 테만 두른다.
- *
- * 채우지 않는 것은 두 가지를 지키기 위해서다(`decisions.md` Q-37). 첫째, 옅게라도 채우면
- * 알이 유리처럼 뿌예져 디자인 시스템 §9-3 의 14번(스큐어모픽 잔재)에 걸린다. 둘째, 성화가
- * 알 뒤로 비쳐 보이게 하려던 v5 의 뜻이 사라진다. 대신 테를 **그 재질의 알 빛깔로 온전한
- * 짙기로** 그려, 아직 안 바친 알에서도 무슨 묵주인지 읽히게 했다(고리의 알 대부분이 늘 이
- * 상태이므로, 여기가 흐리면 재질을 고른 보람이 없다).
- *
- * 테에 빛과 그늘을 나눠 넣어 둥글게 보이게 하는 방법을 먼저 써 봤는데, 렌더해 보니 테의
- * 밝은 쪽이 한지 바탕에 그대로 묻혀 고리의 왼쪽 절반이 유령처럼 사라졌다. 지름이 8.8 밖에
- * 안 되는 테에서는 입체보다 **보이는 것**이 먼저다.
- */
-export function PendingBead({
-  cx,
-  cy,
-  r,
-  material,
-}: {
-  cx: number;
-  cy: number;
-  r: number;
-  material: RosaryMaterial;
-}): ReactNode {
-  return (
-    <Circle
-      cx={cx}
-      cy={cy}
-      r={r}
-      fill="none"
-      stroke={material.bead}
-      strokeWidth={strokeWidthFor(r, RATIO.pendingRim, 1)}
-    />
   );
 }
 
