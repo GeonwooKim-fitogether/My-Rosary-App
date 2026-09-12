@@ -38,13 +38,27 @@
  * 그전에는 안 바친 알이 테만 두른 빈 동그라미여서 진행이 한눈에 보였지만, 실제 묵주는
  * 기도한다고 알이 채워지지 않는다. 그래서 채우기가 하던 일을 빛이 넘겨받았다.
  *
- * 숨쉬기는 v5 의 `@keyframes bre`(4초 주기로 크기 1 → 1.12, 투명도 .42 → 1)를 옮겼다.
- * 시안은 CSS 의 `transform: scale()` 로 키웠지만 여기서는 반지름을 직접 키운다 —
- * React Native 에는 SVG 도형 자신을 중심으로 삼는 `transform-box: fill-box` 가 없어서,
- * 크기를 키우면 뷰박스 원점을 기준으로 자리가 함께 밀리기 때문이다. 반지름을 키우면
- * 중심이 그대로 있으므로 눈에는 같은 움직임으로 보인다.
+ * ── 지금 알은 다섯 상태를 구분해 보인다 (FR-15 · 06-screen-spec 화면 B · `phase.ts`) ──
  *
- * 시안과 마찬가지로 **동작 줄이기(reduce motion)를 켠 기기에서는 숨쉬지 않는다.**
+ * 위 넷은 "어디까지 왔나"의 상태다. 지금 알 하나에는 그 위에 "지금 무슨 일이 벌어지고
+ * 있나"의 상태가 따로 얹힌다 — 진행기가 알리는 값(`phase`)을 받아 이렇게 그린다.
+ *
+ * | 상태 | 움직임이 있는 기기에서 | 동작 줄이기를 켠 기기에서 (정지된 모양의 차이) |
+ * |---|---|---|
+ * | 읽는 중 `reading` | 알 바깥의 테두리가 시계 방향으로 차오른다 — 읽는 절의 어림 길이에 맞춰 | 테두리가 다 차 있다 |
+ * | 내 차례 `response` | 4초 주기로 부풀며 밝아졌다 어두워진다 (v5 `@keyframes bre`) | 지금까지의 모습 그대로 |
+ * | 소리 없이 진행 `silent` | 알을 넘기는 진동에 맞춰 빛무리가 한 번 반짝이고 가라앉는다 | 빛무리가 평소보다 짙다 |
+ * | 단 전환 `decade` | 한 번 크게 부풀었다 돌아온다 | 부푼 채 서 있다 |
+ * | 멈춤 `paused` | 호흡이 멎고 빛무리가 꺼지며 알이 흐려진다 | 같다 — 움직임이 없는 상태다 |
+ *
+ * 값의 출처는 둘뿐이다. v5 시안의 `@keyframes bre`(크기 1 → 1.12, 투명도 .42 → 1, 4초)와
+ * 06-design-system §6 의 모션 표. **시안에 없는 값은 지어내지 않고 이 둘에서 파생했고**,
+ * 어느 값이 어디서 왔는지는 아래 상수마다 적었다.
+ *
+ * 숨쉬기는 시안의 CSS `transform: scale()` 대신 반지름을 직접 키운다 — React Native 에는
+ * SVG 도형 자신을 중심으로 삼는 `transform-box: fill-box` 가 없어서, 크기를 키우면 뷰박스
+ * 원점을 기준으로 자리가 함께 밀리기 때문이다. 반지름을 키우면 중심이 그대로 있으므로
+ * 눈에는 같은 움직임으로 보인다.
  */
 import { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing } from 'react-native';
@@ -58,6 +72,7 @@ import Svg, {
 } from 'react-native-svg';
 import { fonts, useTheme } from '../theme';
 import type { RosaryKey } from '../storage/settings';
+import type { PrayerPhase } from './phase';
 import {
   Bead,
   BeadContact,
@@ -69,6 +84,7 @@ import {
   SHADING,
   gradientIds,
 } from './beadPaint';
+import { DECADE_PULSE_MS } from './phase';
 import { materialFor } from './rosaryMaterials';
 import {
   BEADS,
@@ -98,12 +114,35 @@ const SVG_HEIGHT = (SVG_WIDTH * VIEWBOX.height) / VIEWBOX.width; // 266.5
 const HALO_RADIUS = BEAD_RADIUS.current * 1.7;
 /** 중심 메달 — 알이 아니라 패(牌)이므로 세로로 긴 타원이다. */
 const MEDAL_SIZE = { rx: 6.2, ry: 8.6 } as const;
-/** 숨쉬기의 크기 폭. v5 의 `scale(1.12)`. */
+/** 숨쉬기의 크기 폭. v5 의 `scale(1.12)`. 단 전환의 확장 맥동도 같은 폭까지 부푼다. */
 const BREATH_SCALE = 1.12;
 /** 숨 한 번의 길이. v5 의 `4s`. */
 const BREATH_MS = 4000;
+/** 숨의 가장 어두운 끝. v5 `bre` 의 `opacity:.42`. 멈춤의 흐려짐도 이 값에 세운다. */
+const BREATH_DIM = 0.42;
 /** 지금 알을 두르는 후광의 짙기. v5 의 `opacity=".14"`. */
 const HALO_OPACITY = 0.14;
+/**
+ * 소리 없이 진행할 때 반짝임이 가라앉는 시간. 06-design-system §6 의 **글자 교체 450ms**.
+ * 시안에 반짝임이 없어, 모션 표에서 알이 넘어갈 때 함께 일어나는 움직임(기도문 글자가
+ * 바뀌는 것)의 값을 골랐다. 반짝임은 v5 `bre` 의 밝은 끝(1)에서 후광의 평소 짙기(.14)로 내려온다.
+ */
+const FLASH_MS = 450;
+/**
+ * 동작 줄이기를 켠 기기에서 "소리 없이 진행"이 서 있을 때의 후광 짙기. 움직임 없이도 내 차례
+ * (.14)와 갈리게, 반짝임이 지나는 길 위의 값인 v5 `bre` 의 어두운 끝(.42)에 세웠다.
+ */
+const FLASH_STILL_OPACITY = BREATH_DIM;
+/**
+ * 읽는 중에 차오르는 테두리. 시안에는 없는 그림이라 값을 줄에서 빌렸다 — 굵기는 줄의 바깥
+ * 결(`THREAD.outer` 1.8)과 같고, 알에서 그 굵기의 두 배만큼 떨어져 돈다. 알이 숨 쉴 때
+ * 닿는 크기(1.12배 = 19)보다 바깥이라 두 상태가 겹쳐 보이지 않는다.
+ */
+const RING_WIDTH = 1.8;
+const RING_RADIUS = BEAD_RADIUS.current + RING_WIDTH * 2; // 20.6
+const RING_LENGTH = 2 * Math.PI * RING_RADIUS;
+/** 읽는 길이를 모를 때의 테두리 시간 — 신비 선포의 고정 사이와 같은 2200ms 를 쓴다. */
+const RING_FALLBACK_MS = 2200;
 
 /** 이 그림의 그러데이션 이름 앞가지. 한 화면에 묵주는 하나뿐이라 고정 이름으로 족하다. */
 const PREFIX = 'rosaryBead';
@@ -137,103 +176,196 @@ const CHAIN_DASH = [2.4, 1.4];
 
 type Shading = (typeof SHADING)[keyof typeof SHADING];
 
-/**
- * 숨 — 4초 주기의 값 하나. 지금 알과 십자가·메달이 함께 쓴다.
- *
- * 동작 줄이기를 켠 기기에서는 애니메이션을 아예 걸지 않고 `still` 로 알린다.
- */
-function useBreath(): { still: boolean; breath: Animated.Value } {
-  const breath = useRef(new Animated.Value(0)).current;
-  const [still, setStill] = useState(false);
+/** 어떤 값이 흐름(Animated)일 수도, 그냥 숫자일 수도 있다. 정지 화면에서는 숫자다. */
+type Flow = number | Animated.Value | Animated.AnimatedInterpolation<number>;
 
+/** 동작 줄이기 설정을 한 번 읽는다. 켜져 있으면 다섯 상태를 움직임 대신 모양으로 갈라 그린다. */
+function useReduceMotion(): boolean {
+  const [still, setStill] = useState(false);
   useEffect(() => {
     let cancelled = false;
     void AccessibilityInfo.isReduceMotionEnabled().then((reduce) => {
-      if (cancelled) return;
-      if (reduce) {
-        setStill(true);
-        return;
-      }
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(breath, {
-            toValue: 1,
-            duration: BREATH_MS / 2,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: false,
-          }),
-          Animated.timing(breath, {
-            toValue: 0,
-            duration: BREATH_MS / 2,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: false,
-          }),
-        ]),
-      ).start();
+      if (!cancelled && reduce) setStill(true);
     });
     return () => {
       cancelled = true;
-      breath.stopAnimation();
     };
-  }, [breath]);
-
-  return { still, breath };
+  }, []);
+  return still;
 }
 
-/** 숨 쉬는 알 — 지금 바치는 알 하나에만 붙는다. */
-function BreathingBead({
+/** 지금 알(또는 십자가·메달의 빛무리)을 그리는 데 필요한 값 넷. */
+interface PhaseLook {
+  /** 알과 빛무리의 크기 배수. 1 이 본래 크기다. */
+  scale: Flow;
+  /** 알 무리 전체의 투명도. 숨의 어두운 끝이 .42, 멈춤도 .42 다. */
+  opacity: Flow;
+  /** 빛무리의 짙기. 평소 .14, 멈추면 0. */
+  halo: Flow;
+  /** 읽는 중 테두리가 차오른 정도 0~1. 읽는 중이 아니면 null — 테두리를 그리지 않는다. */
+  ring: Flow | null;
+}
+
+/**
+ * 상태(phase)를 그림의 값으로 옮긴다.
+ *
+ * 움직임이 있는 기기에서는 흐름(Animated) 하나를 상태마다 다르게 굴리고, 동작 줄이기를 켠
+ * 기기에서는 상태마다 정해진 숫자를 그대로 준다. 두 표는 파일 머리의 표와 같다.
+ *
+ * `restartKey` 가 바뀌면 흐름을 처음부터 다시 굴린다 — 알이 바뀔 때마다 반짝임이 다시
+ * 일어나고 테두리가 다시 차오르게 하려는 것이다.
+ */
+function usePhaseLook(phase: PrayerPhase, readingMs: number, restartKey: number): PhaseLook {
+  const still = useReduceMotion();
+  const drive = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (still) return;
+    drive.stopAnimation();
+    drive.setValue(0);
+    const ease = Easing.inOut(Easing.ease);
+    let animation: Animated.CompositeAnimation | null = null;
+
+    if (phase === 'response') {
+      // v5 `bre` — 4초에 한 번, 0 → 1 → 0.
+      animation = Animated.loop(
+        Animated.sequence([
+          Animated.timing(drive, { toValue: 1, duration: BREATH_MS / 2, easing: ease, useNativeDriver: false }),
+          Animated.timing(drive, { toValue: 0, duration: BREATH_MS / 2, easing: ease, useNativeDriver: false }),
+        ]),
+      );
+    } else if (phase === 'decade') {
+      // 확장 맥동 한 번 — 화면 전환 시간(500ms) 안에 부풀었다 돌아온다.
+      animation = Animated.sequence([
+        Animated.timing(drive, { toValue: 1, duration: DECADE_PULSE_MS / 2, easing: ease, useNativeDriver: false }),
+        Animated.timing(drive, { toValue: 0, duration: DECADE_PULSE_MS / 2, easing: ease, useNativeDriver: false }),
+      ]);
+    } else if (phase === 'silent') {
+      // 반짝임 — 밝은 끝에서 시작해 평소 짙기로 가라앉는다. 글자 교체와 같은 450ms.
+      drive.setValue(1);
+      animation = Animated.timing(drive, { toValue: 0, duration: FLASH_MS, easing: Easing.ease, useNativeDriver: false });
+    } else if (phase === 'reading') {
+      // 테두리가 읽는 절의 어림 길이에 맞춰 차오른다. 실제 낭송이 어림보다 짧으면 다음 상태가
+      // 먼저 와서 테두리가 걷히고, 길면 다 찬 채로 기다린다 — 어느 쪽도 거짓을 말하지 않는다.
+      animation = Animated.timing(drive, {
+        toValue: 1,
+        duration: readingMs > 0 ? readingMs : RING_FALLBACK_MS,
+        easing: Easing.linear,
+        useNativeDriver: false,
+      });
+    }
+    animation?.start();
+    return () => {
+      animation?.stop();
+    };
+  }, [phase, readingMs, restartKey, still, drive]);
+
+  if (still) {
+    switch (phase) {
+      case 'reading':
+        return { scale: 1, opacity: 1, halo: HALO_OPACITY, ring: 1 };
+      case 'silent':
+        return { scale: 1, opacity: 1, halo: FLASH_STILL_OPACITY, ring: null };
+      case 'decade':
+        return { scale: BREATH_SCALE, opacity: 1, halo: HALO_OPACITY, ring: null };
+      case 'paused':
+        return { scale: 1, opacity: BREATH_DIM, halo: 0, ring: null };
+      case 'response':
+      default:
+        return { scale: 1, opacity: 1, halo: HALO_OPACITY, ring: null };
+    }
+  }
+
+  const grow = drive.interpolate({ inputRange: [0, 1], outputRange: [1, BREATH_SCALE] });
+  switch (phase) {
+    case 'reading':
+      return { scale: 1, opacity: 1, halo: HALO_OPACITY, ring: drive };
+    case 'response':
+      return {
+        scale: grow,
+        opacity: drive.interpolate({ inputRange: [0, 1], outputRange: [BREATH_DIM, 1] }),
+        halo: HALO_OPACITY,
+        ring: null,
+      };
+    case 'silent':
+      return {
+        scale: 1,
+        opacity: 1,
+        halo: drive.interpolate({ inputRange: [0, 1], outputRange: [HALO_OPACITY, 1] }),
+        ring: null,
+      };
+    case 'decade':
+      return { scale: grow, opacity: 1, halo: HALO_OPACITY, ring: null };
+    case 'paused':
+    default:
+      return { scale: 1, opacity: BREATH_DIM, halo: 0, ring: null };
+  }
+}
+
+/** 숫자든 흐름이든 배수를 곱한다. */
+function times(value: Flow, factor: number): Flow {
+  return typeof value === 'number' ? value * factor : Animated.multiply(value, factor);
+}
+
+/**
+ * 읽는 중 차오르는 테두리 — 원 둘레를 점선 한 토막으로 그리고, 그 토막의 시작점을 밀어
+ * 보이는 길이를 늘린다. 맨 위(12시)에서 시작해 시계 방향으로 돈다.
+ */
+function ReadingRing({ cx, cy, progress, color }: { cx: number; cy: number; progress: Flow; color: string }) {
+  const offset =
+    typeof progress === 'number'
+      ? RING_LENGTH * (1 - progress)
+      : progress.interpolate({ inputRange: [0, 1], outputRange: [RING_LENGTH, 0] });
+  return (
+    <AnimatedCircle
+      cx={cx}
+      cy={cy}
+      r={RING_RADIUS}
+      fill="none"
+      stroke={color}
+      strokeWidth={RING_WIDTH}
+      strokeDasharray={[RING_LENGTH, RING_LENGTH]}
+      strokeDashoffset={offset}
+      strokeLinecap="round"
+      transform={`rotate(-90 ${cx} ${cy})`}
+    />
+  );
+}
+
+/** 지금 바치는 알 하나 — 상태에 따라 부풀고, 반짝이고, 테두리가 차오르고, 흐려진다. */
+function CurrentBead({
   cx,
   cy,
   r,
   shade,
+  phase,
+  readingMs,
+  restartKey,
 }: {
   cx: number;
   cy: number;
   r: number;
   shade: string;
+  phase: PrayerPhase;
+  readingMs: number;
+  restartKey: number;
 }) {
   const { colors } = useTheme();
-  const { still, breath } = useBreath();
+  const look = usePhaseLook(phase, readingMs, restartKey);
   const id = gradientIds(PREFIX);
   const shading: Shading = SHADING.current;
-
-  if (still) {
-    return (
-      <>
-        <Circle cx={cx} cy={cy} r={HALO_RADIUS} fill={`url(#${id.halo})`} opacity={HALO_OPACITY} />
-        <BeadContact cx={cx} cy={cy} r={r} base={r} shading={shading} shade={shade} />
-        <Circle cx={cx} cy={cy} r={r} fill={colors.accentFill} />
-        <BeadShading
-          cx={cx}
-          cy={cy}
-          r={r}
-          base={r}
-          shading={shading}
-          shade={shade}
-          prefix={PREFIX}
-        />
-      </>
-    );
-  }
-
-  const opacity = breath.interpolate({ inputRange: [0, 1], outputRange: [0.42, 1] });
-  const haloRadius = breath.interpolate({
-    inputRange: [0, 1],
-    outputRange: [HALO_RADIUS, HALO_RADIUS * BREATH_SCALE],
-  });
-  const beadRadius = breath.interpolate({
-    inputRange: [0, 1],
-    outputRange: [r, r * BREATH_SCALE],
-  });
+  const beadRadius = times(look.scale, r);
+  const haloRadius = times(look.scale, HALO_RADIUS);
 
   /*
-   * 숨의 투명도는 무리 전체에 한 번만 건다. 이렇게 하지 않으면 후광이 자기 몫의
+   * 상태의 투명도는 무리 전체에 한 번만 건다. 이렇게 하지 않으면 후광이 자기 몫의
    * 14% 를 잃고 42~100% 로 칠해져, 지금 알이 치자색 덩어리가 된다
    * (v5 는 후광에 14% 와 숨 두 가지를 함께 건다).
    */
   return (
-    <AnimatedG opacity={opacity}>
-      <AnimatedCircle cx={cx} cy={cy} r={haloRadius} fill={`url(#${id.halo})`} opacity={HALO_OPACITY} />
+    <AnimatedG opacity={look.opacity}>
+      <AnimatedCircle cx={cx} cy={cy} r={haloRadius} fill={`url(#${id.halo})`} opacity={look.halo} />
+      {look.ring !== null ? <ReadingRing cx={cx} cy={cy} progress={look.ring} color={colors.accentFill} /> : null}
       <BeadContact cx={cx} cy={cy} r={beadRadius} base={r} shading={shading} shade={shade} />
       <AnimatedCircle cx={cx} cy={cy} r={beadRadius} fill={colors.accentFill} />
       <BeadShading
@@ -253,33 +385,79 @@ function BreathingBead({
  * 알이 아닌 자리(십자가·중심 메달)를 감싸는 빛무리.
  *
  * 알처럼 부풀릴 수가 없다 — 십자가는 원이 아니고 메달은 세로로 긴 타원이라 크기를
- * 키우면 모양이 무너진다. 그래서 **빛무리만 숨을 쉬게** 하고 형태는 가만히 둔다.
- * 사용자가 받는 신호(4초 주기로 밝아졌다 어두워진다)는 알과 같다.
+ * 키우면 모양이 무너진다. 그래서 **빛무리만** 상태를 따르고 형태는 가만히 둔다. 읽는 중의
+ * 테두리는 원이 아니라 타원 둘레라 차오르게 그리지 않고, 대신 타원 테두리가 같은 시간에
+ * 걸쳐 짙어진다. 사용자가 받는 신호(숨 · 반짝임 · 맥동 · 흐려짐)는 알과 같다.
  */
-function BreathingGlow({ cx, cy, rx, ry }: { cx: number; cy: number; rx: number; ry: number }) {
-  const { still, breath } = useBreath();
+function PhaseGlow({
+  cx,
+  cy,
+  rx,
+  ry,
+  phase,
+  readingMs,
+  restartKey,
+}: {
+  cx: number;
+  cy: number;
+  rx: number;
+  ry: number;
+  phase: PrayerPhase;
+  readingMs: number;
+  restartKey: number;
+}) {
+  const { colors } = useTheme();
+  const look = usePhaseLook(phase, readingMs, restartKey);
   const id = gradientIds(PREFIX);
-  if (still) {
-    return <Ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill={`url(#${id.halo})`} opacity={HALO_OPACITY} />;
-  }
-  const opacity = breath.interpolate({ inputRange: [0, 1], outputRange: [0.42, 1] });
   return (
-    <AnimatedG opacity={opacity}>
+    <AnimatedG opacity={look.opacity}>
       <AnimatedEllipse
         cx={cx}
         cy={cy}
-        rx={breath.interpolate({ inputRange: [0, 1], outputRange: [rx, rx * BREATH_SCALE] })}
-        ry={breath.interpolate({ inputRange: [0, 1], outputRange: [ry, ry * BREATH_SCALE] })}
+        rx={times(look.scale, rx)}
+        ry={times(look.scale, ry)}
         fill={`url(#${id.halo})`}
-        opacity={HALO_OPACITY}
+        opacity={look.halo}
       />
+      {look.ring !== null ? (
+        <AnimatedEllipse
+          cx={cx}
+          cy={cy}
+          rx={rx}
+          ry={ry}
+          fill="none"
+          stroke={colors.accentFill}
+          strokeWidth={RING_WIDTH}
+          opacity={look.ring}
+        />
+      ) : null}
     </AnimatedG>
   );
 }
 
-export function Rosary({ done, current, focus, label, rosary }: RosaryPlacement & { rosary: RosaryKey }) {
+export function Rosary({
+  done,
+  current,
+  focus,
+  label,
+  rosary,
+  phase,
+  readingMs = 0,
+}: RosaryPlacement & {
+  rosary: RosaryKey;
+  /** 지금 알의 상태 (FR-15 · `phase.ts`). 세션 갈고리가 준다. */
+  phase: PrayerPhase;
+  /** 읽는 중 테두리가 차오르는 데 걸릴 시간 — 지금 읽는 절의 어림 길이. 모르면 0. */
+  readingMs?: number;
+}) {
   const { colors, mode } = useTheme();
   const material = materialFor(mode, rosary);
+  /*
+   * 알이 바뀌면 상태의 움직임을 처음부터 다시 굴린다. 그래야 소리 없이 진행할 때 알마다
+   * 반짝이고, 읽는 중이면 새 절의 길이로 테두리가 다시 차오른다. 십자가와 메달에 머무는
+   * 단계는 알 번호가 없으므로(-1) 어느 자리인지를 함께 섞어 준다.
+   */
+  const restartKey = current >= 0 ? current : focus === 'cross' ? -2 : -3;
   const onCross = focus === 'cross';
   const onMedal = focus === 'medal';
   const spot = current >= 0 ? BEADS[current] : undefined;
@@ -343,7 +521,15 @@ export function Rosary({ done, current, focus, label, rosary }: RosaryPlacement 
         빛무리를 두른다 — 그 두 기도를 바치는 자리가 실제로 십자가이기 때문이다.
       */}
       {onCross ? (
-        <BreathingGlow cx={CROSS.x} cy={CROSS.top + 13 * CROSS_SCALE} rx={22} ry={19} />
+        <PhaseGlow
+          cx={CROSS.x}
+          cy={CROSS.top + 13 * CROSS_SCALE}
+          rx={22}
+          ry={19}
+          phase={phase}
+          readingMs={readingMs}
+          restartKey={restartKey}
+        />
       ) : null}
       <Cross
         x={CROSS.x}
@@ -359,7 +545,15 @@ export function Rosary({ done, current, focus, label, rosary }: RosaryPlacement 
         자리이고, 그때 여기가 빛난다.
       */}
       {onMedal ? (
-        <BreathingGlow cx={MEDAL.x} cy={MEDAL.y} rx={MEDAL_SIZE.rx * 2.6} ry={MEDAL_SIZE.ry * 2.2} />
+        <PhaseGlow
+          cx={MEDAL.x}
+          cy={MEDAL.y}
+          rx={MEDAL_SIZE.rx * 2.6}
+          ry={MEDAL_SIZE.ry * 2.2}
+          phase={phase}
+          readingMs={readingMs}
+          restartKey={restartKey}
+        />
       ) : null}
       <Medal
         cx={MEDAL.x}
@@ -412,9 +606,17 @@ export function Rosary({ done, current, focus, label, rosary }: RosaryPlacement 
         );
       })}
 
-      {/* 지금 바치는 알 — 이웃보다 세 배 넘게 부풀어 맨 위에 얹힌다. */}
+      {/* 지금 바치는 알 — 이웃보다 세 배 넘게 부풀어 맨 위에 얹히고, 상태를 몸으로 말한다. */}
       {spot ? (
-        <BreathingBead cx={spot.x} cy={spot.y} r={BEAD_RADIUS.current} shade={material.shade} />
+        <CurrentBead
+          cx={spot.x}
+          cy={spot.y}
+          r={BEAD_RADIUS.current}
+          shade={material.shade}
+          phase={phase}
+          readingMs={readingMs}
+          restartKey={restartKey}
+        />
       ) : null}
 
       {/* 지금 알 안의 숫자 — 그 단의 몇 번째 성모송인가. */}

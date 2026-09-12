@@ -18,6 +18,7 @@
  */
 import { HAPTIC_PATTERNS, gapForPrayer } from '../domain/pacing';
 import type { PaceKey, RecitationMode } from '../domain/types';
+import type { RunnerPhase } from './phase';
 import type { RunStep } from './steps';
 
 /** 진행기가 바깥 세상에 손을 뻗는 통로. 실제 구현은 `channels.ts` 에 있다. */
@@ -41,6 +42,14 @@ export interface RunnerOptions {
   onStep?: (index: number, step: RunStep) => void;
   /** 마지막 단계까지 마쳤을 때 한 번 불린다. */
   onFinish?: () => void;
+  /**
+   * 지금 알의 상태가 바뀔 때마다 불린다 (FR-15 · `phase.ts`).
+   *
+   * 진행기는 자기가 이미 알고 있는 사실만 알린다 — 읽기 시작할 때 `reading`, 사이가 시작될 때
+   * `response`(읽지 않기면 `silent`), 단이 바뀌는 순간 `decade`. 멈춤은 `isRunning()` 이
+   * 말하므로 여기서 알리지 않는다. 이 알림은 흐름을 바꾸지 않는다 — 시간도 순서도 그대로다.
+   */
+  onPhase?: (phase: RunnerPhase) => void;
 }
 
 export interface Runner {
@@ -122,6 +131,7 @@ export function createRunner(options: RunnerOptions): Runner {
       options.onStep?.(index, step);
 
       if (mode !== 'silent') {
+        options.onPhase?.('reading');
         await channels.speak(step.a);
         if (!alive(mine)) return;
         if (mode === 'full' && step.b) {
@@ -130,6 +140,9 @@ export function createRunner(options: RunnerOptions): Runner {
         }
       }
 
+      // 사이가 시작된다. 교대면 사용자가 받아 바칠 차례이고, 전부 읽기면 다음 읽기 전의 짧은
+      // 쉼이다 — 둘 다 알이 숨을 쉬는 자리로 둔다. 읽지 않기면 소리 없이 사이만 흐른다.
+      options.onPhase?.(mode === 'silent' ? 'silent' : 'response');
       await wait(gapForPrayer(step.prayer, mode, pace));
       if (!alive(mine)) return;
 
@@ -141,7 +154,10 @@ export function createRunner(options: RunnerOptions): Runner {
         finish();
         return;
       }
-      if (queue[next]!.decade !== step.decade) channels.vibrate(HAPTIC_PATTERNS.decadeChange);
+      if (queue[next]!.decade !== step.decade) {
+        channels.vibrate(HAPTIC_PATTERNS.decadeChange);
+        options.onPhase?.('decade');
+      }
       index = next;
     }
   }
@@ -172,6 +188,7 @@ export function createRunner(options: RunnerOptions): Runner {
     index = bounded;
     if (previous && queue[index]!.decade !== previous.decade) {
       channels.vibrate(HAPTIC_PATTERNS.decadeChange);
+      options.onPhase?.('decade');
     }
     if (running) {
       startLoop();

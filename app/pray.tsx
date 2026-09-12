@@ -26,6 +26,8 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { artSession } from '../src/art';
 import { liturgicalDay } from '../src/domain/liturgy';
 import { Rosary } from '../src/prayer/Rosary';
+import { estimateSpeechMs } from '../src/prayer/channels';
+import { PHASE_LABEL } from '../src/prayer/phase';
 import { rosaryStateFor, type RosaryPlacement } from '../src/prayer/rosaryState';
 import { buildDayQueue } from '../src/prayer/steps';
 import { PRAYERS } from '../src/domain/sequence';
@@ -132,6 +134,14 @@ function PraySession({
   const placement: RosaryPlacement = step
     ? rosaryStateFor(step)
     : { done: 0, current: -1, focus: 'cross', label: null };
+  /*
+   * 읽는 중 테두리가 차오르는 시간 (FR-15). 기기는 낭송이 얼마나 걸릴지 미리 말해 주지
+   * 않으므로, 소리 통로가 안전망에 쓰는 어림식(`estimateSpeechMs`)을 그대로 쓴다. 전부 읽기는
+   * 앞 절과 뒷 절을 이어 읽으니 둘을 더한다.
+   */
+  const readingMs = step
+    ? estimateSpeechMs(step.a) + (session.mode === 'full' && step.b ? estimateSpeechMs(step.b) : 0)
+    : 0;
 
   /*
    * 앞뒤 단추에 적을 이름 — 한 걸음 앞과 뒤에 무슨 기도가 있는가.
@@ -186,8 +196,18 @@ function PraySession({
           />
         ) : null}
         <View style={[StyleSheet.absoluteFill, styles.paper]} />
-        <View style={[StyleSheet.absoluteFill, styles.rosaryBox]}>
-          <Rosary {...placement} rosary={rosary} />
+        {/*
+          지금 알의 상태 이름을 이 상자에 붙인다 (FR-15 · 06-design-system §7). 그림은 색과
+          움직임으로 말하고, 화면 낭독기는 이 글로 같은 것을 듣는다.
+        */}
+        <View
+          style={[StyleSheet.absoluteFill, styles.rosaryBox]}
+          accessible
+          accessibilityRole="image"
+          accessibilityLabel={PHASE_LABEL[session.phase]}
+          testID="pray-rosary"
+        >
+          <Rosary {...placement} rosary={rosary} phase={session.phase} readingMs={readingMs} />
         </View>
       </View>
 

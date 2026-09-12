@@ -16,6 +16,7 @@ import { currentJourney, dayNumber, mysteryOf, type Journey } from '../journey/s
 import { positionStore } from '../storage/asyncStore';
 import { createDeviceChannels, koreanVoiceStatus } from './channels';
 import { useRemoteCommands, useShakeToAdvance } from './handsfree';
+import { DECADE_PULSE_MS, type PrayerPhase, type RunnerPhase } from './phase';
 import { createRunner, type Runner } from './runner';
 import { sectionMoves, type SectionMove } from './sections';
 import { buildDayQueue, hailCountAmong, type RunStep } from './steps';
@@ -47,6 +48,13 @@ export interface PrayerSession {
   index: number;
   step: RunStep | null;
   running: boolean;
+  /**
+   * 지금 알의 상태 다섯 중 하나 (FR-15 · `phase.ts`). 묵주 그림이 이 값으로 지금 알을 그린다.
+   *
+   * 진행기가 알리는 넷(읽는 중 · 내 차례 · 소리 없이 진행 · 단 전환)에 멈춤을 얹은 것이다 —
+   * 멈춤은 `running` 이 거짓이라는 뜻이므로 진행기의 알림과 무관하게 여기서 정한다.
+   */
+  phase: PrayerPhase;
   /** 그날의 신비. 이어가기면 저장된 신비다 (FR-03). */
   mystery: MysteryKey;
   /** 실제로 쓰이고 있는 낭송 방식. 음성이 없어 낮춰졌으면 고른 것과 다르다. */
@@ -100,8 +108,20 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
   const [running, setRunning] = useState(false);
   const [mode, setMode] = useState<RecitationMode>(requestedMode);
   const [mystery, setMystery] = useState<MysteryKey>(() => mysteryOf(journey));
+  const [runnerPhase, setRunnerPhase] = useState<RunnerPhase>('reading');
 
   const runnerRef = useRef<Runner | null>(null);
+  /**
+   * 단 전환을 붙들어 두는 자리 (`phase.ts` 의 `DECADE_PULSE_MS` 가 왜 필요한지 적어 두었다).
+   *
+   * 진행기는 `decade` 를 알린 바로 다음에 새 단계의 `reading` 을 알린다. 그 둘을 그대로 상태에
+   * 넣으면 한 번의 그리기로 합쳐져 단 전환은 화면에 나타나지 못한다. 그래서 `decade` 가 오면
+   * 맥동 시간만큼 붙들고, 그 사이에 온 상태는 `pending` 에 두었다가 시간이 끝나면 넘긴다.
+   */
+  const decadeHoldRef = useRef<{
+    timer: ReturnType<typeof setTimeout>;
+    pending: RunnerPhase | null;
+  } | null>(null);
   /**
    * 오늘 실제로 지나온 단계들. 단을 건너뛸 수 있으므로(`decisions.md` 결정 6) 하루
    * 완주 화면의 성모송 수는 큐가 아니라 이 목록에서 나온다.
@@ -132,6 +152,36 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
     let cancelled = false;
     const channels = createDeviceChannels();
     const dayIndex = dayNumber(journey);
+
+    function releaseDecadeHold(): void {
+      const hold = decadeHoldRef.current;
+      if (!hold) return;
+      clearTimeout(hold.timer);
+      decadeHoldRef.current = null;
+    }
+
+    function onPhase(phase: RunnerPhase): void {
+      if (cancelled) return;
+      if (phase === 'decade') {
+        releaseDecadeHold();
+        setRunnerPhase('decade');
+        decadeHoldRef.current = {
+          pending: null,
+          timer: setTimeout(() => {
+            const hold = decadeHoldRef.current;
+            decadeHoldRef.current = null;
+            if (!cancelled && hold?.pending) setRunnerPhase(hold.pending);
+          }, DECADE_PULSE_MS),
+        };
+        return;
+      }
+      const hold = decadeHoldRef.current;
+      if (hold) {
+        hold.pending = phase;
+        return;
+      }
+      setRunnerPhase(phase);
+    }
 
     async function open(): Promise<void> {
       // 1. 저장된 자리를 읽는다. 같은 여정의 같은 날이면 그 자리부터 이어간다 (FR-02).
@@ -187,6 +237,7 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
             visited: [...visitedRef.current],
           });
         },
+        onPhase,
         onFinish: () => {
           if (cancelled || finishedRef.current) return;
           finishedRef.current = true;
@@ -216,6 +267,7 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
 
     return () => {
       cancelled = true;
+      releaseDecadeHold();
       runnerRef.current?.stop();
       runnerRef.current = null;
     };
@@ -272,11 +324,14 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
 
   const step = queue[index] ?? null;
   const moves = sectionMoves(queue, index);
+  // 멈춤은 진행기의 알림이 아니라 "돌고 있지 않다"는 사실이다. 멈춘 채로 알을 옮겨도 멈춤이다.
+  const phase: PrayerPhase = running ? runnerPhase : 'paused';
   return {
     ready,
     index,
     step,
     running,
+    phase,
     mystery,
     mode,
     voiceMissing,

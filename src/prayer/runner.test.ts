@@ -316,3 +316,84 @@ describe('아무 자리로나 옮기기', () => {
     expect(seen.filter((i) => i >= 65)).toHaveLength(81 - 65);
   });
 });
+
+/**
+ * 지금 알의 상태 알림 (FR-15 · `phase.ts`).
+ *
+ * 여기서 확인하는 것은 "알림이 더해졌을 뿐 흐름은 그대로인가"다. 위의 시험들이 낭송 수와
+ * 진동 수와 완주를 그대로 통과한다는 것이 그 절반이고, 알림이 옳은 자리에서 옳은 값으로
+ * 나오는가가 나머지 절반이다.
+ */
+describe('지금 알의 상태 알림', () => {
+  function withPhases(mode: 'alternate' | 'full' | 'silent') {
+    const channels = recorder();
+    const phases: string[] = [];
+    const runner = createRunner({
+      queue: QUEUE,
+      mode,
+      pace: 'normal',
+      channels,
+      onPhase: (phase) => phases.push(phase),
+    });
+    return { runner, phases, channels };
+  }
+
+  it('교대 낭송은 단계마다 읽는 중 → 내 차례 순서로 알린다', async () => {
+    const { runner, phases } = withPhases('alternate');
+    runner.start();
+    await runToEnd();
+
+    const withoutDecade = phases.filter((p) => p !== 'decade');
+    // 81단계 × (reading, response) = 162.
+    expect(withoutDecade).toHaveLength(162);
+    for (let i = 0; i < 81; i++) {
+      expect(withoutDecade[i * 2]).toBe('reading');
+      expect(withoutDecade[i * 2 + 1]).toBe('response');
+    }
+    expect(phases).not.toContain('silent');
+  });
+
+  it('읽지 않기는 읽는 중을 알리지 않고 단계마다 소리 없는 진행만 알린다', async () => {
+    const { runner, phases } = withPhases('silent');
+    runner.start();
+    await runToEnd();
+
+    expect(phases.filter((p) => p === 'silent')).toHaveLength(81);
+    expect(phases).not.toContain('reading');
+    expect(phases).not.toContain('response');
+  });
+
+  it('단이 바뀌는 순간에만 단 전환을 알린다 — 진동과 같은 여섯 번', async () => {
+    const { runner, phases, channels } = withPhases('alternate');
+    runner.start();
+    await runToEnd();
+
+    const decadeVibrations = channels.vibrations.filter(
+      (v) => v.length === HAPTIC_PATTERNS.decadeChange.length,
+    );
+    expect(phases.filter((p) => p === 'decade')).toHaveLength(6);
+    expect(phases.filter((p) => p === 'decade')).toHaveLength(decadeVibrations.length);
+  });
+
+  it('단을 건너 옮기면 그때도 단 전환을 알린다 — 멈춘 채로도', async () => {
+    const { runner, phases } = withPhases('alternate');
+    runner.start();
+    await jest.advanceTimersByTimeAsync(1);
+    runner.pause();
+    phases.length = 0;
+
+    runner.goTo(65); // 제5단 신비 선포로 뛴다 — 시작 기도에서 단이 바뀐다.
+    expect(phases).toEqual(['decade']);
+
+    runner.advance(); // 같은 단 안에서 한 알 — 단 전환이 아니다.
+    expect(phases).toEqual(['decade']);
+  });
+
+  it('알림을 받지 않는 호출자에게는 아무 일도 일어나지 않는다', async () => {
+    const channels = recorder();
+    const runner = createRunner({ queue: QUEUE, mode: 'alternate', pace: 'normal', channels });
+    runner.start();
+    await runToEnd();
+    expect(runner.isRunning()).toBe(false);
+  });
+});
