@@ -22,6 +22,11 @@
  * 앱이 "지금 무언가를 재생 중"인 오디오 세션을 잡고 있어야 하는데, 그것은 낭송을
  * 무음 트랙 위에 얹는 별도의 작업이라 이번 범위에 넣지 않았다 (개발 계획 §11 의 위험
  * 항목이 예고한 그것이다). 실기기의 이어폰 단추는 아직 동작하지 않는다.
+ *
+ * 요구사항 FR-38 의 세 번째 입력인 **음량 버튼은 이 파일에 없다.** iOS 는 심사 지침 2.5.9 로
+ * 쓰지 못하고(PRD §11-3), Android 는 지금의 Expo 관리형 구조 안에 음량 키를 앱에 알려 주는
+ * 부품이 없어 네이티브 모듈을 새로 얹어야 한다. 그 조사와 판정은 `docs/plan/volume-buttons.md`
+ * 에, 붙을 자리는 이 파일 맨 아래에 있다.
  */
 import { useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
@@ -146,3 +151,19 @@ export function useRemoteCommands(enabled: boolean, handlers: RemoteHandlers): v
     };
   }, [enabled]);
 }
+
+/*
+ * ── 음량 버튼이 붙을 자리 (FR-38 · Android 전용 · 부품 결정 뒤) ─────────────────────────
+ *
+ * 여기에 `useVolumeButtons(enabled, { onNext, onPrevious })` 같은 갈고리 하나가 들어온다.
+ * 지금은 없다 — Expo SDK 57 이 주는 모듈과 React Native 자체에는 Android 의 음량 위·아래 키를
+ * 앱에 전달하는 통로가 없어서(뒤로 가기 키만 `BackHandler` 로 온다), 붙이려면 네이티브 부품을
+ * 새로 얹어야 하고 그것은 빌드 방식을 바꾸는 일이라 공방장의 승인이 필요하다. 그 조사와
+ * 무엇이 필요한지는 `docs/plan/volume-buttons.md` 에 적었다. V1 검증 빌드에서는 양 플랫폼
+ * 모두 음량 버튼을 쓰지 않는다는 결정(`decisions.md` Q-06a)도 그대로다.
+ *
+ * 붙일 때 지킬 것 셋. 첫째, `Platform.OS === 'android'` 안에서만 부품을 부르고 iOS 와 웹에서는
+ * 아무 일도 하지 않는다 — iOS 는 심사 지침 2.5.9 때문이고 웹은 브라우저가 음량 키를 주지 않기
+ * 때문이다. 둘째, 위 두 갈고리처럼 `enabled`(설정의 손 없이 조작)가 꺼져 있으면 아무것도 걸지
+ * 않는다. 셋째, 한 번의 누름은 한 알만 움직인다 — 위는 `onNext`, 아래는 `onPrevious`.
+ */
