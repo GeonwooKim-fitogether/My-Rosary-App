@@ -7,7 +7,7 @@
  *
  * **시계를 실제로 멈춘다.** `openApp` 이 세우는 가짜 시계는 시각을 고정할 뿐 시간은 실시간으로
  * 흐른다 — 그래서 시험의 소리 통로가 "다 읽었다"를 알리는 0ms 타이머가 곧바로 도착해, 읽는 중은
- * 눈 깜짝할 사이에 내 차례로 넘어간다. 기도 화면에 들어선 뒤 `pauseAt` 으로 시간을 멈추면
+ * 눈 깜짝할 사이에 내 차례로 넘어간다. 기도 화면에 들어선 뒤 `freezeClock` 으로 시간을 멈추면
  * 그 뒤로 상태를 바꾸는 것은 이 시험의 조작과 `runFor` 만이다.
  *
  * - **읽는 중**: 알을 옮기면 진행기가 그 자리의 절을 읽기 시작한다. 시험의 소리 통로는 "다
@@ -28,6 +28,7 @@ import {
   collectConsoleErrors,
   enterHome,
   enterPrayerFromHome,
+  freezeClock,
   openApp,
   pressMediaButton,
 } from './support/harness';
@@ -35,12 +36,6 @@ import {
 const OUT = 'docs/plan/bead-phases';
 
 test.use({ reducedMotion: 'reduce' });
-
-/** 지금 시각에서 시간을 멈춘다. 이 뒤로는 `runFor` 로만 시간이 흐른다. */
-async function freezeClock(page: import('@playwright/test').Page) {
-  const now = await page.evaluate(() => Date.now());
-  await page.clock.pauseAt(now + 50);
-}
 
 /** 알을 하나 옮긴다 — 이어폰의 다음 단추. 화면 단추와 같은 길(`advance`)이다. */
 async function nextBead(page: import('@playwright/test').Page, times = 1) {

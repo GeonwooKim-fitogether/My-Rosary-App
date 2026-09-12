@@ -10,10 +10,18 @@
  * 글자 크기를 곱해 적었다. 둘째, CSS 의 자간은 `em`(`.24em`)인데 React Native 의
  * `letterSpacing` 은 픽셀이라 역시 글자 크기를 곱했다.
  *
+ * **서체 계단(`type` · `type2`)은 시스템 글자 크기 확대를 따른다** (FR-28). 아래 표들은 100%
+ * 기준값으로 적혀 있고, 내보낼 때 `fontScale.ts` 가 이 기기의 배율을 곱한다. 곱하는 방식이
+ * 플랫폼마다 다른 이유(React Native 가 이미 키우는 것은 다시 곱지 않는다)는 그 파일 머리에 있다.
+ * 줄 높이와 자간이 글자 크기에 곱해 적혀 있으므로, 셋에 같은 배율을 곱하면 비율이 그대로
+ * 남는다 — 글자를 키워도 줄이 붙지 않는다는 것이 이 구조에서 나온다.
+ *
  * **밤 벌은 아직 없다.** v5 가 낮 벌만 그렸기 때문이며, 만드는 방식은 `decisions.md`
  * Q-14 가 M2 로 정해 두었다. 그래서 색을 화면에 직접 쓰지 않고 반드시 이름으로 쓴다 —
  * 나중에 색표 한 벌을 더 끼워 넣으면 화면을 고치지 않고 밤 벌을 받을 수 있게 하려는 것이다.
  */
+
+import { TEXT_SCALE, scaleTypeScale } from './fontScale';
 
 /** 색의 이름들. 밤 벌이 생기면 같은 이름으로 값만 다른 표를 하나 더 만든다. */
 export interface ColorTokens {
@@ -174,10 +182,10 @@ export const fonts = {
 } as const;
 
 /**
- * 서체 계단. 이름은 쓰임새로 붙였고 값은 v5 로그인 화면에서 그대로 가져왔다.
- * React Native 의 `TextStyle` 에 그대로 펼쳐 쓸 수 있는 모양이다.
+ * 서체 계단의 100% 기준값. 이름은 쓰임새로 붙였고 값은 v5 로그인 화면에서 그대로 가져왔다.
+ * 화면은 이 표를 직접 쓰지 않고 아래에서 배율을 곱한 `type` 을 쓴다.
  */
-export const type = {
+const baseType = {
   /** 10.5px · 자간 .24em · 회색. 화면 맨 위의 작은 라벨 ("54일 기도"). */
   label: {
     fontFamily: fonts.sans,
@@ -283,6 +291,12 @@ export const type = {
   },
 } as const;
 
+/**
+ * 서체 계단 — 이 기기의 글자 배율을 곱한 값 (FR-28). React Native 의 `TextStyle` 에 그대로
+ * 펼쳐 쓸 수 있는 모양이다.
+ */
+export const type = scaleTypeScale(baseType, TEXT_SCALE);
+
 /** 치수. 화면마다 다시 적지 않도록 여기 모은다. */
 export const metrics = {
   /**
@@ -367,12 +381,12 @@ export const seasonColorsFor = (mode: ThemeMode): SeasonColors =>
   mode === 'night' ? nightSeasonColors : seasonColors;
 
 /**
- * M2 가 더한 서체 계단.
+ * M2 가 더한 서체 계단의 100% 기준값.
  *
- * 위의 `type` 과 같은 방식으로 v5 마크업에서 글자 그대로 옮겼고, 어느 화면의 어느
+ * 위의 `baseType` 과 같은 방식으로 v5 마크업에서 글자 그대로 옮겼고, 어느 화면의 어느
  * 자리에서 왔는지 항목마다 적었다. CSS 의 배수 줄 높이와 em 자간은 픽셀로 환산했다.
  */
-export const type2 = {
+const baseType2 = {
   /** 24px 명조 · 줄 높이 1.3. 홈 카드의 바람 한 줄 (`s-home` 의 카드 제목). */
   cardTitle: { fontFamily: fonts.serif, fontSize: 24, lineHeight: 24 * 1.3 },
   /** 12px 중간 굵기 · 자간 .06em. 홈 카드의 `23일째 · 청원` (`j0-meta`). */
@@ -431,6 +445,9 @@ export const type2 = {
   /** 11.5px · 줄 높이 1.7. 시트 아래 각주 — v5 `s-assign` 의 마지막 줄에서 왔다. */
   sheetNote: { fontFamily: fonts.sans, fontSize: 11.5, lineHeight: 11.5 * 1.7 },
 } as const;
+
+/** M2 서체 계단 — 이 기기의 글자 배율을 곱한 값 (FR-28). */
+export const type2 = scaleTypeScale(baseType2, TEXT_SCALE);
 
 /**
  * M2 가 쓰는 치수 몇 가지. v5 마크업에서 옮긴 값이다.
