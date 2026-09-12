@@ -29,11 +29,11 @@ import {
   journeyLength,
 } from '../src/journey/rules';
 import { HAILS_PER_DAY } from '../src/prayer/steps';
-import { removeJourney } from '../src/state/appStore';
 import { useAppState } from '../src/state/useAppState';
 import { positionStore } from '../src/storage/asyncStore';
 import type { PrayerPosition } from '../src/storage/position';
 import { type as type1, type2, useThemedStyles, type Theme } from '../src/theme';
+import { RemoveJourneySheet } from '../src/ui/RemoveJourneySheet';
 import { ConfirmSheet } from '../src/ui/Sheet';
 import { primeSpeech } from '../src/prayer/channels';
 import {
@@ -202,19 +202,14 @@ export default function JourneyDetailScreen() {
         testID="sheet-restart"
       />
 
-      <ConfirmSheet
-        visible={quitSheet}
-        label="이 기도 지우기"
-        message="이 기도를 지웁니다. 기록도 함께 지워집니다."
-        confirmLabel="지우기"
-        cancelLabel="두기"
-        onConfirm={() => {
+      {/* S6 — 홈 카드를 길게 누를 때와 같은 시트다 (`src/ui/RemoveJourneySheet.tsx`). */}
+      <RemoveJourneySheet
+        journeyId={quitSheet ? journey.id : null}
+        onRemoved={() => {
           setQuitSheet(false);
-          removeJourney(journey.id);
           router.back();
         }}
         onClose={() => setQuitSheet(false)}
-        testID="sheet-quit"
       />
     </ScreenBody>
   );

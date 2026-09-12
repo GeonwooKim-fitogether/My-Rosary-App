@@ -11,6 +11,9 @@
  *    카드의 넷째 줄(`내 몫 제2단 · 오늘 다섯 중 셋`)도 그때 선다.
  * 3. **날짜가 달력에서 온다.** v5 는 리본의 `today` 칸으로 며칠째를 셌지만, 저장된 여정은
  *    앱을 안 켠 날에도 날짜가 흘러야 하므로 시작일과 오늘로 센다 (`src/journey/rules.ts`).
+ *
+ * 시안에 없고 요구사항이 정한 것이 하나 더 있다 — **카드를 길게 누르면 여정을 지우는 확인
+ * 시트가 뜬다** (FR-05 · 시트 S6). 여정 상세의 `이 여정 그만두기` 와 같은 시트를 쓴다.
  */
 import { useCallback, useState } from 'react';
 import { Image } from 'expo-image';
@@ -39,6 +42,7 @@ import {
   useThemedStyles,
   type Theme,
 } from '../src/theme';
+import { RemoveJourneySheet } from '../src/ui/RemoveJourneySheet';
 import { PrimaryButton, QuietButton, Ribbon, ScreenBody, ScreenHeader } from '../src/ui/Screen';
 import { primeSpeech } from '../src/prayer/channels';
 
@@ -46,6 +50,8 @@ export default function HomeScreen() {
   const { ready, journeys } = useAppState();
   const styles = useThemedStyles(homeStyles);
   const [position, setPosition] = useState<PrayerPosition | null>(null);
+  /** 길게 눌러 지우려는 여정. null 이면 시트가 닫혀 있다 (FR-05). */
+  const [removing, setRemoving] = useState<Journey | null>(null);
   const today = new Date();
 
   // 화면으로 돌아올 때마다 오늘 자리를 다시 읽는다. 기도하다 나온 직후의 카드가
@@ -95,9 +101,20 @@ export default function HomeScreen() {
             today={today}
             position={position}
             index={index}
+            onLongPress={() => setRemoving(journey)}
           />
         ))}
       </ScrollView>
+
+      {/*
+        S6 — 카드를 길게 누르면 뜨는 확인 시트. 여정 상세의 `이 여정 그만두기` 와 같은 것이다.
+        조 여정의 "조 해산 · 조에서 나가기"는 조가 M3 에 생긴 뒤의 일이라 여기 없다.
+      */}
+      <RemoveJourneySheet
+        journeyId={removing?.id ?? null}
+        onRemoved={() => setRemoving(null)}
+        onClose={() => setRemoving(null)}
+      />
 
       <PrimaryButton
         label="새 기도"
@@ -116,6 +133,7 @@ export default function HomeScreen() {
 
 /**
  * 카드 한 장. 탭하면 기도로 들어가고(FR-42), 리본을 탭하면 여정 상세로 간다(FR-37).
+ * **길게 누르면 지우는 확인 시트가 뜬다**(FR-05) — 짧게 누르기는 그대로다.
  *
  * 리본이 "자세히"의 자리를 대신하는 것은 v5 의 배선 그대로다 — 시안에서도 카드는 기도로,
  * 리본은 여정 상세로 간다.
@@ -125,11 +143,14 @@ function JourneyCard({
   today,
   position,
   index,
+  onLongPress,
 }: {
   journey: Journey;
   today: Date;
   position: PrayerPosition | null;
   index: number;
+  /** 카드를 길게 눌렀을 때 — 홈이 지우는 시트를 연다. */
+  onLongPress: () => void;
 }) {
   const styles = useThemedStyles(homeStyles);
   const plate = artSession.forJourney(journey.id);
@@ -156,7 +177,9 @@ function JourneyCard({
       <Pressable
         style={styles.cardRow}
         onPress={openPrayer}
+        onLongPress={onLongPress}
         accessibilityRole="button"
+        accessibilityHint="길게 누르면 이 기도를 지웁니다"
         testID={`home-card-${index}`}
       >
         {plate ? (
