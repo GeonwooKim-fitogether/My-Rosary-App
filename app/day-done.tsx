@@ -75,7 +75,7 @@ export default function DayDoneScreen() {
       </Text>
 
       <View style={styles.stats}>
-        <StatRow label="성모송" value={`${hails}번`} />
+        <StatRow label="성모송" value={`${hails}번`} testID="day-done-hails" />
         <StatRow label="걸린 시간" value={`${Math.max(1, Math.round(elapsedMs / 60000))}분`} />
         <StatRow label="이어서" value={`${resumeCount}번`} last />
       </View>
@@ -94,12 +94,24 @@ export default function DayDoneScreen() {
   );
 }
 
-function StatRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
+function StatRow({
+  label,
+  value,
+  last,
+  testID,
+}: {
+  label: string;
+  value: string;
+  last?: boolean;
+  testID?: string;
+}) {
   const styles = useThemedStyles(dayDoneStyles);
   return (
     <View style={[styles.statRow, last ? styles.statRowLast : null]}>
       <Text style={styles.statLabel}>{label}</Text>
-      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statValue} testID={testID}>
+        {value}
+      </Text>
     </View>
   );
 }

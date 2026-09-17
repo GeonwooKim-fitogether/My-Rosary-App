@@ -49,7 +49,7 @@ test('빈 홈에서 새 기도를 만들어 첫날을 바치면 홈과 여정 �
   await expect(page.getByTestId('pray-title')).toContainText('아버지의 건강');
   await expect(page.getByTestId('pray-title')).toContainText('1일째 · 청원');
 
-  // 4. 77단계를 스스로 지나 하루 완주로.
+  // 4. 81단계를 스스로 지나 하루 완주로.
   await runUntilVisible(page, 'day-done-screen');
   await expect(page.getByTestId('day-done-head')).toHaveText('9월 5일 · 첫 번째 날');
   await expect(page.getByTestId('day-done-summary')).toHaveText(

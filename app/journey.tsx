@@ -29,12 +29,13 @@ import {
   journeyLength,
 } from '../src/journey/rules';
 import { HAILS_PER_DAY } from '../src/prayer/steps';
-import { removeJourney } from '../src/state/appStore';
 import { useAppState } from '../src/state/useAppState';
 import { positionStore } from '../src/storage/asyncStore';
 import type { PrayerPosition } from '../src/storage/position';
 import { type as type1, type2, useThemedStyles, type Theme } from '../src/theme';
+import { RemoveJourneySheet } from '../src/ui/RemoveJourneySheet';
 import { ConfirmSheet } from '../src/ui/Sheet';
+import { primeSpeech } from '../src/prayer/channels';
 import {
   DayGrid,
   OutlineButton,
@@ -161,7 +162,10 @@ export default function JourneyDetailScreen() {
           label="오늘 이어서 바치기"
           // 이 화면을 갈아 끼우고 기도로 간다. 기도 화면의 `잠시 멈춤` 이 홈으로 나가는 단추라,
           // 상세 위에 쌓으면 홈이 아니라 상세로 되돌아오게 된다.
-          onPress={() => router.replace({ pathname: '/pray', params: { id: journey.id } })}
+          onPress={() => {
+            primeSpeech();
+            router.replace({ pathname: '/pray', params: { id: journey.id } });
+          }}
           testID="journey-resume"
         />
       )}
@@ -187,6 +191,7 @@ export default function JourneyDetailScreen() {
         confirmLabel="처음부터"
         cancelLabel="아니요, 이어서"
         onConfirm={() => {
+          primeSpeech();
           setRestartSheet(false);
           void positionStore.clear().then(() => {
             setPosition(null);
@@ -197,19 +202,14 @@ export default function JourneyDetailScreen() {
         testID="sheet-restart"
       />
 
-      <ConfirmSheet
-        visible={quitSheet}
-        label="이 기도 지우기"
-        message="이 기도를 지웁니다. 기록도 함께 지워집니다."
-        confirmLabel="지우기"
-        cancelLabel="두기"
-        onConfirm={() => {
+      {/* S6 — 홈 카드를 길게 누를 때와 같은 시트다 (`src/ui/RemoveJourneySheet.tsx`). */}
+      <RemoveJourneySheet
+        journeyId={quitSheet ? journey.id : null}
+        onRemoved={() => {
           setQuitSheet(false);
-          removeJourney(journey.id);
           router.back();
         }}
         onClose={() => setQuitSheet(false)}
-        testID="sheet-quit"
       />
     </ScreenBody>
   );

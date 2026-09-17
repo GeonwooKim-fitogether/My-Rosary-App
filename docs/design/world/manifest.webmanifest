@@ -1,0 +1,15 @@
+{
+  "name": "MyRosary World",
+  "short_name": "MyRosary",
+  "description": "A rosary in hand, sacred art before the eyes.",
+  "start_url": "./MyRosary%20World.dc.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1e1b18",
+  "theme_color": "#1e1b18",
+  "lang": "ko",
+  "icons": [
+    { "src": "img/04-cross.jpg", "sizes": "736x736", "type": "image/jpeg", "purpose": "any" }
+  ]
+}

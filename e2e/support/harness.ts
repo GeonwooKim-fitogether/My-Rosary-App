@@ -53,7 +53,13 @@ export async function installDeviceStubs(page: Page): Promise<void> {
     if (synth) {
       synth.getVoices = () => [voice];
       synth.speak = (utterance) => {
-        calls.speech.push(String(utterance.text ?? ''));
+        const text = String(utterance.text ?? '');
+        // 공백뿐인 낭송은 기도문이 아니라 **소리 엔진을 깨우는 것**이다. 브라우저는 사용자가
+        // 누른 조작에서 곧바로 이어진 소리만 내보내므로, 앱은 기도로 들어가는 단추를 누른
+        // 자리에서 들리지 않는 낭송 하나를 먼저 내보내 자격을 얻는다(`primeSpeech`). 그것을
+        // 낭송으로 세면 하루의 낭송 수가 한 번 더 세어져, 단계 하나가 두 번 낭송된 것처럼
+        // 보인다. 실제로 그런 오진이 한 번 있었다.
+        if (text.trim() !== '') calls.speech.push(text);
         setTimeout(() => utterance.onend?.({}), 0);
       };
       synth.cancel = () => {};
@@ -155,11 +161,36 @@ export const FIXED_TODAY = new Date('2026-09-05T09:00:00');
  */
 export async function openApp(
   page: Page,
-  options: { demo?: boolean; at?: Date } = {},
+  options: { demo?: boolean; at?: Date; fontScale?: number } = {},
 ): Promise<void> {
   await page.clock.install({ time: options.at ?? FIXED_TODAY });
   await installDeviceStubs(page);
+  if (options.fontScale && options.fontScale !== 1) await installFontScale(page, options.fontScale);
   await page.goto(options.demo === false ? '/' : '/?demo=1');
+}
+
+/**
+ * 시스템 글자 크기 확대를 흉내 낸다 (FR-28).
+ *
+ * 웹에는 기기의 글자 배율이 없고, 사용자가 손댈 수 있는 것은 브라우저의 뿌리 글자 크기다. 앱은
+ * 그 값(`html` 의 `font-size`)을 16 으로 나누어 배율로 쓴다(`src/theme/fontScale.ts`). 그래서
+ * 확대를 흉내 내는 가장 정직한 길은, 사용자가 브라우저 설정에서 글자를 "크게"로 바꾼 것처럼 뿌리
+ * 글자 크기를 키워 두는 것이다 — 200% 면 32px.
+ *
+ * 앱의 묶음(bundle)이 뿌리 글자 크기를 읽는 시점은 그 묶음이 처음 실행될 때다. 초기화 스크립트가
+ * 도는 순간에는 `<html>` 이 아직 없을 수 있어, 있으면 바로 적용하고 없으면 생기는 것을 지켜보다
+ * 적용한다.
+ */
+export async function installFontScale(page: Page, fontScale: number): Promise<void> {
+  await page.addInitScript((px: string) => {
+    const apply = () => {
+      const root = document.documentElement;
+      if (root && root.style.fontSize !== px) root.style.fontSize = px;
+    };
+    apply();
+    new MutationObserver(apply).observe(document, { childList: true });
+    document.addEventListener('DOMContentLoaded', apply);
+  }, `${16 * fontScale}px`);
 }
 
 /** 첫 화면의 단추를 눌러 홈으로 들어간다 (`decisions.md` Q-17 이 닫힌 배선). */
@@ -172,6 +203,18 @@ export async function enterHome(page: Page): Promise<void> {
 export async function enterPrayerFromHome(page: Page, index = 0): Promise<void> {
   await page.getByTestId(`home-card-${index}`).click();
   await page.getByTestId('pray-title').waitFor();
+}
+
+/**
+ * 지금 시각에서 시간을 멈춘다. 이 뒤로는 `page.clock.runFor` 로만 시간이 흐른다.
+ *
+ * `openApp` 이 세우는 가짜 시계는 **시각을 고정할 뿐 시간은 실시간으로 흐른다.** 그래서 기도
+ * 화면에 들어선 뒤 몇 초만 지나도 앱이 스스로 알을 넘겨, "내가 누른 것 때문에 움직였나"를 가릴 수
+ * 없어진다. 조작으로 만든 상태를 그대로 붙들고 재야 하는 시험은 화면에 들어선 직후 이것을 부른다.
+ */
+export async function freezeClock(page: Page): Promise<void> {
+  const now = await page.evaluate(() => Date.now());
+  await page.clock.pauseAt(now + 50);
 }
 
 /** 하루가 끝날 때까지 시계를 앞당긴다. 다 마치면 true. */

@@ -18,6 +18,7 @@
  */
 import { HAPTIC_PATTERNS, gapForPrayer } from '../domain/pacing';
 import type { PaceKey, RecitationMode } from '../domain/types';
+import type { RunnerPhase } from './phase';
 import type { RunStep } from './steps';
 
 /** 진행기가 바깥 세상에 손을 뻗는 통로. 실제 구현은 `channels.ts` 에 있다. */
@@ -41,6 +42,14 @@ export interface RunnerOptions {
   onStep?: (index: number, step: RunStep) => void;
   /** 마지막 단계까지 마쳤을 때 한 번 불린다. */
   onFinish?: () => void;
+  /**
+   * 지금 알의 상태가 바뀔 때마다 불린다 (FR-15 · `phase.ts`).
+   *
+   * 진행기는 자기가 이미 알고 있는 사실만 알린다 — 읽기 시작할 때 `reading`, 사이가 시작될 때
+   * `response`(읽지 않기면 `silent`), 단이 바뀌는 순간 `decade`. 멈춤은 `isRunning()` 이
+   * 말하므로 여기서 알리지 않는다. 이 알림은 흐름을 바꾸지 않는다 — 시간도 순서도 그대로다.
+   */
+  onPhase?: (phase: RunnerPhase) => void;
 }
 
 export interface Runner {
@@ -54,6 +63,13 @@ export interface Runner {
   advance(): void;
   /** 앞 알로 되돌아간다 (이어폰 이전 버튼). */
   back(): void;
+  /**
+   * 아무 자리로나 옮긴다 — 단을 넘기는 단추가 부른다 (`decisions.md` 결정 6).
+   *
+   * 멈춰 있을 때 옮겨도 화면과 저장된 자리가 함께 따라온다. 진행 중이면 그 자리부터
+   * 다시 읽기 시작한다.
+   */
+  goTo(index: number): void;
   /** 완전히 멈춘다. 화면을 떠날 때 부른다. */
   stop(): void;
   index(): number;
@@ -115,6 +131,7 @@ export function createRunner(options: RunnerOptions): Runner {
       options.onStep?.(index, step);
 
       if (mode !== 'silent') {
+        options.onPhase?.('reading');
         await channels.speak(step.a);
         if (!alive(mine)) return;
         if (mode === 'full' && step.b) {
@@ -123,6 +140,9 @@ export function createRunner(options: RunnerOptions): Runner {
         }
       }
 
+      // 사이가 시작된다. 교대면 사용자가 받아 바칠 차례이고, 전부 읽기면 다음 읽기 전의 짧은
+      // 쉼이다 — 둘 다 알이 숨을 쉬는 자리로 둔다. 읽지 않기면 소리 없이 사이만 흐른다.
+      options.onPhase?.(mode === 'silent' ? 'silent' : 'response');
       await wait(gapForPrayer(step.prayer, mode, pace));
       if (!alive(mine)) return;
 
@@ -134,7 +154,10 @@ export function createRunner(options: RunnerOptions): Runner {
         finish();
         return;
       }
-      if (queue[next]!.decade !== step.decade) channels.vibrate(HAPTIC_PATTERNS.decadeChange);
+      if (queue[next]!.decade !== step.decade) {
+        channels.vibrate(HAPTIC_PATTERNS.decadeChange);
+        options.onPhase?.('decade');
+      }
       index = next;
     }
   }
@@ -165,8 +188,18 @@ export function createRunner(options: RunnerOptions): Runner {
     index = bounded;
     if (previous && queue[index]!.decade !== previous.decade) {
       channels.vibrate(HAPTIC_PATTERNS.decadeChange);
+      options.onPhase?.('decade');
     }
-    if (running) startLoop();
+    if (running) {
+      startLoop();
+      return;
+    }
+    /*
+     * 멈춘 채로 옮겼으면 반복문이 없으므로 아무도 자리가 바뀐 것을 모른다. 화면은 옛
+     * 단계를 그대로 보이고 저장된 자리도 옛 자리에 머문다 — 다시 열면 옮기기 전으로
+     * 돌아간다는 뜻이다. 그래서 여기서 한 번 알린다.
+     */
+    options.onStep?.(index, queue[index]!);
   }
 
   return {
@@ -190,6 +223,9 @@ export function createRunner(options: RunnerOptions): Runner {
     },
     back() {
       goTo(index - 1);
+    },
+    goTo(target) {
+      goTo(target);
     },
     stop() {
       running = false;

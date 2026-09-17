@@ -110,10 +110,17 @@ for (const [, id, css] of styles) {
   parts.push(`<style id="${id}">${id === 'expo-generated-fonts' ? faces : css}</style>`);
 }
 parts.push(body);
-// 원본은 이 표시를 module 스크립트에 두고 번들에 defer 를 걸어 순서를 맞춘다.
-// 파일 하나로 묶으면 번들이 defer 없는 보통 스크립트가 되어 module 보다 **먼저** 돈다.
-// 그래서 표시도 보통 스크립트로 바꿔, 번들 앞에서 확실히 놓이게 한다.
-parts.push('<script>globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>');
+// 미리 그려 둔 화면에 이어 붙이지 않고(hydrate) 처음부터 다시 그리게 한다.
+//
+// 원본 웹 빌드는 서버에서 미리 그린 첫 화면 위에 앱을 이어 붙인다. 그런데 이 파일은
+// 어느 주소에 올라갈지 알 수 없고, 깊은 주소에 올라가면 앱이 첫 화면 대신 `+not-found`
+// 를 그리려 한다. 미리 그려 둔 것(첫 화면)과 어긋나 React 가 하이드레이션 오류를 낸다.
+// 파일 하나짜리 판에서 이어 붙이기가 버는 것은 첫 그림 몇 밀리초뿐이라, 끄는 편이 낫다.
+//
+// 순서도 함께 고쳐 둔다. 원본은 이 표시를 module 스크립트에 두고 번들에 defer 를 걸어
+// 순서를 맞추는데, 한 파일로 묶으면 번들이 defer 없는 보통 스크립트가 되어 module 보다
+// 먼저 돈다. 그래서 표시도 보통 스크립트로 두어 번들 앞에 확실히 놓는다.
+parts.push('<script>globalThis.__EXPO_ROUTER_HYDRATE__=false;</script>');
 parts.push(`<script>${safeBundle}</script>`);
 
 const out = parts.join('\n');

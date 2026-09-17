@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1e1b18">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="_ds/classical-5544a169-e0bd-40c5-b3e7-fd302ed699da/styles.css">
+  <script src="_ds/classical-5544a169-e0bd-40c5-b3e7-fd302ed699da/_ds_bundle.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
+  <style>
+    html,body{margin:0;padding:0;background:#17161a;min-height:100%}
+    body{font-family:"Lora","Noto Serif KR",serif;-webkit-text-size-adjust:100%;overscroll-behavior:none}
+    a{color:var(--accent,#b68235)} a:hover{color:var(--accent2,#6e2a35)}
+    button{font-family:inherit}
+    input{font-family:inherit}
+    @keyframes mrPulse{0%,100%{opacity:.85;transform:scale(1)}50%{opacity:.25;transform:scale(1.9)}}
+    @keyframes mrFade{from{opacity:0}to{opacity:1}}
+    @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+  </style>
+</helmet>
+
+<div data-screen-label="MyRosary World" style="--paper:{{th.paper}};--ink:{{th.ink}};--accent:{{th.accent}};--accent2:{{th.accent2}};--scrim:{{th.scrim}};--muted:{{th.muted}};--color-bg:{{th.paper}};--color-text:{{th.ink}};--color-accent:{{th.accent}};--color-surface:{{th.paper}};--font-heading:'Cormorant Garamond','Noto Serif KR',serif;--font-body:'Lora','Noto Serif KR',serif;position:relative;max-width:560px;margin:0 auto;min-height:100dvh;background:var(--paper,#f4efe4);color:var(--ink,#1c2333);font-family:var(--font-body);line-height:1.5;box-shadow:0 0 0 1px rgba(255,255,255,.04)">
+  <div aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap">{{ srText }}</div>
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Home" style="display:flex;flex-direction:column;min-height:100dvh">
+      <div style="position:relative;height:min(52dvh,470px);background:var(--scrim,#1e1b18);overflow:hidden;flex:none">
+        <div role="img" aria-label="{{ homeImg.alt }}" style="position:absolute;inset:0;background-image:url('{{ homeImg.src }}');background-size:cover;background-position:{{ homeImg.focal }};animation:mrFade 900ms ease both"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.34) 0%,rgba(0,0,0,0) 28%,rgba(0,0,0,0) 56%,color-mix(in srgb,var(--paper,#f4efe4) 75%,transparent) 82%,var(--paper,#f4efe4) 96%)"></div>
+        <div style="position:absolute;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 14px) 20px 0;display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <div style="font-family:var(--font-heading);font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#f6efe2;text-shadow:0 1px 8px rgba(0,0,0,.5)">{{ t.appName }}</div>
+          <button type="button" onClick="{{ goRegion }}" aria-label="{{ t.regionLang }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:1px solid rgba(255,255,255,.55);border-radius:999px;background:rgba(0,0,0,.22);color:#f6efe2;font-size:12px;letter-spacing:.08em;cursor:pointer;white-space:nowrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg>
+            <span style="flex:none;white-space:nowrap">{{ regionShort }}</span>
+          </button>
+        </div>
+        <button type="button" onClick="{{ viewHomeImage }}" aria-label="{{ t.view }}" style="position:absolute;right:16px;bottom:22%;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.45);background:rgba(0,0,0,.2);color:#f6efe2;display:grid;place-items:center;cursor:pointer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg>
+        </button>
+      </div>
+      <div style="flex:1;padding:16px 24px calc(env(safe-area-inset-bottom) + 84px);display:flex;flex-direction:column;gap:18px">
+        <div>
+          <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent,#b68235);font-variant-numeric:tabular-nums">{{ t.today }} · {{ todayLabel }}</div>
+          <h1 style="font-family:var(--font-heading);font-weight:500;font-size:clamp(34px,10vw,44px);line-height:1.05;margin:8px 0 10px;letter-spacing:-.01em;text-wrap:balance">{{ todaySetName }}</h1>
+          <p style="margin:0;font-size:15px;line-height:1.6;color:var(--ink);opacity:.82;text-wrap:pretty">{{ todayFirstMystery }}</p>
+          <button type="button" onClick="{{ goMystery }}" style="margin-top:8px;background:none;border:0;padding:8px 0;color:var(--accent,#b68235);font-size:13px;letter-spacing:.04em;cursor:pointer;text-decoration:underline;text-underline-offset:4px;min-height:44px">{{ t.mysteryGuide }} →</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button type="button" class="btn btn-primary btn-block" onClick="{{ primaryAction }}" style="min-height:56px;font-size:19px;font-weight:500;letter-spacing:.01em;border-radius:4px;margin:0">{{ primaryLabel }}</button>
+          <sc-if value="{{ hasSession }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted,#6b6a66);font-variant-numeric:tabular-nums">
+              <div style="flex:1;height:1px;background:rgba(0,0,0,.14);position:relative"><div style="position:absolute;left:0;top:-1px;height:3px;background:var(--accent,#b68235);width:{{ sessionPct }}%"></div></div>
+              <span>{{ sessionWhere }}</span>
+              <button type="button" onClick="{{ restartToday }}" style="background:none;border:0;color:var(--muted,#6b6a66);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px 0;min-height:32px;font-size:12.5px">{{ t.again }}</button>
+            </div>
+          </sc-if>
+        </div>
+        <sc-if value="{{ hasJourney }}" hint-placeholder-val="{{ false }}">
+          <div style="border-top:1px solid rgba(0,0,0,.14);padding-top:10px">
+            <div style="font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted,#6b6a66);margin-bottom:2px">{{ t.journeys }}</div>
+            <sc-for list="{{ homeJourneys }}" as="hj" hint-placeholder-count="2">
+              <button type="button" onClick="{{ hj.open }}" style="width:100%;text-align:left;background:none;border:0;border-bottom:1px solid rgba(0,0,0,.09);padding:10px 0;cursor:pointer;color:inherit;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px">
+                <span style="min-width:0"><span style="display:block;font-size:14.5px;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ hj.intention }}</span><span style="display:block;font-size:11.5px;color:var(--muted,#6b6a66);margin-top:2px">{{ hj.state }}</span></span>
+                <span style="font-size:12px;letter-spacing:.06em;color:var(--accent,#b68235);white-space:nowrap;font-variant-numeric:tabular-nums">{{ hj.day }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isMystery }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Today's Mystery" style="display:flex;flex-direction:column;min-height:100dvh">
+      <div style="padding:calc(env(safe-area-inset-top) + 8px) 12px 0;display:flex;align-items:center;gap:6px">
+        <button type="button" onClick="{{ goHome }}" aria-label="{{ t.back }}" style="width:44px;height:44px;border:0;background:none;color:inherit;display:grid;place-items:center;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+        <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent,#b68235)">{{ t.today }}</div>
+      </div>
+      <div style="padding:8px 24px 0">
+        <h1 style="font-family:var(--font-heading);font-weight:500;font-size:clamp(32px,9vw,42px);line-height:1.05;margin:0 0 6px">{{ todaySetName }}</h1>
+        <div style="font-size:13px;color:var(--muted,#6b6a66)">{{ todayLabel }}</div>
+      </div>
+      <div style="margin:18px 24px 0;position:relative;aspect-ratio:4/3;background:var(--scrim);overflow:hidden;border:6px solid var(--paper);outline:1px solid rgba(0,0,0,.14)">
+        <div role="img" aria-label="{{ homeImg.alt }}" style="width:100%;height:100%;background-image:url('{{ homeImg.src }}');background-size:cover;background-position:{{ homeImg.focal }}"></div>
+      </div>
+      <ol style="list-style:none;margin:18px 24px 0;padding:0;display:flex;flex-direction:column">
+        <sc-for list="{{ todayMysteries }}" as="m" hint-placeholder-count="5">
+          <li style="display:grid;grid-template-columns:34px minmax(0,1fr);gap:8px;padding:12px 0;border-top:1px solid rgba(0,0,0,.14)">
+            <span style="font-family:var(--font-heading);font-size:24px;line-height:1;color:var(--accent,#b68235);font-variant-numeric:tabular-nums">{{ m.n }}</span>
+            <div><div style="font-size:16px;line-height:1.45;text-wrap:pretty">{{ m.title }}</div><div style="font-size:12px;color:var(--muted,#6b6a66);margin-top:3px">{{ m.ref }}</div></div>
+          </li>
+        </sc-for>
+      </ol>
+      <div style="padding:20px 24px calc(env(safe-area-inset-bottom) + 92px)">
+        <button type="button" class="btn btn-primary btn-block" onClick="{{ primaryAction }}" style="min-height:56px;font-size:19px;margin:0">{{ primaryLabel }}</button>
+      </div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isPray }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Prayer" style="position:relative;height:100dvh;display:flex;flex-direction:column;background:var(--scrim,#1e1b18);color:#f4ecdc;overflow:hidden">
+      <div aria-hidden="true" style="position:absolute;inset:0;background-image:url('{{ prayImg.src }}');background-size:cover;background-position:{{ prayImg.focal }};opacity:.92"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.18) 18%,rgba(0,0,0,.28) 40%,color-mix(in srgb,var(--scrim,#1e1b18) 88%,transparent) 58%,color-mix(in srgb,var(--scrim,#1e1b18) 97%,transparent) 72%,var(--scrim,#1e1b18) 100%)"></div>
+      <header style="position:relative;z-index:2;padding:calc(env(safe-area-inset-top) + 6px) 8px 0;display:flex;align-items:center;gap:4px;flex:none">
+        <button type="button" onClick="{{ leavePray }}" aria-label="{{ t.back }}" style="width:44px;height:44px;border:0;background:none;color:inherit;display:grid;place-items:center;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+        <div style="flex:1;text-align:center;min-width:0">
+          <div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.6)">{{ prayHeader }}</div>
+          <div style="font-size:11px;opacity:.65;font-variant-numeric:tabular-nums;margin-top:2px">{{ stepLabel }}</div>
+        </div>
+        <button type="button" onClick="{{ cycleFont }}" aria-label="{{ t.fontSize }}" style="width:44px;height:44px;border:0;background:none;color:inherit;font-family:var(--font-heading);font-size:20px;cursor:pointer">Aa</button>
+        <button type="button" onClick="{{ toggleVoice }}" aria-pressed="{{ voiceOn }}" aria-label="{{ voiceLabel }}" style="width:44px;height:44px;border:0;background:none;color:{{ voiceColor }};display:grid;place-items:center;cursor:pointer">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"></path><path d="{{ voicePath }}"></path></svg>
+        </button>
+      </header>
+      <div style="position:relative;z-index:2;height:1px;margin:6px 16px 0;background:rgba(255,255,255,.18);flex:none"><div style="height:1px;background:#e9c877;width:{{ stepPct }}%;transition:width 400ms ease"></div></div>
+
+      <div style="position:relative;z-index:2;flex:none;display:flex;justify-content:center;padding-top:6px">
+        <svg viewBox="0 0 240 324" role="img" aria-label="{{ srText }}" onPointerDown="{{ onDown }}" onPointerMove="{{ onMove }}" onPointerUp="{{ onUp }}" onPointerCancel="{{ onUp }}" style="height:min(38dvh,calc(66vw * 1.35),400px);width:auto;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;overflow:visible;display:block">
+          <defs>
+            <filter id="mrGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3.2"></feGaussianBlur></filter>
+            <radialGradient id="mrCenter"><stop offset="0" stop-color="#000" stop-opacity=".22"></stop><stop offset="1" stop-color="#000" stop-opacity="0"></stop></radialGradient>
+          </defs>
+          <circle cx="120" cy="118" r="96" fill="url(#mrCenter)"></circle>
+          <g style="transform:rotate({{ rot }}deg);transition:{{ rotTransition }};transform-origin:120px 118px;transform-box:view-box">
+            <circle cx="120" cy="118" r="96" fill="none" stroke="rgba(255,255,255,.32)" stroke-width="1" stroke-dasharray="{{ chainDash }}" stroke-dashoffset="{{ chainOffset }}" transform="rotate(90 120 118)"></circle>
+            <sc-for list="{{ loopBeads }}" as="b" hint-placeholder-count="54">
+              <circle cx="{{ b.cx }}" cy="{{ b.cy }}" r="{{ b.r }}" fill="{{ b.fill }}" stroke="{{ b.stroke }}" stroke-width="{{ b.sw }}"></circle>
+            </sc-for>
+          </g>
+          <line x1="120" y1="212" x2="120" y2="296" stroke="rgba(255,255,255,.32)" stroke-width="1"></line>
+          <ellipse cx="120" cy="219" rx="6.5" ry="8.5" fill="{{ medal.fill }}" stroke="{{ medal.stroke }}" stroke-width="{{ medal.sw }}"></ellipse>
+          <sc-for list="{{ tailBeads }}" as="b" hint-placeholder-count="5">
+            <circle cx="{{ b.cx }}" cy="{{ b.cy }}" r="{{ b.r }}" fill="{{ b.fill }}" stroke="{{ b.stroke }}" stroke-width="{{ b.sw }}"></circle>
+          </sc-for>
+          <path d="M117.6 296h4.8v8h8.4v4.8h-8.4v11.2h-4.8v-11.2h-8.4v-4.8h8.4z" fill="{{ cross.fill }}" stroke="{{ cross.stroke }}" stroke-width="{{ cross.sw }}" stroke-linejoin="round"></path>
+          <g style="pointer-events:none;transform:translate({{ cur.cx }}px,{{ cur.cy }}px);transition:{{ curTransition }}">
+            <circle cx="0" cy="0" r="{{ cur.rGlow }}" fill="#f2c96a" opacity=".85" filter="url(#mrGlow)"></circle>
+            <circle cx="0" cy="0" r="{{ cur.rRing }}" fill="none" stroke="#fff1c9" stroke-width="1" style="transform-origin:0 0;transform-box:view-box;animation:{{ pulseAnim }}"></circle>
+            <circle cx="0" cy="0" r="{{ cur.r }}" fill="#fff6dc" stroke="#fff" stroke-width="1"></circle>
+          </g>
+          <circle cx="120" cy="118" r="58" fill="transparent" style="cursor:pointer" onClick="{{ tapCenter }}"></circle>
+        </svg>
+      </div>
+
+      <div style="position:relative;z-index:2;flex:1;min-height:0;display:flex;flex-direction:column;padding:10px 24px 0">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex:none;border-bottom:1px solid rgba(255,255,255,.16);padding-bottom:8px">
+          <div style="font-family:var(--font-heading);font-size:22px;font-weight:500;letter-spacing:.01em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ prayerTitle }}</div>
+          <div style="font-size:13px;letter-spacing:.06em;opacity:.8;font-variant-numeric:tabular-nums;white-space:nowrap;color:#e9c877">{{ prayerCounter }}</div>
+        </div>
+        <div style="flex:1;min-height:0;overflow-x:clip;overflow-y:auto;scrollbar-width:none;padding:12px 0 16px;-webkit-overflow-scrolling:touch;mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 22px),transparent 100%)">
+          <sc-if value="{{ hasMysteryLine }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0 0 10px;font-size:13px;line-height:1.5;color:#e9c877;letter-spacing:.02em;text-wrap:pretty">{{ mysteryLine }}</p>
+          </sc-if>
+          <p style="margin:0;font-size:{{ fontPx }}px;line-height:1.62;white-space:pre-line;text-wrap:pretty;text-shadow:0 1px 2px rgba(0,0,0,.5);overflow-wrap:anywhere">{{ prayerText }}</p>
+          <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:12px 0 0;font-size:14px;line-height:1.55;opacity:.72;text-wrap:pretty">{{ noteText }}</p>
+          </sc-if>
+        </div>
+      </div>
+
+      <nav aria-label="controls" style="position:relative;z-index:2;flex:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:10px;padding:6px 16px 0">
+        <button type="button" onClick="{{ prev }}" disabled="{{ atStart }}" style="display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px;min-width:0;padding:0 12px 0 8px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:rgba(0,0,0,.25);color:inherit;font-size:13.5px;cursor:pointer;opacity:{{ prevOpacity }}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="m15 18-6-6 6-6"></path></svg><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ prevName }}</span>
+        </button>
+        <button type="button" onClick="{{ next }}" style="display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px;min-width:0;padding:0 8px 0 12px;border:1px solid #e9c877;border-radius:999px;background:rgba(0,0,0,.25);color:#fff3d3;font-size:13.5px;cursor:pointer">
+          <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ nextName }}</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+      </nav>
+      <div style="position:relative;z-index:2;flex:none;text-align:center;font-size:11px;letter-spacing:.06em;opacity:.5;line-height:1.3;padding:6px 16px calc(env(safe-area-inset-bottom) + 10px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ hintText }}</div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isComplete }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Complete" style="position:relative;min-height:100dvh;display:flex;flex-direction:column;background:var(--scrim,#1e1b18);color:#f4ecdc">
+      <div role="img" aria-label="{{ doneImg.alt }}" style="position:absolute;inset:0;background-image:url('{{ doneImg.src }}');background-size:cover;background-position:{{ doneImg.focal }};opacity:.9"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.2) 0%,rgba(0,0,0,.1) 35%,color-mix(in srgb,var(--scrim,#1e1b18) 92%,transparent) 62%,var(--scrim,#1e1b18) 100%)"></div>
+      <div style="position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 24px calc(env(safe-area-inset-bottom) + 24px);gap:16px">
+        <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#e9c877">{{ doneSetName }}</div>
+        <h1 style="font-family:var(--font-heading);font-weight:500;font-size:clamp(32px,9vw,42px);line-height:1.08;margin:0;text-wrap:balance">{{ t.complete }}</h1>
+        <div style="display:flex;gap:22px;font-variant-numeric:tabular-nums;font-size:15px;border-top:1px solid rgba(255,255,255,.2);padding-top:14px">
+          <span>{{ doneHail }}</span><span>{{ doneMinutes }}</span>
+        </div>
+        <sc-if value="{{ hasJourney }}" hint-placeholder-val="{{ false }}"><div style="font-size:14px;opacity:.85">{{ journeyLine }} · {{ journeyDay }}</div></sc-if>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px">
+          <button type="button" onClick="{{ goHomeFresh }}" style="min-height:52px;border:1px solid #e9c877;border-radius:4px;background:transparent;color:#fff3d3;font-family:var(--font-heading);font-size:19px;cursor:pointer">{{ t.toHome }}</button>
+          <button type="button" onClick="{{ pinDoneImage }}" style="min-height:44px;border:1px solid rgba(255,255,255,.35);border-radius:4px;background:transparent;color:inherit;font-size:14px;cursor:pointer">{{ pinDoneLabel }}</button>
+        </div>
+      </div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isView }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Art View" style="position:relative;height:100dvh;background:#0d0c0b;color:#f4ecdc;display:flex;flex-direction:column">
+      <div role="img" aria-label="{{ viewImg.alt }}" onClick="{{ toggleViewUi }}" style="position:absolute;inset:0;background-image:url('{{ viewImg.src }}');background-size:contain;background-position:center;background-repeat:no-repeat;animation:mrFade 700ms ease both;cursor:pointer"></div>
+      <div style="position:relative;z-index:1;display:flex;justify-content:flex-end;padding:calc(env(safe-area-inset-top) + 8px) 8px 0;opacity:{{ viewUiOpacity }};transition:opacity 300ms">
+        <button type="button" onClick="{{ closeView }}" aria-label="{{ t.close }}" style="width:44px;height:44px;border:0;border-radius:50%;background:rgba(0,0,0,.45);color:inherit;display:grid;place-items:center;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+      </div>
+      <div style="position:relative;z-index:1;margin-top:auto;padding:16px 20px calc(env(safe-area-inset-bottom) + 18px);background:linear-gradient(180deg,transparent,rgba(0,0,0,.7));display:flex;align-items:center;justify-content:space-between;gap:12px;opacity:{{ viewUiOpacity }};transition:opacity 300ms">
+        <div style="min-width:0"><div style="font-family:var(--font-heading);font-size:20px;line-height:1.2">{{ viewImg.alt }}</div><div style="font-size:12px;opacity:.7;margin-top:2px">{{ viewMeta }}</div></div>
+        <div style="display:flex;gap:6px;flex:none">
+          <button type="button" onClick="{{ toggleFavView }}" aria-pressed="{{ viewFav }}" aria-label="{{ t.favorites }}" style="width:44px;height:44px;border:1px solid rgba(255,255,255,.35);border-radius:50%;background:rgba(0,0,0,.35);color:{{ viewFavColor }};display:grid;place-items:center;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="{{ viewFavFill }}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"></path></svg></button>
+          <button type="button" onClick="{{ togglePinView }}" aria-pressed="{{ viewPinned }}" aria-label="{{ t.pin }}" style="height:44px;padding:0 14px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:rgba(0,0,0,.35);color:{{ viewPinColor }};font-size:13px;cursor:pointer;white-space:nowrap">{{ viewPinLabel }}</button>
+        </div>
+      </div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isGallery }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Gallery" style="min-height:100dvh;padding:calc(env(safe-area-inset-top) + 18px) 20px calc(env(safe-area-inset-bottom) + 92px)">
+      <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent,#b68235)">{{ regionName }}</div>
+      <h1 style="font-family:var(--font-heading);font-weight:500;font-size:clamp(30px,8vw,38px);line-height:1.05;margin:6px 0 14px">{{ t.gallery }}</h1>
+      <div class="seg" role="tablist" style="display:flex;width:100%">
+        <label class="seg-opt" style="flex:1;justify-content:center;min-height:44px;padding:6px 4px;white-space:nowrap;font-size:12.5px"><input type="radio" name="gal" checked="{{ galRegion }}" onChange="{{ setGalRegion }}"><span>{{ regionName }}</span></label>
+        <label class="seg-opt" style="flex:1;justify-content:center;min-height:44px;padding:6px 4px;white-space:nowrap;font-size:12.5px"><input type="radio" name="gal" checked="{{ galAll }}" onChange="{{ setGalAll }}"><span>{{ t.allImages }}</span></label>
+        <label class="seg-opt" style="flex:1;justify-content:center;min-height:44px;padding:6px 4px;white-space:nowrap;font-size:12.5px"><input type="radio" name="gal" checked="{{ galFav }}" onChange="{{ setGalFav }}"><span>{{ t.favorites }}</span></label>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 14px;margin-top:20px">
+        <sc-for list="{{ galleryItems }}" as="g" hint-placeholder-count="6">
+          <figure style="margin:0;display:flex;flex-direction:column;gap:8px">
+            <button type="button" onClick="{{ g.open }}" aria-label="{{ g.alt }}" style="position:relative;display:block;padding:0;border:6px solid var(--paper);outline:1px solid rgba(0,0,0,.14);background:var(--scrim);aspect-ratio:3/4;overflow:hidden;cursor:pointer;width:100%">
+              <div aria-hidden="true" style="width:100%;height:100%;background-image:url('{{ g.src }}');background-size:cover;background-position:{{ g.focal }};filter:sepia(.12) saturate(.92)"></div>
+              <sc-if value="{{ g.isPinned }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:8px;top:8px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;background:rgba(0,0,0,.55);color:#f6efe2">{{ t.pinned }}</span></sc-if>
+            </button>
+            <figcaption style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+              <span style="font-size:13px;line-height:1.3;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)">{{ g.alt }}</span>
+              <button type="button" onClick="{{ g.fav }}" aria-pressed="{{ g.isFav }}" aria-label="{{ t.favorites }}" style="width:44px;height:44px;margin:-10px -12px -10px 0;border:0;background:none;color:{{ g.favColor }};display:grid;place-items:center;cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="{{ g.favFill }}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"></path></svg></button>
+            </figcaption>
+          </figure>
+        </sc-for>
+      </div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isGuide }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Mysteries Guide" style="min-height:100dvh;padding:calc(env(safe-area-inset-top) + 18px) 24px calc(env(safe-area-inset-bottom) + 92px)">
+      <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent,#b68235)">{{ t.mysteryGuide }}</div>
+      <h1 style="font-family:var(--font-heading);font-weight:500;font-size:clamp(30px,8vw,38px);line-height:1.05;margin:6px 0 14px">{{ guideSetName }}</h1>
+      <div class="seg" style="display:flex;width:100%">
+        <sc-for list="{{ setTabs }}" as="s" hint-placeholder-count="4">
+          <label class="seg-opt" style="flex:1;justify-content:center;min-height:44px;padding:6px 4px;text-align:center;font-size:12px;line-height:1.2"><input type="radio" name="gset" checked="{{ s.on }}" onChange="{{ s.pick }}"><span>{{ s.short }}</span></label>
+        </sc-for>
+      </div>
+      <ol style="list-style:none;margin:10px 0 0;padding:0">
+        <sc-for list="{{ guideMysteries }}" as="m" hint-placeholder-count="5">
+          <li style="display:grid;grid-template-columns:36px minmax(0,1fr);gap:8px;padding:16px 0;border-bottom:1px solid rgba(0,0,0,.14)">
+            <span style="font-family:var(--font-heading);font-size:28px;line-height:1;color:var(--accent,#b68235);font-variant-numeric:tabular-nums">{{ m.n }}</span>
+            <div>
+              <div style="font-family:var(--font-heading);font-size:21px;line-height:1.25;text-wrap:pretty">{{ m.title }}</div>
+              <div style="font-size:12px;letter-spacing:.06em;color:var(--muted,#6b6a66);margin-top:4px">{{ t.scripture }} · {{ m.ref }}</div>
+              <p style="margin:8px 0 0;font-size:15px;line-height:1.6;opacity:.85;text-wrap:pretty">{{ m.note }}</p>
+            </div>
+          </li>
+        </sc-for>
+      </ol>
+      <button type="button" class="btn btn-primary btn-block" onClick="{{ prayGuideSet }}" style="min-height:52px;font-size:17px;margin-top:20px">{{ t.prayThis }}</button>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isJourneys }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Journeys" style="min-height:100dvh;padding:calc(env(safe-area-inset-top) + 18px) 24px calc(env(safe-area-inset-bottom) + 92px)">
+      <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent,#b68235)">{{ todayLabel }}</div>
+      <h1 style="font-family:var(--font-heading);font-weight:500;font-size:clamp(30px,8vw,38px);line-height:1.05;margin:6px 0 18px">{{ t.journeys }}</h1>
+      <sc-if value="{{ noJourneys }}" hint-placeholder-val="{{ false }}"><p style="color:var(--muted,#6b6a66);font-size:14px;margin:0 0 18px">{{ t.noJourney }}</p></sc-if>
+      <div style="display:flex;flex-direction:column;gap:22px">
+        <sc-for list="{{ journeyRows }}" as="j" hint-placeholder-count="1">
+          <article style="border-top:1px solid rgba(0,0,0,.14)">
+            <button type="button" onClick="{{ j.toggle }}" aria-expanded="{{ j.open }}" style="width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;background:none;border:0;padding:14px 0 10px;color:inherit;cursor:pointer;text-align:left;min-height:56px">
+              <span style="min-width:0">
+                <span style="display:block;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent,#b68235)">{{ j.kicker }}</span>
+                <span style="display:block;font-family:var(--font-heading);font-size:21px;line-height:1.25;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ j.intention }}</span>
+              </span>
+              <span style="font-variant-numeric:tabular-nums;font-size:12.5px;white-space:nowrap;color:var(--muted,#6b6a66)">{{ j.dayLabel }}</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted,#6b6a66);transform:rotate({{ j.chevron }}deg);transition:transform 220ms"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <div style="height:2px;background:rgba(0,0,0,.1);margin:0 0 12px"><div style="height:2px;background:var(--accent,#b68235);width:{{ j.pct }}%;transition:width 300ms"></div></div>
+            <sc-if value="{{ j.open }}" hint-placeholder-val="{{ false }}">
+              <div style="padding-bottom:14px">
+                <div style="display:grid;grid-template-columns:repeat({{ j.cols }},minmax(0,1fr));gap:4px">
+                  <sc-for list="{{ j.ticks }}" as="tk" hint-placeholder-count="9">
+                    <span title="{{ tk.label }}" style="display:block;aspect-ratio:1;border-radius:1px;background:{{ tk.bg }};border:1px solid {{ tk.border }}"></span>
+                  </sc-for>
+                </div>
+                <button type="button" class="btn btn-primary btn-block" onClick="{{ j.pray }}" style="min-height:50px;font-size:16px;margin-top:14px">{{ j.prayLabel }}</button>
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;font-size:12.5px;color:var(--muted,#6b6a66)">
+                  <span style="min-width:0;overflow:hidden;text-overflow:ellipsis">{{ j.footer }}</span>
+                  <button type="button" onClick="{{ j.remove }}" style="background:none;border:0;color:var(--accent2,#6e2a35);text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:44px;padding:0 4px;font-size:12.5px;white-space:nowrap">{{ t.delete }}</button>
+                </div>
+              </div>
+            </sc-if>
+          </article>
+        </sc-for>
+      </div>
+      <div style="margin-top:28px;border-top:1px solid rgba(0,0,0,.14);padding-top:18px">
+        <h2 style="font-family:var(--font-heading);font-weight:500;font-size:22px;margin:0 0 12px">{{ t.newJourney }}</h2>
+        <div class="seg" style="display:flex;width:100%">
+          <label class="seg-opt" style="flex:1;justify-content:center;min-height:44px"><input type="radio" name="jk" checked="{{ nj9 }}" onChange="{{ setNj9 }}"><span>{{ t.nine }}</span></label>
+          <label class="seg-opt" style="flex:1;justify-content:center;min-height:44px"><input type="radio" name="jk" checked="{{ nj54 }}" onChange="{{ setNj54 }}"><span>{{ t.fiftyFour }}</span></label>
+          <label class="seg-opt" style="flex:1;justify-content:center;min-height:44px"><input type="radio" name="jk" checked="{{ njDaily }}" onChange="{{ setNjDaily }}"><span>{{ t.daily }}</span></label>
+        </div>
+        <div class="field" style="margin-top:14px"><label for="mr-int">{{ t.intention }}</label><input id="mr-int" class="input" type="text" value="{{ njIntention }}" onChange="{{ setNjIntention }}" placeholder="{{ t.intentionPh }}" style="min-height:48px;font-size:16px"></div>
+        <button type="button" class="btn btn-primary btn-block" onClick="{{ addJourney }}" style="min-height:50px;font-size:17px;margin-top:14px">{{ t.startJourney }}</button>
+      </div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Settings" style="min-height:100dvh;padding:calc(env(safe-area-inset-top) + 18px) 24px calc(env(safe-area-inset-bottom) + 92px)">
+      <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent,#b68235)">{{ t.appName }}</div>
+      <h1 style="font-family:var(--font-heading);font-weight:500;font-size:clamp(30px,8vw,38px);line-height:1.05;margin:6px 0 10px">{{ t.settings }}</h1>
+      <button type="button" onClick="{{ goRegion }}" style="width:100%;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:12px;background:none;border:0;border-top:1px solid rgba(0,0,0,.14);border-bottom:1px solid rgba(0,0,0,.14);padding:16px 0;color:inherit;cursor:pointer;min-height:56px">
+        <span><span style="display:block;font-size:15px">{{ t.regionLang }}</span><span style="display:block;font-size:12.5px;color:var(--muted,#6b6a66);margin-top:2px">{{ regionName }} · {{ langName }}</span></span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+      </button>
+      <div style="padding:16px 0;border-bottom:1px solid rgba(0,0,0,.14)">
+        <div style="font-size:15px;margin-bottom:10px">{{ t.fontSize }}</div>
+        <div class="seg" style="display:flex;width:100%">
+          <sc-for list="{{ fontOpts }}" as="f" hint-placeholder-count="4">
+            <label class="seg-opt" style="flex:1;justify-content:center;min-height:44px;padding:6px 2px"><input type="radio" name="fs" checked="{{ f.on }}" onChange="{{ f.pick }}"><span style="font-size:{{ f.px }}px;line-height:1">{{ f.label }}</span></label>
+          </sc-for>
+        </div>
+      </div>
+      <sc-for list="{{ toggles }}" as="tg" hint-placeholder-count="4">
+        <button type="button" role="switch" aria-checked="{{ tg.on }}" onClick="{{ tg.toggle }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;background:none;border:0;border-bottom:1px solid rgba(0,0,0,.14);padding:14px 0;color:inherit;cursor:pointer;min-height:56px;text-align:left">
+          <span style="font-size:15px">{{ tg.label }}</span>
+          <span style="position:relative;flex:none;width:44px;height:26px;border-radius:13px;border:1px solid {{ tg.border }};background:{{ tg.bg }};transition:background 200ms"><span style="position:absolute;top:3px;left:{{ tg.knobLeft }}px;width:18px;height:18px;border-radius:50%;background:{{ tg.knob }};transition:left 200ms"></span></span>
+        </button>
+      </sc-for>
+      <div style="padding:16px 0;border-bottom:1px solid rgba(0,0,0,.14);display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <span><span style="display:block;font-size:15px">{{ t.history }}</span><span style="display:block;font-size:12.5px;color:var(--muted,#6b6a66);margin-top:2px">{{ historyLine }}</span></span>
+        <span style="font-family:var(--font-heading);font-size:28px;color:var(--accent,#b68235);font-variant-numeric:tabular-nums">{{ historyCount }}</span>
+      </div>
+      <div style="padding:16px 0;border-bottom:1px solid rgba(0,0,0,.14);display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <span><span style="display:block;font-size:15px">{{ t.install }}</span><span style="display:block;font-size:12.5px;color:var(--muted,#6b6a66);margin-top:2px">{{ offlineLine }}</span></span>
+        <button type="button" class="btn btn-secondary" onClick="{{ install }}" disabled="{{ noInstall }}" style="min-height:40px">{{ t.install }}</button>
+      </div>
+      <sc-if value="{{ hasSession }}" hint-placeholder-val="{{ false }}">
+        <button type="button" onClick="{{ clearSession }}" style="margin-top:16px;background:none;border:0;color:var(--accent2,#6e2a35);font-size:13.5px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:44px;padding:0">{{ t.clearSession }}</button>
+      </sc-if>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isRegion }}" hint-placeholder-val="{{ false }}">
+    <section data-screen-label="Region & Language" style="min-height:100dvh;padding:calc(env(safe-area-inset-top) + 8px) 24px calc(env(safe-area-inset-bottom) + 24px)">
+      <div style="display:flex;align-items:center;gap:6px;margin-left:-12px">
+        <button type="button" onClick="{{ backFromRegion }}" aria-label="{{ t.back }}" style="width:44px;height:44px;border:0;background:none;color:inherit;display:grid;place-items:center;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+        <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent,#b68235)">{{ t.regionLang }}</div>
+      </div>
+      <h1 style="font-family:var(--font-heading);font-weight:500;font-size:clamp(30px,8vw,38px);line-height:1.05;margin:10px 0 16px">{{ t.region }}</h1>
+      <div style="display:flex;flex-direction:column">
+        <sc-for list="{{ regionRows }}" as="r" hint-placeholder-count="5">
+          <button type="button" onClick="{{ r.pick }}" aria-pressed="{{ r.on }}" style="display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:14px;align-items:center;text-align:left;background:none;border:0;border-top:1px solid rgba(0,0,0,.14);padding:12px 0;color:inherit;cursor:pointer;min-height:44px">
+            <span style="display:block;height:72px;overflow:hidden;background:{{ r.scrim }};border:4px solid {{ r.paper }};outline:1px solid rgba(0,0,0,.14)"><span aria-hidden="true" style="display:block;width:100%;height:100%;background-image:url('{{ r.src }}');background-size:cover;background-position:{{ r.focal }}"></span></span>
+            <span style="min-width:0"><span style="display:block;font-family:var(--font-heading);font-size:22px;line-height:1.15">{{ r.name }}</span><span style="display:block;font-size:12.5px;color:var(--muted,#6b6a66);margin-top:3px;line-height:1.4;text-wrap:pretty">{{ r.desc }}</span><span style="display:flex;gap:5px;margin-top:7px"><span style="width:12px;height:12px;border-radius:50%;background:{{ r.paper }};border:1px solid rgba(0,0,0,.2)"></span><span style="width:12px;height:12px;border-radius:50%;background:{{ r.ink }}"></span><span style="width:12px;height:12px;border-radius:50%;background:{{ r.accent }}"></span><span style="width:12px;height:12px;border-radius:50%;background:{{ r.accent2 }}"></span></span></span>
+            <span style="width:22px;height:22px;border-radius:50%;border:1.5px solid {{ r.dotBorder }};background:{{ r.dotBg }};box-shadow:inset 0 0 0 4px var(--paper)"></span>
+          </button>
+        </sc-for>
+      </div>
+      <h2 style="font-family:var(--font-heading);font-weight:500;font-size:26px;margin:28px 0 8px">{{ t.language }}</h2>
+      <div style="display:flex;flex-direction:column">
+        <sc-for list="{{ langRows }}" as="l" hint-placeholder-count="7">
+          <button type="button" onClick="{{ l.pick }}" aria-pressed="{{ l.on }}" style="display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;background:none;border:0;border-top:1px solid rgba(0,0,0,.14);padding:0;color:inherit;cursor:pointer;min-height:52px">
+            <span style="font-size:16px;color:{{ l.color }}">{{ l.name }}</span><span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted,#6b6a66)">{{ l.tag }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ showNav }}" hint-placeholder-val="{{ false }}">
+    <nav aria-label="main" style="position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:560px;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);background:color-mix(in srgb,var(--paper,#f4efe4) 94%,transparent);backdrop-filter:blur(8px);border-top:1px solid rgba(0,0,0,.14);padding:6px 0 calc(env(safe-area-inset-bottom) + 6px)">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
+        <button type="button" onClick="{{ n.go }}" aria-current="{{ n.current }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;min-height:52px;justify-content:center;background:none;border:0;color:{{ n.color }};cursor:pointer;font-size:11px;letter-spacing:.04em">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" dangerouslySetInnerHTML="{{ n.icon }}"></svg>
+          <span>{{ n.label }}</span>
+        </button>
+      </sc-for>
+    </nav>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;initialRegion&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;&quot;,&quot;options&quot;:[&quot;&quot;,&quot;europe&quot;,&quot;northamerica&quot;,&quot;southamerica&quot;,&quot;asia&quot;,&quot;korea&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Preview&quot;},&quot;initialLang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;&quot;,&quot;options&quot;:[&quot;&quot;,&quot;ko&quot;,&quot;en&quot;,&quot;it&quot;,&quot;fr&quot;,&quot;es&quot;,&quot;pt&quot;,&quot;tl&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Preview&quot;},&quot;beadStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;gold&quot;,&quot;options&quot;:[&quot;gold&quot;,&quot;pearl&quot;],&quot;tsType&quot;:&quot;'gold'|'pearl'&quot;,&quot;section&quot;:&quot;Rosary&quot;}}">
+class Component extends DCLogic {
+  state = { ready: false, screen: 'home', settings: { lang: 'ko', region: 'korea', fontScale: 1, voice: false, autoAdvance: true, haptic: true, reduceMotion: false },
+    session: null, homeImage: null, favorites: [], pinned: null, journeys: [], history: [], guideSet: null, galTab: 'region', openJourney: null,
+    rot: 0, dragging: false, viewId: null, viewUi: true, done: null, nj: { kind: '54', intention: '' }, returnTo: 'home', installEvt: null };
+  D = null; seq = []; loop = []; firstStep = {}; beadSteps = {}; drag = null; speakToken = 0;
+
+  load(k, d) { try { const v = localStorage.getItem('myrosary.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }
+  save(k, v) { try { localStorage.setItem('myrosary.' + k, JSON.stringify(v)); } catch (e) {} }
+  newId() { return Date.now() + '-' + Math.random().toString(36).slice(2, 8); }
+
+  async componentDidMount() {
+    const D = await import('./data.js'); this.D = D;
+    this.seq = D.buildSequence(); this.loop = D.loopOrder();
+    this.seq.forEach((s, i) => { if (this.firstStep[s.bead] == null) this.firstStep[s.bead] = i; (this.beadSteps[s.bead] = this.beadSteps[s.bead] || []).push(i); });
+    const settings = Object.assign({}, this.state.settings, this.load('settings', {}));
+    if (this.props.initialRegion) settings.region = this.props.initialRegion;
+    if (this.props.initialLang) settings.lang = this.props.initialLang;
+    const session = this.load('session', null);
+    const pinned = this.load('pinned', null);
+    const homeImage = pinned || this.pickImage(settings.region, this.load('lastImage', null));
+    this.save('lastImage', homeImage);
+    const seen = {}; let fixed = false;
+    const journeys = this.load('journeys', []).map(j => { const id = String(j.id); if (!seen[id]) { seen[id] = 1; return j; } fixed = true; return Object.assign({}, j, { id: this.newId() }); });
+    if (fixed) this.save('journeys', journeys);
+    this.setState({ ready: true, settings, session, pinned, homeImage, favorites: this.load('favorites', []), journeys, history: this.load('history', []),
+      rot: 0, screen: 'home' });
+    this.keyHandler = (e) => { if (this.state.screen !== 'pray') return; if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); this.next(); } if (e.key === 'ArrowLeft') { e.preventDefault(); this.prev(); } };
+    window.addEventListener('keydown', this.keyHandler);
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); this.setState({ installEvt: e }); });
+    try { if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js', { scope: './' }).catch(() => {}); } catch (e) {}
+    window.__rosary = this; // debugging handle
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this.keyHandler); try { speechSynthesis.cancel(); } catch (e) {} }
+
+  // ── helpers ──
+  region() { return this.D.REGIONS.find(r => r.id === this.state.settings.region) || this.D.REGIONS[0]; }
+  ui() { return this.D.UI[this.state.settings.lang] || this.D.UI.en; }
+  pickImage(regionId, exclude) {
+    const r = this.D.REGIONS.find(x => x.id === regionId) || this.D.REGIONS[0];
+    const pool = r.images.filter(id => id !== exclude); return pool[Math.floor(Math.random() * pool.length)];
+  }
+  img(id) { const im = this.D.IMAGES[id] || this.D.IMAGES['01']; const lang = this.state.settings.lang; return { src: im.src, focal: im.focal, alt: im.title[lang] || im.title.en, id }; }
+  todayStr(d) { d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  locale() { return ({ ko: 'ko-KR', en: 'en-US', it: 'it-IT', fr: 'fr-FR', es: 'es-ES', pt: 'pt-BR', tl: 'fil-PH' })[this.state.settings.lang] || 'en'; }
+  todaySet() { return this.D.DAY_TO_SET[new Date().getDay()]; }
+  reduced() { return this.state.settings.reduceMotion || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  haptic(ms) { if (this.state.settings.haptic && navigator.vibrate) { try { navigator.vibrate(ms); } catch (e) {} } }
+  ACT = 18; // active bead sits 18° counterclockwise from the bottom (just beside the medal)
+  rotFor() { return 0; } // the rosary never moves; only the highlight travels along the beads
+  setSettings(patch) { const settings = Object.assign({}, this.state.settings, patch); this.save('settings', settings); this.setState({ settings }); }
+  go(screen, extra) { window.scrollTo(0, 0); this.setState(Object.assign({ screen }, extra || {})); }
+
+  // ── session ──
+  startSession(set) {
+    const imageId = this.state.pinned || this.state.homeImage;
+    const session = { set: set || this.todaySet(), step: 0, imageId, visited: [0], startedAt: Date.now(), elapsed: 0, tick: Date.now(), date: this.todayStr() };
+    this.save('session', session); this.setState({ session, rot: 0, screen: 'pray' }); this.afterStep(session);
+  }
+  resumeSession() { const session = Object.assign({}, this.state.session, { tick: Date.now() }); this.setState({ session, rot: this.rotFor(session.step), screen: 'pray' }); this.afterStep(session); }
+  goStep(i) {
+    const s = this.state.session; if (!s) return; i = Math.max(0, Math.min(80, i)); if (i === s.step) return;
+    const now = Date.now(); const elapsed = s.elapsed + Math.min(now - (s.tick || now), 120000);
+    const visited = s.visited.includes(i) ? s.visited : s.visited.concat([i]);
+    const session = Object.assign({}, s, { step: i, elapsed, tick: now, visited });
+    this.save('session', session); this.setState({ session, rot: this.rotFor(i) }); this.haptic(12); this.afterStep(session);
+  }
+  next() { const s = this.state.session; if (!s) return; if (s.step >= 80) return this.finish(); this.goStep(s.step + 1); }
+  prev() { const s = this.state.session; if (s) this.goStep(s.step - 1); }
+  finish() {
+    const s = this.state.session; const now = Date.now(); const elapsed = s.elapsed + Math.min(now - (s.tick || now), 120000);
+    const hail = s.visited.filter(i => this.seq[i].kind === 'hail').length; const today = this.todayStr();
+    const history = this.state.history.concat([{ date: today, set: s.set, hail, minutes: Math.max(1, Math.round(elapsed / 60000)) }]);
+    const journeys = this.state.journeys.map(j => Object.assign({}, j, { days: Object.assign({}, j.days, { [today]: true }) }));
+    this.save('history', history); this.save('journeys', journeys); this.save('session', null); this.haptic([20, 60, 20]);
+    try { speechSynthesis.cancel(); } catch (e) {}
+    this.setState({ history, journeys, session: null, done: { set: s.set, hail, minutes: Math.max(1, Math.round(elapsed / 60000)), imageId: s.imageId }, screen: 'complete' });
+  }
+  afterStep(session) {
+    this.speakToken++; const token = this.speakToken;
+    if (!this.state.settings.voice || !('speechSynthesis' in window)) return;
+    const text = this.stepText(session); try { speechSynthesis.cancel(); } catch (e) {}
+    const u = new SpeechSynthesisUtterance(text); u.lang = this.locale(); u.rate = 0.9;
+    u.onend = () => { if (token !== this.speakToken) return; if (this.state.settings.autoAdvance && this.state.screen === 'pray') this.autoTimer = setTimeout(() => { if (token === this.speakToken && this.state.screen === 'pray') this.next(); }, 1400); };
+    setTimeout(() => { if (token === this.speakToken) speechSynthesis.speak(u); }, 60);
+  }
+  stepText(session) {
+    const st = this.seq[session.step]; const lang = this.state.settings.lang; const P = this.D.PRAYERS[lang] || this.D.PRAYERS.en;
+    if (st.kind === 'announce') { const M = this.D.MYSTERIES[lang] || this.D.MYSTERIES.en; return M[session.set][st.decade - 1]; }
+    return P[st.kind];
+  }
+
+  // ── rosary pointer interaction ──
+  svgCenter(e) { const r = e.currentTarget.getBoundingClientRect(); return { cx: r.left + r.width / 2, cy: r.top + r.height * (118 / 324), R: r.width * (96 / 240) }; }
+  onDown = (e) => {
+    if (!this.state.session) return; const c = this.svgCenter(e); const dx = e.clientX - c.cx, dy = e.clientY - c.cy; const d = Math.hypot(dx, dy);
+    if (d < c.R * 0.6 || d > c.R * 1.45) return; // center = tap, tail = buttons
+    e.currentTarget.setPointerCapture(e.pointerId);
+    this.drag = { a0: Math.atan2(dy, dx) * 180 / Math.PI, rot0: this.state.rot, acc: 0, last: Math.atan2(dy, dx) * 180 / Math.PI, moved: false, lastK: null };
+    this.setState({ dragging: true });
+  };
+  beadAt(e) { // loop bead index under the pointer (angle measured counterclockwise from the bottom)
+    const c = this.svgCenter(e); const dx = e.clientX - c.cx, dy = e.clientY - c.cy;
+    let deg = Math.atan2(dx, dy) * 180 / Math.PI; if (deg < 0) deg += 360; // 0 = bottom, grows toward the right/up
+    return Math.max(0, Math.min(53, Math.round(deg * 56 / 360) - 1));
+  }
+  onMove = (e) => {
+    if (!this.drag) return; const c = this.svgCenter(e); const a = Math.atan2(e.clientY - c.cy, e.clientX - c.cx) * 180 / Math.PI;
+    let d = a - this.drag.last; if (d > 180) d -= 360; if (d < -180) d += 360; this.drag.last = a; this.drag.acc += d;
+    if (Math.abs(this.drag.acc) > 3) this.drag.moved = true;
+    if (!this.drag.moved) return;
+    const k = this.beadAt(e); if (k !== this.drag.lastK) { this.drag.lastK = k; const target = this.firstStep[this.loop[k]]; if (target !== this.state.session.step) this.goStep(target); }
+  };
+  onUp = (e) => {
+    if (!this.drag) return; const drag = this.drag; this.drag = null;
+    if (!drag.moved) { const k = this.beadAt(e); const target = this.firstStep[this.loop[k]]; if (target !== this.state.session.step) this.goStep(target); }
+    this.setState({ dragging: false });
+  };
+  tapCenter = () => { if (this.state.dragging) return; this.next(); };
+
+  // ── journeys ──
+  addJourney = () => {
+    const nj = this.state.nj; if (!nj.intention.trim() && nj.kind !== 'daily') return;
+    const j = { id: this.newId(), kind: nj.kind, intention: nj.intention.trim(), start: this.todayStr(), days: {} };
+    const journeys = this.state.journeys.concat([j]); this.save('journeys', journeys); this.setState({ journeys, nj: { kind: nj.kind, intention: '' }, openJourney: j.id });
+  };
+  journeyInfo(j) {
+    const total = j.kind === '9' ? 9 : j.kind === '54' ? 54 : 0; const start = new Date(j.start + 'T00:00:00'); const day = Math.floor((new Date(this.todayStr() + 'T00:00:00') - start) / 86400000) + 1;
+    const prayed = Object.keys(j.days).length; const end = new Date(start); end.setDate(end.getDate() + Math.max(total, 1) - 1);
+    return { total, day, prayed, end, active: total === 0 || day <= total, phase: j.kind === '54' ? (day <= 27 ? 'petition' : 'thanks') : null };
+  }
+
+  renderVals() {
+    const S = this.state; if (!S.ready || !this.D) return { ready: false, isHome: false, showNav: false, th: {}, srText: '' };
+    const D = this.D, t = this.ui(), fmt = D.fmt, R = this.region(), lang = S.settings.lang;
+    const th = { paper: R.paper, ink: R.ink, accent: R.accent, accent2: R.accent2, scrim: R.scrim, muted: R.muted };
+    const setName = (set) => t[set];
+    const todaySet = this.todaySet(); const M = D.MYSTERIES[lang] || D.MYSTERIES.en; const MED = D.MEDITATIONS[lang] || D.MEDITATIONS.en;
+    const todayLabel = new Date().toLocaleDateString(this.locale(), { month: 'long', day: 'numeric', weekday: 'long' });
+    const homeImg = this.img(S.homeImage);
+    const sess = S.session; const st = sess ? this.seq[sess.step] : null;
+    const kindName = (k) => t[k];
+    const primaryAction = () => sess ? this.resumeSession() : this.startSession(todaySet);
+    const where = sess ? (st.decade === 0 ? t.opening : st.decade === 6 ? t.closing : fmt(t.decadeN, { n: st.decade })) + ' · ' + kindName(st.kind) : '';
+    const activeJ = S.journeys.map(j => ({ j, i: this.journeyInfo(j) })).filter(x => x.i.active)[0];
+    const journeyLine = activeJ ? (activeJ.j.intention || t[activeJ.j.kind === '9' ? 'nine' : activeJ.j.kind === '54' ? 'fiftyFour' : 'daily']) : '';
+    const journeyDay = activeJ ? (activeJ.i.total ? fmt(t.dayOf, { d: activeJ.i.day, t: activeJ.i.total }) : t.daily) : '';
+
+    // rosary geometry
+    const CX = 120, CY = 118, RR = 96; const pearl = (this.props.beadStyle ?? 'gold') === 'pearl'; const gold = pearl ? '#efe6d6' : '#d6b25e', goldS = pearl ? '#fff' : '#f3dfa6', pend = 'rgba(255,255,255,.2)', pendS = 'rgba(255,255,255,.72)';
+    const cur = sess ? sess.step : -1;
+    const stateOf = (bead) => { const steps = this.beadSteps[bead] || []; if (steps.includes(cur)) return 'cur'; return steps.length && steps[steps.length - 1] < cur ? 'done' : 'pend'; };
+    const paint = (bead) => { const s = stateOf(bead); return s === 'done' ? { fill: gold, stroke: goldS, sw: 0.7 } : s === 'cur' ? { fill: '#fff6dc', stroke: '#fff', sw: 1 } : { fill: pend, stroke: pendS, sw: 0.7 }; };
+    const loopBeads = this.loop.map((id, k) => { const th2 = (k + 1) * 2 * Math.PI / 56; return Object.assign({ id, cx: +(CX + RR * Math.sin(th2)).toFixed(2), cy: +(CY + RR * Math.cos(th2)).toFixed(2), r: id[0] === 'L' ? 5.8 : 3.7 }, paint(id)); });
+    const tailPos = { tL2: [120, 236, 5.8], tS3: [120, 250, 3.7], tS2: [120, 261, 3.7], tS1: [120, 272, 3.7], tL1: [120, 286, 5.8] };
+    const tailBeads = Object.keys(tailPos).map(id => Object.assign({ id, cx: tailPos[id][0], cy: tailPos[id][1], r: tailPos[id][2] }, paint(id)));
+    const medal = paint('medal'); const cross = paint('cross');
+    let curPos = { cx: 120, cy: 308, r: 0, rGlow: 0, rRing: 0 };
+    if (st) {
+      if (this.loop.includes(st.bead)) { const k = this.loop.indexOf(st.bead); const rr = st.bead[0] === 'L' ? 5.8 : 3.7; const a = (k + 1) * 2 * Math.PI / 56; curPos = { cx: +(CX + RR * Math.sin(a)).toFixed(2), cy: +(CY + RR * Math.cos(a)).toFixed(2), r: rr, rGlow: rr + 6, rRing: rr + 3 }; }
+      else if (tailPos[st.bead]) { const p = tailPos[st.bead]; curPos = { cx: p[0], cy: p[1], r: p[2], rGlow: p[2] + 6, rRing: p[2] + 3 }; }
+      else if (st.bead === 'medal') curPos = { cx: 120, cy: 219, r: 7.5, rGlow: 13, rRing: 10.5 };
+      else curPos = { cx: 120, cy: 308, r: 9, rGlow: 15, rRing: 12 };
+    }
+    if (st && st.bead === 'cross') curPos.r = 0; // cross drawn by path; keep glow + ring only
+    const reduced = this.reduced();
+    const rotTransition = 'none';
+    const chainCirc = 2 * Math.PI * RR; const gap = chainCirc * (2 / 56);
+    const bead = st ? (st.bead === 'cross' ? t.beadCross : st.bead === 'medal' ? t.beadMedal : st.bead[0] === 'L' || st.bead.startsWith('tL') ? t.beadOur : fmt(t.beadHail, { i: st.hailIdx || '' })) : '';
+    const prayerTitle = st ? kindName(st.kind) : ''; const prayerCounter = st ? (st.kind === 'hail' ? st.hailIdx + ' / ' + st.hailOf : (st.decade >= 1 && st.decade <= 5 ? fmt(t.decadeN, { n: st.decade }) : '')) : '';
+    const prayerText = sess ? this.stepText(sess) : '';
+    const prayHeader = sess ? (st.decade === 0 ? setName(sess.set) + ' · ' + t.opening : st.decade === 6 ? setName(sess.set) + ' · ' + t.closing : setName(sess.set) + ' · ' + fmt(t.decadeN, { n: st.decade })) : '';
+    const mysteryLine = st && st.decade >= 1 && st.decade <= 5 && st.kind !== 'announce' ? M[sess.set][st.decade - 1] : '';
+    const noteText = st && st.kind === 'announce' ? ((MED[sess.set] || [])[st.decade - 1] || '') + (D.SCRIPTURE[sess.set] ? '  ·  ' + D.SCRIPTURE[sess.set][st.decade - 1] : '') : '';
+    const prevSt = sess && sess.step > 0 ? this.seq[sess.step - 1] : null; const nextSt = sess && sess.step < 80 ? this.seq[sess.step + 1] : null;
+    const srText = st ? fmt(t.srCurrent, { bead, prayer: prayerTitle + (prayerCounter ? ' ' + prayerCounter : ''), pos: (sess.step + 1) + ' / 81' }) : t.appName;
+    const fontPx = [17, 20, 23, 27][S.settings.fontScale] || 20;
+    const doneImg = this.img(S.done ? S.done.imageId : S.homeImage);
+    const viewImg = this.img(S.viewId || S.homeImage); const viewFav = S.favorites.includes(viewImg.id); const viewPinned = S.pinned === viewImg.id;
+    const galIds = S.galTab === 'fav' ? S.favorites : S.galTab === 'all' ? D.IMAGE_IDS : R.images;
+    const galleryItems = galIds.map(id => { const im = this.img(id); const isFav = S.favorites.includes(id); return Object.assign(im, { isFav, isPinned: S.pinned === id, favColor: isFav ? R.accent2 : R.muted, favFill: isFav ? 'currentColor' : 'none', open: () => this.go('view', { viewId: id, returnTo: 'gallery', viewUi: true }), fav: () => this.toggleFav(id) }); });
+    const guideSet = S.guideSet || todaySet;
+    const setShort = { joyful: t.joyful.split(/[ ·]/)[0], luminous: t.luminous.split(/[ ·]/)[0], sorrowful: t.sorrowful.split(/[ ·]/)[0], glorious: t.glorious.split(/[ ·]/)[0] };
+    const mysteriesOf = (set) => M[set].map((title, i) => ({ n: i + 1, title, ref: D.SCRIPTURE[set][i], note: (MED[set] || [])[i] || (D.MEDITATIONS.en[set] || [])[i] || '' }));
+    const journeyRows = S.journeys.map(j => { const i = this.journeyInfo(j); const total = i.total || Math.max(9, Math.ceil((i.day || 1) / 9) * 9);
+      const ticks = Array.from({ length: total }, (_, k) => { const d = new Date(j.start + 'T00:00:00'); d.setDate(d.getDate() + k); const key = this.todayStr(d); const on = !!j.days[key]; const isToday = key === this.todayStr(); return { bg: on ? R.accent : 'transparent', border: on ? R.accent : isToday ? R.ink : 'rgba(0,0,0,.18)', label: d.toLocaleDateString(this.locale(), { month: 'short', day: 'numeric' }) }; });
+      const open = S.openJourney === j.id;
+      const kindLabel = t[j.kind === '9' ? 'nine' : j.kind === '54' ? 'fiftyFour' : 'daily']; const phase = i.phase ? t[i.phase] : '';
+      return { intention: j.intention || t.intention, kicker: [kindLabel, phase].filter(Boolean).join(' · '),
+        footer: [j.days[this.todayStr()] ? t.prayedToday : t.notYet, i.total ? fmt(t.dueDate, { date: i.end.toLocaleDateString(this.locale(), { month: 'short', day: 'numeric' }) }) : ''].filter(Boolean).join(' · '), dayLabel: i.total ? fmt(t.dayOf, { d: Math.min(i.day, i.total), t: i.total }) : i.prayed + '', ticks, cols: total > 27 ? 18 : 9, open, chevron: open ? 180 : 0, pct: Math.min(100, Math.round(i.prayed / total * 100)),
+        toggle: () => this.setState({ openJourney: open ? null : j.id }),
+        prayLabel: sess ? t.resume : t.prayForThis, pray: () => { if (this.state.session) this.resumeSession(); else this.startSession(todaySet); },
+        todayState: j.days[this.todayStr()] ? t.prayedToday : t.notYet, due: i.total ? fmt(t.dueDate, { date: i.end.toLocaleDateString(this.locale(), { month: 'short', day: 'numeric' }) }) : '',
+        remove: () => { const journeys = S.journeys.filter(x => x.id !== j.id); this.save('journeys', journeys); this.setState({ journeys, openJourney: null }); } }; });
+    const mkToggle = (key, label) => ({ label, on: !!S.settings[key], toggle: () => this.setSettings({ [key]: !S.settings[key] }), bg: S.settings[key] ? R.accent : 'transparent', border: S.settings[key] ? R.accent : 'rgba(0,0,0,.25)', knob: S.settings[key] ? R.paper : R.muted, knobLeft: S.settings[key] ? 21 : 3 });
+    const navDefs = [['home', t.home, '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>'], ['gallery', t.gallery, '<rect x="3" y="4" width="18" height="16" rx="1"/><circle cx="9" cy="10" r="1.6"/><path d="m21 16-5-5-9 9"/>'], ['journeys', t.journeys, '<circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.5 19h6a3.5 3.5 0 0 0 0-7h-5a3.5 3.5 0 0 1 0-7h6"/>'], ['settings', t.settings, '<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>']];
+    const navScreens = ['home', 'gallery', 'journeys', 'settings', 'guide', 'mystery'];
+    const langOf = (id) => D.LANGS.find(l => l.id === id);
+
+    return {
+      ready: true, th, t, srText,
+      isHome: S.screen === 'home', isMystery: S.screen === 'mystery', isPray: S.screen === 'pray', isComplete: S.screen === 'complete', isView: S.screen === 'view', isGallery: S.screen === 'gallery', isGuide: S.screen === 'guide', isJourneys: S.screen === 'journeys', isSettings: S.screen === 'settings', isRegion: S.screen === 'region',
+      showNav: navScreens.includes(S.screen),
+      navItems: navDefs.map(([id, label, icon]) => ({ label, icon: { __html: icon }, current: (S.screen === id || (id === 'home' && (S.screen === 'mystery' || S.screen === 'guide'))) ? 'page' : 'false', color: (S.screen === id || (id === 'home' && (S.screen === 'mystery' || S.screen === 'guide'))) ? R.accent : R.muted, go: () => this.go(id) })),
+      regionShort: lang.toUpperCase() + ' · ' + t[R.id], regionName: t[R.id], langName: (langOf(lang) || {}).name,
+      homeImg, todayLabel, todaySetName: setName(todaySet), todayFirstMystery: M[todaySet][0], todayMysteries: mysteriesOf(todaySet),
+      primaryAction, primaryLabel: sess ? t.resume : t.start, hasSession: !!sess, sessionPct: sess ? Math.round(sess.step / 80 * 100) : 0, sessionWhere: where,
+      restartToday: () => { this.save('session', null); this.setState({ session: null }); this.startSession(todaySet); },
+      hasJourney: !!activeJ, journeyLine, journeyDay,
+      homeJourneys: S.journeys.map(j => ({ j, i: this.journeyInfo(j) })).filter(x => x.i.active).map(({ j, i }) => ({
+        intention: j.intention || t[j.kind === '9' ? 'nine' : j.kind === '54' ? 'fiftyFour' : 'daily'],
+        state: [t[j.kind === '9' ? 'nine' : j.kind === '54' ? 'fiftyFour' : 'daily'], i.phase ? t[i.phase] : '', j.days[this.todayStr()] ? t.prayedToday : t.notYet].filter(Boolean).join(' · '),
+        day: i.total ? fmt(t.dayOf, { d: Math.min(i.day, i.total), t: i.total }) : fmt(t.hailCount, { n: i.prayed }),
+        open: () => this.go('journeys', { openJourney: j.id }) })),
+      goHome: () => this.go('home'), goMystery: () => this.go('mystery'), goRegion: () => this.go('region', { returnTo: S.screen }), goJourneys: () => this.go('journeys'), backFromRegion: () => this.go(S.returnTo === 'region' ? 'home' : S.returnTo),
+      viewHomeImage: () => this.go('view', { viewId: S.homeImage, returnTo: 'home', viewUi: true }),
+      goHomeFresh: () => { const homeImage = S.pinned || this.pickImage(S.settings.region, S.homeImage); this.save('lastImage', homeImage); this.go('home', { homeImage }); },
+      // pray
+      prayImg: (() => { const im = sess ? this.img(sess.imageId) : homeImg; const m = /^(\S+)\s+(\d+)%$/.exec(im.focal); return m ? Object.assign({}, im, { focal: m[1] + ' ' + Math.min(60, +m[2] + 14) + '%' }) : im; })(), prayHeader, stepLabel: sess ? (sess.step + 1) + ' / 81' : '', stepPct: sess ? Math.round((sess.step + 1) / 81 * 100) : 0,
+      leavePray: () => { try { speechSynthesis.cancel(); } catch (e) {} this.speakToken++; this.go('home'); },
+      cycleFont: () => this.setSettings({ fontScale: (S.settings.fontScale + 1) % 4 }), fontPx,
+      toggleVoice: () => { const voice = !S.settings.voice; this.setSettings({ voice }); if (voice) setTimeout(() => this.afterStep(this.state.session), 0); else { try { speechSynthesis.cancel(); } catch (e) {} this.speakToken++; } },
+      voiceOn: !!S.settings.voice, voiceLabel: S.settings.voice ? t.voiceOn : t.voiceOff, voiceColor: S.settings.voice ? '#e9c877' : 'rgba(244,236,220,.75)', voicePath: S.settings.voice ? 'M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13' : 'm22 9-6 6M16 9l6 6',
+      rot: 0, rotTransition, curTransition: S.dragging || reduced ? 'none' : 'transform 420ms cubic-bezier(.22,.8,.2,1)', chainDash: (chainCirc - gap).toFixed(2) + ' ' + gap.toFixed(2), chainOffset: (-(gap / 2)).toFixed(2),
+      loopBeads, tailBeads, medal, cross, cur: curPos, pulseAnim: reduced ? 'none' : 'mrPulse 2.6s ease-in-out infinite',
+      onDown: this.onDown, onMove: this.onMove, onUp: this.onUp, tapCenter: this.tapCenter,
+      prayerTitle, prayerCounter, prayerText, hasMysteryLine: !!mysteryLine, mysteryLine, hasNote: !!noteText, noteText,
+      prev: () => this.prev(), next: () => this.next(), atStart: !sess || sess.step === 0, prevOpacity: sess && sess.step === 0 ? 0.35 : 1,
+      prevName: prevSt ? kindName(prevSt.kind) : t.prev, nextName: nextSt ? kindName(nextSt.kind) : t.complete.split(/[ .]/)[0], hintText: t.tapHint + ' · ' + t.dragHint,
+      // complete
+      doneImg, doneSetName: S.done ? setName(S.done.set) : '', doneHail: S.done ? fmt(t.hailCount, { n: S.done.hail }) : '', doneMinutes: S.done ? fmt(t.minutes, { n: S.done.minutes }) : '',
+      pinDoneImage: () => this.togglePin(S.done ? S.done.imageId : S.homeImage), pinDoneLabel: S.done && S.pinned === S.done.imageId ? t.pinned : t.keepImage,
+      // view
+      viewImg, viewUiOpacity: S.viewUi ? 1 : 0, toggleViewUi: () => this.setState({ viewUi: !S.viewUi }), closeView: () => this.go(S.returnTo || 'home'),
+      viewMeta: t[R.id] + (viewPinned ? ' · ' + t.pinned : ''), viewFav, viewFavColor: viewFav ? '#e9c877' : '#f4ecdc', viewFavFill: viewFav ? 'currentColor' : 'none', toggleFavView: () => this.toggleFav(viewImg.id),
+      viewPinned, viewPinColor: viewPinned ? '#e9c877' : '#f4ecdc', viewPinLabel: viewPinned ? t.unpin : t.pin, togglePinView: () => this.togglePin(viewImg.id),
+      // gallery
+      galRegion: S.galTab === 'region', galAll: S.galTab === 'all', galFav: S.galTab === 'fav', setGalRegion: () => this.setState({ galTab: 'region' }), setGalAll: () => this.setState({ galTab: 'all' }), setGalFav: () => this.setState({ galTab: 'fav' }), galleryItems,
+      // guide
+      guideSetName: setName(guideSet), setTabs: D.MYSTERY_SETS.map(s => ({ short: setShort[s], on: s === guideSet, pick: () => this.setState({ guideSet: s }) })), guideMysteries: mysteriesOf(guideSet),
+      prayGuideSet: () => { this.save('session', null); this.setState({ session: null }); this.startSession(guideSet); },
+      // journeys
+      noJourneys: S.journeys.length === 0, journeyRows, nj9: S.nj.kind === '9', nj54: S.nj.kind === '54', njDaily: S.nj.kind === 'daily',
+      setNj9: () => this.setState({ nj: Object.assign({}, S.nj, { kind: '9' }) }), setNj54: () => this.setState({ nj: Object.assign({}, S.nj, { kind: '54' }) }), setNjDaily: () => this.setState({ nj: Object.assign({}, S.nj, { kind: 'daily' }) }),
+      njIntention: S.nj.intention, setNjIntention: (e) => this.setState({ nj: Object.assign({}, S.nj, { intention: e.target.value }) }), addJourney: this.addJourney,
+      // settings
+      fontOpts: [t.small, t.normal, t.large, t.xlarge].map((label, i) => ({ label, px: [12, 14, 16, 19][i], on: S.settings.fontScale === i, pick: () => this.setSettings({ fontScale: i }) })),
+      toggles: [mkToggle('voice', t.voice), mkToggle('autoAdvance', t.autoAdvance), mkToggle('haptic', t.haptic), mkToggle('reduceMotion', t.reduceMotion)],
+      historyCount: S.history.length, historyLine: S.history.length ? fmt(t.hailCount, { n: S.history.reduce((a, h) => a + h.hail, 0) }) : t.data,
+      install: () => { if (S.installEvt) S.installEvt.prompt(); }, noInstall: !S.installEvt, offlineLine: t.offline,
+      clearSession: () => { this.save('session', null); this.setState({ session: null }); },
+      // region & language
+      regionRows: D.REGIONS.map(r => ({ name: t[r.id], desc: (t.regionDesc || {})[r.id] || '', src: D.IMAGES[r.images[0]].src, focal: D.IMAGES[r.images[0]].focal, paper: r.paper, ink: r.ink, accent: r.accent, accent2: r.accent2, scrim: r.scrim, on: r.id === R.id, dotBorder: r.id === R.id ? R.accent : 'rgba(0,0,0,.25)', dotBg: r.id === R.id ? R.accent : 'transparent',
+        pick: () => { const patch = { region: r.id }; if (!r.langs.includes(S.settings.lang)) patch.lang = r.defaultLang; this.setSettings(patch); const homeImage = S.pinned || this.pickImage(r.id, S.homeImage); this.save('lastImage', homeImage); this.setState({ homeImage }); } })),
+      langRows: D.LANGS.map(l => ({ name: l.name, on: l.id === lang, color: l.id === lang ? R.accent : R.ink, tag: l.id === lang ? '●' : (R.langs.includes(l.id) ? t[R.id] : ''), pick: () => this.setSettings({ lang: l.id }) })),
+    };
+  }
+  toggleFav(id) { const favorites = this.state.favorites.includes(id) ? this.state.favorites.filter(x => x !== id) : this.state.favorites.concat([id]); this.save('favorites', favorites); this.setState({ favorites }); }
+  togglePin(id) { const pinned = this.state.pinned === id ? null : id; this.save('pinned', pinned); this.setState({ pinned, homeImage: pinned || this.state.homeImage }); }
+}
+</script>
+</body>
+</html>

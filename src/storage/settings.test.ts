@@ -29,7 +29,8 @@ describe('기본값', () => {
   it('낭송은 교대, 받는 사이는 보통, 낮과 밤은 기기 설정 따름이다', () => {
     expect(DEFAULT_SETTINGS.recitation).toBe('alternate');
     expect(DEFAULT_SETTINGS.pace).toBe('normal');
-    expect(DEFAULT_SETTINGS.theme).toBe('system');
+    // 낮(한지)으로 고정한다 — decisions.md 결정 5. 밤은 설정에서 고른다.
+    expect(DEFAULT_SETTINGS.theme).toBe('day');
   });
 
   it('손 없이 조작은 켜져 있다 — 08 검증의 중심 질문이 그 입력을 요구한다 (Q-21)', () => {

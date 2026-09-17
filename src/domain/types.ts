@@ -8,12 +8,21 @@
  */
 
 /** 기도문 키. `spec/prayers.ko.json` 의 `prayers` 키와 같다. */
-export type PrayerKey = 'sign' | 'creed' | 'our' | 'hail' | 'glory' | 'save' | 'decl';
+export type PrayerKey =
+  | 'sign'
+  | 'kiss'
+  | 'creed'
+  | 'our'
+  | 'hail'
+  | 'glory'
+  | 'save'
+  | 'salve'
+  | 'decl';
 
-/** 77단계 중 한 단계. `spec/prayer-sequence.json` 의 `steps` 한 원소. */
+/** 81단계 중 한 단계. `spec/prayer-sequence.json` 의 `steps` 한 원소. */
 export interface PrayerStep {
-  /** 시작 기도 구간인지, 다섯 단 중 하나인지. */
-  section: 'opening' | 'decade';
+  /** 시작 기도 구간인지, 다섯 단 중 하나인지, 마침 기도 구간인지. */
+  section: 'opening' | 'decade' | 'closing';
   /** 몇째 단인가 (1~5). 시작 기도 구간에는 없다. */
   decade?: number;
   prayer: PrayerKey;
@@ -25,7 +34,7 @@ export interface PrayerStep {
   of?: number;
   /** 묵주의 큰 알(주님의 기도)인가. */
   big?: boolean;
-  /** 0부터 76까지. 자리 저장이 가리키는 값이다 (FR-03). */
+  /** 0부터 80까지. 자리 저장이 가리키는 값이다 (FR-03). */
   index: number;
 }
 
