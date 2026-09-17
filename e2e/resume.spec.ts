@@ -10,6 +10,7 @@ import {
   collectConsoleErrors,
   enterHome,
   enterPrayerFromHome,
+  freezeClock,
   openApp,
 } from './support/harness';
 
@@ -24,6 +25,11 @@ test('잠시 멈추고 나갔다 들어오면 멈춘 자리에서 이어진다',
 
   // 얼마쯤 바친다. 시작 기도를 지나 제1단 안으로 들어갈 만큼.
   await page.clock.runFor(40000);
+  // 여기서 시간을 멈춘다. `openApp` 이 세우는 가짜 시계는 시각만 고정할 뿐 시간은 실시간으로
+  // 흐르므로, 멈추지 않으면 자리를 읽은 뒤 멈춤을 누르기까지의 몇십 밀리초 사이에 앱이 알을
+  // 하나 더 넘겨 버린다. 그러면 저장된 자리가 방금 읽은 자리보다 앞서고, 다시 들어왔을 때
+  // 두 값이 어긋나 시험이 실패한다 — 실제로 여섯 번에 한 번 그렇게 실패했다(2026-09-17).
+  await freezeClock(page);
   const stoppedAt = await page.getByTestId('pray-step').textContent();
   const stoppedText = await page.getByTestId('pray-a').textContent();
   expect(stoppedAt).not.toBe('시작 기도 · 성호경');
@@ -49,6 +55,9 @@ test('여기서 끝내기를 누르면 다음에 오늘 처음부터 시작한�
   await enterHome(page);
   await enterPrayerFromHome(page);
   await page.clock.runFor(40000);
+  // 같은 이유로 시간을 멈춘다 — 다시 들어온 뒤 "처음부터"를 재는 동안 앱이 스스로 알을
+  // 넘기면 그 판정도 흔들린다.
+  await freezeClock(page);
   await expect(page.getByTestId('pray-step')).not.toHaveText('시작 기도 · 성호경');
 
   await page.getByTestId('pray-stop').click();
