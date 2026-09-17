@@ -39,6 +39,12 @@ export default function RootLayout() {
     'NotoSerifKR-Regular': require('../assets/fonts/NotoSerifKR-Regular.ttf'),
     'NotoSansKR-Regular': require('../assets/fonts/NotoSansKR-Regular.ttf'),
     'NotoSansKR-Medium': require('../assets/fonts/NotoSansKR-Medium.ttf'),
+    // 새 시안(결정 11)이 쓰는 라틴 글꼴 둘. 한글은 위의 명조를 그대로 쓴다.
+    // 이름은 `src/theme/worldTokens.ts` 의 `worldFonts` 와 글자 하나까지 같아야 한다.
+    'CormorantGaramond-Regular': require('../assets/fonts/CormorantGaramond-Regular.ttf'),
+    'CormorantGaramond-SemiBold': require('../assets/fonts/CormorantGaramond-SemiBold.ttf'),
+    'Lora-Regular': require('../assets/fonts/Lora-Regular.ttf'),
+    'Lora-SemiBold': require('../assets/fonts/Lora-SemiBold.ttf'),
   });
 
   // 저장된 여정과 설정을 읽어 온다. 여러 번 불려도 한 번만 연다.

@@ -1,0 +1,155 @@
+{
+  "$schema_note": "지역 다섯과 언어 일곱. 색 여섯은 src/theme/tokens.ts 가 토큰으로 옮겨 쓰고, 그림 목록은 src/art/worldPlates.ts 가 쓴다.",
+  "source": "docs/design/world/data.js (Claude Design 인계본, 2026-09-16). 공식 기도서와 대조되지 않았다.",
+  "languages": [
+    {
+      "id": "ko",
+      "name": "한국어",
+      "voice": "ko-KR"
+    },
+    {
+      "id": "en",
+      "name": "English",
+      "voice": "en-US"
+    },
+    {
+      "id": "it",
+      "name": "Italiano",
+      "voice": "it-IT"
+    },
+    {
+      "id": "fr",
+      "name": "Français",
+      "voice": "fr-FR"
+    },
+    {
+      "id": "es",
+      "name": "Español",
+      "voice": "es-ES"
+    },
+    {
+      "id": "pt",
+      "name": "Português",
+      "voice": "pt-BR"
+    },
+    {
+      "id": "tl",
+      "name": "Filipino",
+      "voice": "fil-PH"
+    }
+  ],
+  "regions": [
+    {
+      "id": "europe",
+      "defaultLang": "en",
+      "langs": [
+        "en",
+        "it",
+        "fr"
+      ],
+      "paper": "#f4efe4",
+      "ink": "#1c2333",
+      "accent": "#b68235",
+      "accent2": "#6e2a35",
+      "scrim": "#141a2a",
+      "muted": "#6b6a66",
+      "images": [
+        "03",
+        "04",
+        "13",
+        "17",
+        "07",
+        "06",
+        "11"
+      ]
+    },
+    {
+      "id": "northamerica",
+      "defaultLang": "en",
+      "langs": [
+        "en",
+        "es"
+      ],
+      "paper": "#f2f3f4",
+      "ink": "#14233a",
+      "accent": "#c19a4f",
+      "accent2": "#5a6b7d",
+      "scrim": "#0f1a2b",
+      "muted": "#66707c",
+      "images": [
+        "05",
+        "16",
+        "13",
+        "06",
+        "03",
+        "17"
+      ]
+    },
+    {
+      "id": "southamerica",
+      "defaultLang": "es",
+      "langs": [
+        "es",
+        "pt"
+      ],
+      "paper": "#f7efe2",
+      "ink": "#1f3a2e",
+      "accent": "#c98f2b",
+      "accent2": "#b4553a",
+      "scrim": "#1c2a24",
+      "muted": "#6d6558",
+      "images": [
+        "15",
+        "14",
+        "17",
+        "02",
+        "13",
+        "05"
+      ]
+    },
+    {
+      "id": "asia",
+      "defaultLang": "en",
+      "langs": [
+        "en",
+        "tl"
+      ],
+      "paper": "#f5f2ec",
+      "ink": "#23272a",
+      "accent": "#b9a06a",
+      "accent2": "#4f7f6f",
+      "scrim": "#1b1f22",
+      "muted": "#6a6c6a",
+      "images": [
+        "07",
+        "10",
+        "11",
+        "06",
+        "01",
+        "16"
+      ]
+    },
+    {
+      "id": "korea",
+      "defaultLang": "ko",
+      "langs": [
+        "ko"
+      ],
+      "paper": "#f3ede2",
+      "ink": "#2a2622",
+      "accent": "#b68235",
+      "accent2": "#2f4a7a",
+      "scrim": "#1e1b18",
+      "muted": "#6b645a",
+      "images": [
+        "01",
+        "12",
+        "10",
+        "02",
+        "11",
+        "08",
+        "07"
+      ]
+    }
+  ]
+}

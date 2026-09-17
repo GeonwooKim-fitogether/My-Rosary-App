@@ -67,3 +67,47 @@ describe('읽어 들이기', () => {
     expect(loaded.handsFree).toBe(false);
   });
 });
+
+describe('지역과 언어 (결정 11 의 새 시안)', () => {
+  it('기본값은 한국·한국어다', () => {
+    expect(DEFAULT_SETTINGS.region).toBe('korea');
+    expect(DEFAULT_SETTINGS.language).toBe('ko');
+  });
+
+  it('두 값이 없던 옛 기기도 그대로 열린다 — 없으면 기본값으로 메운다', () => {
+    const parsed = parseSettings(JSON.stringify({ recitation: 'silent', theme: 'day' }));
+    expect(parsed.recitation).toBe('silent');
+    expect(parsed.region).toBe('korea');
+    expect(parsed.language).toBe('ko');
+  });
+
+  it('아는 지역과 켜진 언어는 그대로 돌아온다', () => {
+    const parsed = parseSettings(JSON.stringify({ region: 'europe', language: 'en' }));
+    expect(parsed.region).toBe('europe');
+    expect(parsed.language).toBe('en');
+  });
+
+  it('모르는 지역은 한국으로 떨어진다', () => {
+    expect(parseSettings(JSON.stringify({ region: '남극' })).region).toBe('korea');
+  });
+
+  it('켜지지 않은 언어가 저장돼 있으면 그 지역의 기본 언어로 떨어진다', () => {
+    // 이탈리아어는 데이터는 들어와 있으나 아직 켜지지 않았다 (기도문 대조 전 — D-4).
+    const parsed = parseSettings(JSON.stringify({ region: 'europe', language: 'it' }));
+    expect(parsed.language).toBe('en');
+  });
+
+  it('지역도 언어도 모르는 값이면 한국·한국어다', () => {
+    const parsed = parseSettings(JSON.stringify({ region: 'mars', language: 'tl' }));
+    expect(parsed.region).toBe('korea');
+    expect(parsed.language).toBe('ko');
+  });
+
+  it('저장한 지역과 언어가 그대로 돌아온다', async () => {
+    const store = createSettingsStore(memoryStore());
+    await store.save({ ...DEFAULT_SETTINGS, region: 'asia', language: 'en' });
+    const loaded = await store.load();
+    expect(loaded.region).toBe('asia');
+    expect(loaded.language).toBe('en');
+  });
+});

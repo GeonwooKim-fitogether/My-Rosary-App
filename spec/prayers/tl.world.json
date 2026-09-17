@@ -1,0 +1,18 @@
+{
+  "$schema_note": "시안이 담아 온 기도문. 이 저장소의 spec/prayers.ko.json 과 달리 앞 절(a)·뒷 절(b)로 나뉘어 있지 않다. 교대 낭송(FR-11)은 그 나눔 위에 서 있으므로, 나누기 전에는 이 판본을 낭송에 연결하지 않는다.",
+  "language": "tl",
+  "verified": false,
+  "split": false,
+  "source": "docs/design/world/data.js (Claude Design 인계본, 2026-09-16). 공식 기도서와 대조되지 않았다.",
+  "todo": "① 공식 기도서와 대조해 verified 를 올린다(D-4). ② 그 언어의 전례 관습을 아는 사람이 앞 절·뒷 절로 나눈다.",
+  "prayers": {
+    "sign": "Sa ngalan ng Ama, at ng Anak, at ng Espiritu Santo. Amen.",
+    "kiss": "Hagkan ang krusipiho.",
+    "creed": "Sumasampalataya ako sa Diyos Amang makapangyarihan sa lahat, na may gawa ng langit at lupa. Sumasampalataya ako kay Hesukristo, iisang Anak ng Diyos, Panginoon nating lahat. Nagkatawang-tao siya lalang ng Espiritu Santo, ipinanganak ni Santa Mariang Birhen. Pinagpakasakit ni Poncio Pilato, ipinako sa krus, namatay, inilibing. Nanaog sa kinaroroonan ng mga yumao. Nang may ikatlong araw nabuhay na mag-uli. Umakyat sa langit. Naluluklok sa kanan ng Diyos Amang makapangyarihan sa lahat. Doon magmumulang paririto at huhukom sa nangabubuhay at nangamatay na tao.\nSumasampalataya naman ako sa Diyos Espiritu Santo, sa banal na Simbahang Katolika, sa kasamahan ng mga banal, sa kapatawaran ng mga kasalanan, sa pagkabuhay na muli ng nangamatay na tao at sa buhay na walang hanggan. Amen.",
+    "our": "Ama namin, sumasalangit Ka, sambahin ang ngalan Mo. Mapasaamin ang kaharian Mo. Sundin ang loob Mo dito sa lupa para nang sa langit.\nBigyan Mo kami ngayon ng aming kakanin sa araw-araw. At patawarin Mo kami sa aming mga sala, para nang pagpapatawad namin sa nagkakasala sa amin. At huwag Mo kaming ipahintulot sa tukso, at iadya Mo kami sa lahat ng masama. Amen.",
+    "hail": "Aba Ginoong Maria, napupuno ka ng grasya, ang Panginoong Diyos ay sumasaiyo. Bukod kang pinagpala sa babaeng lahat, at pinagpala naman ang iyong anak na si Hesus.\nSanta Maria, Ina ng Diyos, ipanalangin mo kaming makasalanan, ngayon at kung kami'y mamamatay. Amen.",
+    "glory": "Luwalhati sa Ama, at sa Anak, at sa Espiritu Santo. Kapara nang sa unang-una, ngayon at magpasawalang hanggan. Amen.",
+    "fatima": "O Hesus ko, patawarin Mo kami sa aming mga sala, iligtas Mo kami sa apoy ng impiyerno, hanguin Mo ang mga kaluluwa sa purgatoryo, lalung-lalo na ang mga walang nakakaalaala.",
+    "salve": "Aba po, Santa Mariang Hari, Ina ng awa. Ikaw ang kabuhayan at katamisan, aba, pinananaligan ka namin. Ikaw nga ang tinatawag namin, pinapanaw na taong anak ni Eva. Ikaw rin ang pinagbubuntung-hininga namin ng aming pagtangis dini sa lupang bayang kahapis-hapis.\nAy aba, pintakasi ka namin, ilingon mo sa amin ang mga mata mong maawain. At saka kung matapos yaring pagpanaw sa amin, ipakita mo sa amin ang iyong Anak na si Hesus.\nSanta Maria, Ina ng Diyos, maawain, maalam at matamis na Birhen."
+  }
+}

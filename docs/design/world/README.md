@@ -10,7 +10,7 @@
 | 내용 모듈 | `data.js` (52KB) | 언어 일곱(ko·en·it·fr·es·pt·tl)의 기도문·신비 이름·화면 문구, 지역 다섯의 색 벌과 그림 목록, 성화 열일곱 장의 초점 좌표, 81단계 순서를 만드는 `buildSequence()` |
 | 런타임 | `support.js` (69KB) | Claude Design 의 렌더 엔진. 마크업의 `{{ }}` 를 앱 논리의 값으로 채운다. **React 18 과 Babel 을 외부 CDN(unpkg)에서 받아 온다** — 아래 "여는 법" 참조 |
 | 디자인 시스템 | `_ds/classical-*/` | 「Classical」 체계. `styles.css` 가 토큰(색·글꼴·간격·반지름·그림자)과 부품 클래스(`.btn` · `.seg` · `.field` · `.plate`)의 정본이고, `readme.md` 가 쓰는 법, `_ds_manifest.json` 이 토큰 목록이다 |
-| 성화 | `img/` (17장, 3.0MB) | `data.js` 의 `IMAGES` 표가 장마다 초점 좌표와 한·영 제목을 갖는다. **`12-mary-child-neutral.jpg` 오른쪽 아래에 작가 서명(워터마크)이 찍혀 있다** — 정식 자산에서는 교체 대상이다(PRD D-1) |
+| 성화 | `img/` (파일 17장, 3.0MB · 표에 오른 것은 16장) | `data.js` 의 `IMAGES` 표가 장마다 초점 좌표와 한·영 제목을 갖는다. 표에서 빠진 한 장(`09-color-jesus.jpg`)은 스톡 사진 워터마크가 전면에 반복돼 시안이 풀에서 뺐다. **표에 오른 열여섯 중 넷(`02-mary-child` · `04-cross` · `11-prayer-rosary` · `13`)에도 작가 서명이나 워터마크가 오른쪽 아래에 보인다** — 정식 자산에서는 교체 대상이다(PRD D-1 · `decisions.md` Q-50) |
 | 설치형 웹앱 껍데기 | `manifest.webmanifest` · `sw.js` | 홈 화면 설치와 오프라인 캐시. 시안이 "설치 가능한 모바일 웹앱(PWA)"을 요구 사항으로 받았기 때문에 들어 있다 |
 | 시안을 만든 지시문 | `prompt.md` | 공방장이 Claude Design 에 넘긴 원문. 제품 목표, 보존할 기능, 지역 다섯, 언어 일곱, 화면 열, 금지 사항, 완료 기준이 여기 있다. **시안의 의도를 읽을 때 마크업보다 먼저 볼 문서다** |
 | 인계 꾸러미의 안내문 | `HANDOFF-README.md` | Claude Design 이 붙인 영문 안내. "픽셀 단위로 재현하되 내부 구조는 베끼지 말라"가 요지다 |

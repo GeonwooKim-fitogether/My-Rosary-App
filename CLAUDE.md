@@ -12,9 +12,9 @@
 |---|---|
 | 제품 요구사항(PRD 제3판, FR-01~45), 디자인 시스템, 서비스 설계, 화면 명세, 화면 지도 | `docs/product/06-*.md` — 원본은 atelier `idea/mobile-rosary/`, 이관 뒤 atelier 쪽은 freeze. 이관 경위는 `docs/product/README.md` |
 | 시안 계보 (v5 이전) | `docs/product/prototype/` (atelier 최초 핸드오프) · `docs/design/screens-day.html` · `screens-night.html` · `prototype.html`. **정본이 아니다** — 값이 어긋나면 v5 를 따른다(결정 2) |
-| **화면 시안 정본 (Claude Design 「MyRosary World」 인계본)** | `docs/design/world/` — `MyRosary World.dc.html` 에 화면 열, `data.js` 에 언어 일곱의 기도문·문구와 지역 다섯의 색 벌, `_ds/` 에 「Classical」 디자인 시스템, `img/` 에 성화 열일곱 장, `prompt.md` 에 시안을 만든 지시문. 여는 법과 v5 와의 차이는 그 폴더의 `README.md` (결정 11) |
+| **화면 시안 정본 (Claude Design 「MyRosary World」 인계본)** | `docs/design/world/` — `MyRosary World.dc.html` 에 화면 열, `data.js` 에 언어 일곱의 기도문·문구와 지역 다섯의 색 벌, `_ds/` 에 「Classical」 디자인 시스템, `img/` 에 성화 열일곱 장(표에 오른 것은 열여섯), `prompt.md` 에 시안을 만든 지시문. 여는 법과 v5 와의 차이는 그 폴더의 `README.md` (결정 11) |
 | **개발 로드맵 정본 (W0~W5)** | `docs/plan/roadmap-world.md` — 살아남는 자산과 다시 그리는 것, 시안이 침묵하는 여섯 자리의 결정 카드(§3), 마일스톤 여섯과 노출 증명, 시안 자체의 결함 열 가지, 사람 몫 |
-| 시안을 이 컨테이너에서 실제로 렌더한 화면 사진 | `docs/plan/world-screens/` — 열 장, 390×844. 글꼴은 대체 글꼴이다(Q-49). 무엇을 보는 사진인지는 그 폴더의 `README.md` |
+| 시안을 이 컨테이너에서 실제로 렌더한 화면 사진 | `docs/plan/world-screens/` — 열두 장, 390×844. 열 장은 대체 글꼴로 찍혔고(Q-49), 두 장은 W0 에서 번들한 진짜 글꼴로 다시 찍었다. 성화의 서명·워터마크도 이 폴더가 적는다. 무엇을 보는 사진인지는 그 폴더의 `README.md` |
 | 시안 계보 — atelier v5 인계본 (결정 11 전의 정본) | `docs/design/v5/` — `index.html` 한 파일에 화면 열과 기도 엔진, `art/` 에 성화 열여섯 장. `node docs/design/v5/build.mjs` 로 파일 하나짜리 조립본을 만든다. 경위와 슬롯 체계는 `docs/design/v5/README.md` |
 | 기도 도메인 데이터 (81단계, 신비 4종, 54일 규칙, 기도문 임시 판본) | `spec/` — 프레임워크 무관 JSON·마크다운. PRD에 없는 것은 지어 넣지 않았다 |
 | 옛 개발 계획 (마일스톤 M0~M5 — 결정 11 로 W0~W5 가 대체했다. 계정·스토어 체크리스트 §9 와 팀 §10 은 그대로 쓴다) | `docs/plan/development-plan.md` |
