@@ -4,7 +4,7 @@
 
 ## 지금 어디까지 왔나
 
-**관문 둘이 모두 닫혔다. 지금 열려 있는 것은 구현이다.** 관문 1(기획안 컨펌)은 2026-09-05에 닫혔고 — 화면 세 곳을 프로토타입 방식으로 가기로 해 화면이 여덟에서 열로 늘었다(결정 1) — 관문 2(시안)는 atelier v5 인계본이 정본 자리에 앉으면서 2026-09-08에 대체로 닫혔다(결정 2, `docs/design/v5/`). 같은 날 **프레임워크·스택이 A안(Expo + React Native + EAS Build + Supabase)으로 확정됐다**(결정 3). M0(바닥)·M1(기도 루프)·M2(여정과 홈)가 작업완료다 — Expo 골격과 도메인 코어 위에 v5 의 화면 여덟(로그인·기도·하루 완주·홈·새 기도·여정 상세·여정 완주·설정)과 초대 코드 화면이 서 있고, 여정과 설정이 기기에 저장되며, 바텀 시트 일곱과 밤 벌(쪽빛)이 v5 값에서 파생돼 붙었다(Q-14). 화면 사진은 `docs/plan/m1-screens/`와 `docs/plan/m2-screens/`에 있다. **실기기(iOS·Android) 확인은 아직 한 번도 하지 못했다** — 이 컨테이너에 맥도 폰도 없어 소리·진동·이어폰 단추는 사람이 확인해야 한다. 다음은 M3(계정·서버·조)다. 현재 상태와 다음 할 일은 언제나 `decisions.md`와 `docs/plan/development-plan.md`가 정본이다 — 이 파일의 이 절은 요약일 뿐이니, 어긋나면 그 두 파일을 믿는다.
+**관문 둘이 모두 닫혔다. 지금 열려 있는 것은 구현이다.** 관문 1(기획안 컨펌)은 2026-09-05에 닫혔고 — 화면 세 곳을 프로토타입 방식으로 가기로 해 화면이 여덟에서 열로 늘었다(결정 1) — 관문 2(시안)는 atelier v5 인계본이 정본 자리에 앉으면서 2026-09-08에 대체로 닫혔다(결정 2, `docs/design/v5/`). 같은 날 **프레임워크·스택이 A안(Expo + React Native + EAS Build + Supabase)으로 확정됐다**(결정 3). M0(바닥)·M1(기도 루프)·M2(여정과 홈)가 작업완료다 — Expo 골격과 도메인 코어 위에 v5 의 화면 여덟(로그인·기도·하루 완주·홈·새 기도·여정 상세·여정 완주·설정)과 초대 코드 화면이 서 있고, 여정과 설정이 기기에 저장되며, 바텀 시트 일곱과 밤 벌(쪽빛)이 v5 값에서 파생돼 붙었다(Q-14). 화면 사진은 `docs/plan/m1-screens/`와 `docs/plan/m2-screens/`에 있다. **실기기(iOS·Android) 확인은 아직 한 번도 하지 못했다** — 이 컨테이너에 맥도 폰도 없어 소리·진동·이어폰 단추는 사람이 확인해야 한다. **2026-09-17 에 시안 정본이 바뀌었다(결정 11)** — 공방장이 Claude Design 인계본 「MyRosary World」(`docs/design/world/`)로 최종 개발하기로 지목했다. 지역 다섯·언어 일곱·원형 고리 묵주·성화 갤러리를 갖고 계정과 조가 없는 시안이며, 개발 순서는 `docs/plan/roadmap-world.md` 의 W0~W5 가 정본이다(옛 M0~M5 를 대체). 시안이 침묵하는 여섯 자리(계정·조, 배포 형태, 언어 범위, 묵주, 낭송 척추, 판본·밤 벌)는 그 문서 §3 의 결정 카드가 답을 기다린다. 다음은 W0(토큰·글꼴·언어 데이터·성화 표)다. 현재 상태와 다음 할 일은 언제나 `decisions.md`와 `docs/plan/roadmap-world.md`가 정본이다 — 이 파일의 이 절은 요약일 뿐이니, 어긋나면 그 두 파일을 믿는다.
 
 ## 정본 문서가 어디 있나
 
@@ -12,9 +12,14 @@
 |---|---|
 | 제품 요구사항(PRD 제3판, FR-01~45), 디자인 시스템, 서비스 설계, 화면 명세, 화면 지도 | `docs/product/06-*.md` — 원본은 atelier `idea/mobile-rosary/`, 이관 뒤 atelier 쪽은 freeze. 이관 경위는 `docs/product/README.md` |
 | 시안 계보 (v5 이전) | `docs/product/prototype/` (atelier 최초 핸드오프) · `docs/design/screens-day.html` · `screens-night.html` · `prototype.html`. **정본이 아니다** — 값이 어긋나면 v5 를 따른다(결정 2) |
-| **화면 시안 정본 (atelier v5 인계본)** | `docs/design/v5/` — `index.html` 한 파일에 화면 열과 기도 엔진, `art/` 에 성화 열여섯 장. `node docs/design/v5/build.mjs` 로 파일 하나짜리 조립본을 만든다. 경위와 슬롯 체계는 `docs/design/v5/README.md` |
+| **화면 시안 정본 (Claude Design 「MyRosary World」 인계본)** | `docs/design/world/` — `MyRosary World.dc.html` 에 화면 열, `data.js` 에 언어 일곱의 기도문·문구와 지역 다섯의 색 벌, `_ds/` 에 「Classical」 디자인 시스템, `img/` 에 성화 열일곱 장, `prompt.md` 에 시안을 만든 지시문. 여는 법과 v5 와의 차이는 그 폴더의 `README.md` (결정 11) |
+| **개발 로드맵 정본 (W0~W5)** | `docs/plan/roadmap-world.md` — 살아남는 자산과 다시 그리는 것, 시안이 침묵하는 여섯 자리의 결정 카드(§3), 마일스톤 여섯과 노출 증명, 시안 자체의 결함 열 가지, 사람 몫 |
+| 시안을 이 컨테이너에서 실제로 렌더한 화면 사진 | `docs/plan/world-screens/` — 열 장, 390×844. 글꼴은 대체 글꼴이다(Q-49). 무엇을 보는 사진인지는 그 폴더의 `README.md` |
+| 시안 계보 — atelier v5 인계본 (결정 11 전의 정본) | `docs/design/v5/` — `index.html` 한 파일에 화면 열과 기도 엔진, `art/` 에 성화 열여섯 장. `node docs/design/v5/build.mjs` 로 파일 하나짜리 조립본을 만든다. 경위와 슬롯 체계는 `docs/design/v5/README.md` |
 | 기도 도메인 데이터 (81단계, 신비 4종, 54일 규칙, 기도문 임시 판본) | `spec/` — 프레임워크 무관 JSON·마크다운. PRD에 없는 것은 지어 넣지 않았다 |
-| 개발 계획 정본 (마일스톤 M0~M5, v5 값의 소재) | `docs/plan/development-plan.md` |
+| 옛 개발 계획 (마일스톤 M0~M5 — 결정 11 로 W0~W5 가 대체했다. 계정·스토어 체크리스트 §9 와 팀 §10 은 그대로 쓴다) | `docs/plan/development-plan.md` |
+| 구현 대조표 — 요구사항 마흔둘 대비 구현 30 · 일부 6 · 없음 6 (2026-09-12) | `docs/plan/implementation-audit.md` |
+| 엣지 기획안 — 우위가 어디서 나오나를 다시 물은 문서. §7 카드는 결정 11 이 흡수했다 | `docs/plan/edge-plan.md` |
 | **M0 작업 지시서** | `docs/plan/m0-work-order.md` |
 | M1·M2 에서 찍은 화면 사진 | `docs/plan/m1-screens/`(기도 · 하루 완주) · `docs/plan/m2-screens/`(홈 · 새 기도 · 여정 상세 · 여정 완주 · 설정 · 초대 코드 · 시트 · 밤 벌) — v5 시안과 나란히 놓고 대조한다 |
 | 알 쉰아홉을 다 그리고 단 넘기기를 붙인 뒤의 화면 사진 | `docs/plan/rosary-full/` — 낮·밤 두 벌과 390×844·390×640 두 크기, 모두 네 장. 무엇을 보며 확인하는지는 그 폴더의 `README.md` (결정 6) |
