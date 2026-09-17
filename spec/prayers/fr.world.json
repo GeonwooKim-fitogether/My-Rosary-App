@@ -1,0 +1,18 @@
+{
+  "$schema_note": "시안이 담아 온 기도문. 이 저장소의 spec/prayers.ko.json 과 달리 앞 절(a)·뒷 절(b)로 나뉘어 있지 않다. 교대 낭송(FR-11)은 그 나눔 위에 서 있으므로, 나누기 전에는 이 판본을 낭송에 연결하지 않는다.",
+  "language": "fr",
+  "verified": false,
+  "split": false,
+  "source": "docs/design/world/data.js (Claude Design 인계본, 2026-09-16). 공식 기도서와 대조되지 않았다.",
+  "todo": "① 공식 기도서와 대조해 verified 를 올린다(D-4). ② 그 언어의 전례 관습을 아는 사람이 앞 절·뒷 절로 나눈다.",
+  "prayers": {
+    "sign": "Au nom du Père, et du Fils, et du Saint-Esprit. Amen.",
+    "kiss": "On embrasse le crucifix.",
+    "creed": "Je crois en Dieu, le Père tout-puissant, créateur du ciel et de la terre. Et en Jésus-Christ, son Fils unique, notre Seigneur, qui a été conçu du Saint-Esprit, est né de la Vierge Marie, a souffert sous Ponce Pilate, a été crucifié, est mort et a été enseveli, est descendu aux enfers, le troisième jour est ressuscité des morts, est monté aux cieux, est assis à la droite de Dieu le Père tout-puissant, d'où il viendra juger les vivants et les morts.\nJe crois en l'Esprit Saint, à la sainte Église catholique, à la communion des saints, à la rémission des péchés, à la résurrection de la chair, à la vie éternelle. Amen.",
+    "our": "Notre Père, qui es aux cieux, que ton nom soit sanctifié, que ton règne vienne, que ta volonté soit faite sur la terre comme au ciel.\nDonne-nous aujourd'hui notre pain de ce jour. Pardonne-nous nos offenses, comme nous pardonnons aussi à ceux qui nous ont offensés. Et ne nous laisse pas entrer en tentation, mais délivre-nous du Mal. Amen.",
+    "hail": "Je vous salue, Marie, pleine de grâce ; le Seigneur est avec vous. Vous êtes bénie entre toutes les femmes, et Jésus, le fruit de vos entrailles, est béni.\nSainte Marie, Mère de Dieu, priez pour nous, pauvres pécheurs, maintenant et à l'heure de notre mort. Amen.",
+    "glory": "Gloire au Père, et au Fils, et au Saint-Esprit, comme il était au commencement, maintenant et toujours, pour les siècles des siècles. Amen.",
+    "fatima": "Ô mon Jésus, pardonnez-nous nos péchés, préservez-nous du feu de l'enfer, et conduisez au ciel toutes les âmes, surtout celles qui ont le plus besoin de votre miséricorde.",
+    "salve": "Salut, ô Reine, Mère de miséricorde, notre vie, notre douceur, notre espérance, salut ! Enfants d'Ève, exilés, nous crions vers vous ; vers vous nous soupirons, gémissant et pleurant dans cette vallée de larmes.\nÔ vous, notre avocate, tournez vers nous vos regards miséricordieux. Et après cet exil, montrez-nous Jésus, le fruit béni de vos entrailles.\nÔ clémente, ô miséricordieuse, ô douce Vierge Marie."
+  }
+}

@@ -1,0 +1,315 @@
+{
+  "$schema_note": "신비의 이름과 해설. 신비를 고르는 규칙(요일·54일 순환)은 여기가 아니라 spec/mysteries.json 이 정본이다 — 시안은 요일 규칙만 알고 54일 순환(FR-43)을 모른다.",
+  "verified": false,
+  "source": "docs/design/world/data.js (Claude Design 인계본, 2026-09-16). 공식 기도서와 대조되지 않았다.",
+  "sets": [
+    "joyful",
+    "luminous",
+    "sorrowful",
+    "glorious"
+  ],
+  "scripture": {
+    "joyful": [
+      "Lk 1:26-38",
+      "Lk 1:39-56",
+      "Lk 2:1-20",
+      "Lk 2:22-38",
+      "Lk 2:41-52"
+    ],
+    "luminous": [
+      "Mt 3:13-17",
+      "Jn 2:1-11",
+      "Mk 1:14-15",
+      "Lk 9:28-36",
+      "Mt 26:26-29"
+    ],
+    "sorrowful": [
+      "Lk 22:39-46",
+      "Jn 19:1",
+      "Mt 27:27-31",
+      "Jn 19:16-17",
+      "Lk 23:33-46"
+    ],
+    "glorious": [
+      "Mt 28:1-10",
+      "Acts 1:9-11",
+      "Acts 2:1-4",
+      "Rev 12:1",
+      "Rev 12:1"
+    ]
+  },
+  "names": {
+    "ko": {
+      "joyful": [
+        "마리아께서 예수님을 잉태하심을 묵상합시다.",
+        "마리아께서 엘리사벳을 방문하심을 묵상합시다.",
+        "마리아께서 예수님을 낳으심을 묵상합시다.",
+        "마리아께서 예수님을 성전에 바치심을 묵상합시다.",
+        "마리아께서 잃으셨던 예수님을 성전에서 찾으심을 묵상합시다."
+      ],
+      "luminous": [
+        "예수님께서 요르단 강에서 세례를 받으심을 묵상합시다.",
+        "예수님께서 카나에서 첫 기적을 행하심을 묵상합시다.",
+        "예수님께서 하느님 나라를 선포하심을 묵상합시다.",
+        "예수님께서 영광스럽게 변모하심을 묵상합시다.",
+        "예수님께서 성체성사를 세우심을 묵상합시다."
+      ],
+      "sorrowful": [
+        "예수님께서 우리를 위하여 피땀 흘리심을 묵상합시다.",
+        "예수님께서 우리를 위하여 매 맞으심을 묵상합시다.",
+        "예수님께서 우리를 위하여 가시관 쓰심을 묵상합시다.",
+        "예수님께서 우리를 위하여 십자가 지심을 묵상합시다.",
+        "예수님께서 우리를 위하여 십자가에 못 박혀 돌아가심을 묵상합시다."
+      ],
+      "glorious": [
+        "예수님께서 부활하심을 묵상합시다.",
+        "예수님께서 승천하심을 묵상합시다.",
+        "예수님께서 성령을 보내심을 묵상합시다.",
+        "예수님께서 마리아를 하늘에 불러올리심을 묵상합시다.",
+        "예수님께서 마리아께 천상 모후의 관을 씌우심을 묵상합시다."
+      ]
+    },
+    "en": {
+      "joyful": [
+        "The Annunciation",
+        "The Visitation",
+        "The Nativity",
+        "The Presentation in the Temple",
+        "The Finding of Jesus in the Temple"
+      ],
+      "luminous": [
+        "The Baptism of Jesus in the Jordan",
+        "The Wedding at Cana",
+        "The Proclamation of the Kingdom of God",
+        "The Transfiguration",
+        "The Institution of the Eucharist"
+      ],
+      "sorrowful": [
+        "The Agony in the Garden",
+        "The Scourging at the Pillar",
+        "The Crowning with Thorns",
+        "The Carrying of the Cross",
+        "The Crucifixion and Death of Our Lord"
+      ],
+      "glorious": [
+        "The Resurrection",
+        "The Ascension",
+        "The Descent of the Holy Spirit",
+        "The Assumption of Mary",
+        "The Coronation of Mary as Queen of Heaven"
+      ]
+    },
+    "it": {
+      "joyful": [
+        "L'Annunciazione dell'Angelo a Maria",
+        "La Visita di Maria a Santa Elisabetta",
+        "La Nascita di Gesù a Betlemme",
+        "La Presentazione di Gesù al Tempio",
+        "Il Ritrovamento di Gesù nel Tempio"
+      ],
+      "luminous": [
+        "Il Battesimo di Gesù al Giordano",
+        "Le Nozze di Cana",
+        "L'Annuncio del Regno di Dio",
+        "La Trasfigurazione",
+        "L'Istituzione dell'Eucaristia"
+      ],
+      "sorrowful": [
+        "L'Agonia di Gesù nel Getsemani",
+        "La Flagellazione di Gesù",
+        "La Coronazione di spine",
+        "Gesù carico della croce",
+        "La Crocifissione e morte di Gesù"
+      ],
+      "glorious": [
+        "La Risurrezione di Gesù",
+        "L'Ascensione di Gesù al cielo",
+        "La Discesa dello Spirito Santo",
+        "L'Assunzione di Maria al cielo",
+        "L'Incoronazione di Maria Regina del cielo e della terra"
+      ]
+    },
+    "fr": {
+      "joyful": [
+        "L'Annonciation",
+        "La Visitation",
+        "La Nativité",
+        "La Présentation de Jésus au Temple",
+        "Le Recouvrement de Jésus au Temple"
+      ],
+      "luminous": [
+        "Le Baptême de Jésus au Jourdain",
+        "Les Noces de Cana",
+        "L'Annonce du Royaume de Dieu",
+        "La Transfiguration",
+        "L'Institution de l'Eucharistie"
+      ],
+      "sorrowful": [
+        "L'Agonie de Jésus à Gethsémani",
+        "La Flagellation",
+        "Le Couronnement d'épines",
+        "Le Portement de la croix",
+        "Le Crucifiement et la mort de Jésus"
+      ],
+      "glorious": [
+        "La Résurrection",
+        "L'Ascension",
+        "La Pentecôte",
+        "L'Assomption de Marie",
+        "Le Couronnement de Marie au ciel"
+      ]
+    },
+    "es": {
+      "joyful": [
+        "La Encarnación del Hijo de Dios",
+        "La Visitación de Nuestra Señora a su prima Santa Isabel",
+        "El Nacimiento del Hijo de Dios en Belén",
+        "La Presentación de Jesús en el Templo",
+        "El Niño Jesús perdido y hallado en el Templo"
+      ],
+      "luminous": [
+        "El Bautismo de Jesús en el Jordán",
+        "Las Bodas de Caná",
+        "El Anuncio del Reino de Dios",
+        "La Transfiguración",
+        "La Institución de la Eucaristía"
+      ],
+      "sorrowful": [
+        "La Oración de Jesús en el Huerto",
+        "La Flagelación del Señor",
+        "La Coronación de espinas",
+        "Jesús con la cruz a cuestas",
+        "La Crucifixión y muerte de Nuestro Señor"
+      ],
+      "glorious": [
+        "La Resurrección del Señor",
+        "La Ascensión del Señor",
+        "La Venida del Espíritu Santo",
+        "La Asunción de Nuestra Señora",
+        "La Coronación de la Santísima Virgen"
+      ]
+    },
+    "pt": {
+      "joyful": [
+        "A Anunciação do Anjo a Maria",
+        "A Visitação de Maria a sua prima Isabel",
+        "O Nascimento de Jesus em Belém",
+        "A Apresentação do Menino Jesus no Templo",
+        "O Encontro do Menino Jesus no Templo"
+      ],
+      "luminous": [
+        "O Batismo de Jesus no Jordão",
+        "As Bodas de Caná",
+        "O Anúncio do Reino de Deus",
+        "A Transfiguração",
+        "A Instituição da Eucaristia"
+      ],
+      "sorrowful": [
+        "A Agonia de Jesus no Horto",
+        "A Flagelação de Jesus",
+        "A Coroação de espinhos",
+        "Jesus carrega a cruz",
+        "A Crucificação e morte de Jesus"
+      ],
+      "glorious": [
+        "A Ressurreição de Jesus",
+        "A Ascensão de Jesus ao céu",
+        "A Descida do Espírito Santo",
+        "A Assunção de Maria ao céu",
+        "A Coroação de Maria como Rainha do céu e da terra"
+      ]
+    },
+    "tl": {
+      "joyful": [
+        "Ang Pagbati ng Anghel kay Maria",
+        "Ang Pagdalaw ni Maria kay Elisabet",
+        "Ang Pagsilang ni Hesus",
+        "Ang Paghahandog kay Hesus sa Templo",
+        "Ang Pagkakita kay Hesus sa Templo"
+      ],
+      "luminous": [
+        "Ang Pagbibinyag kay Hesus sa Ilog Jordan",
+        "Ang Kasalan sa Cana",
+        "Ang Pagpapahayag ng Kaharian ng Diyos",
+        "Ang Pagbabagong-anyo ni Hesus",
+        "Ang Pagtatatag ng Eukaristiya"
+      ],
+      "sorrowful": [
+        "Ang Paghihirap ni Hesus sa Halamanan",
+        "Ang Paghampas kay Hesus",
+        "Ang Pagpuputong ng Koronang Tinik",
+        "Ang Pagpapasan ni Hesus ng Krus",
+        "Ang Pagkamatay ni Hesus sa Krus"
+      ],
+      "glorious": [
+        "Ang Muling Pagkabuhay ni Hesus",
+        "Ang Pag-akyat ni Hesus sa Langit",
+        "Ang Pagbaba ng Espiritu Santo",
+        "Ang Pag-aakyat kay Maria sa Langit",
+        "Ang Pagpuputong kay Maria bilang Reyna ng Langit at Lupa"
+      ]
+    }
+  },
+  "meditations": {
+    "ko": {
+      "joyful": [
+        "천사가 마리아께 구세주의 어머니가 되실 것을 알리고, 마리아는 \"말씀대로 이루어지소서\" 하고 응답합니다.",
+        "마리아는 엘리사벳을 찾아가고, 엘리사벳은 \"여인 중에 복되시다\" 하고 인사합니다.",
+        "베들레헴의 구유에서 구세주가 태어나십니다.",
+        "마리아와 요셉은 아기 예수를 성전에 바치고, 시메온은 구원을 봅니다.",
+        "사흘 만에 성전에서 아버지의 집에 있는 소년 예수를 찾습니다."
+      ],
+      "luminous": [
+        "요르단 강에서 세례를 받으신 예수님 위에 \"사랑하는 아들\"이라는 소리가 들립니다.",
+        "카나의 혼인 잔치에서 물이 포도주가 되어 첫 표징을 보이십니다.",
+        "\"하느님의 나라가 가까이 왔다. 회개하고 복음을 믿어라.\"",
+        "산 위에서 예수님의 얼굴이 해처럼 빛납니다.",
+        "최후의 만찬에서 빵과 포도주를 몸과 피로 내어 주십니다."
+      ],
+      "sorrowful": [
+        "겟세마니에서 땀이 피처럼 떨어질 때까지 기도하십니다.",
+        "빌라도의 명으로 기둥에서 매를 맞으십니다.",
+        "가시관을 쓰시고 조롱을 받으십니다.",
+        "골고타를 향해 십자가를 지고 가십니다.",
+        "십자가에 못 박혀 \"다 이루어졌다\" 하시고 숨을 거두십니다."
+      ],
+      "glorious": [
+        "사흗날 새벽, 무덤은 비어 있고 주님은 살아 계십니다.",
+        "제자들이 보는 가운데 하늘로 오르십니다.",
+        "오순절에 성령이 불꽃 모양 혀처럼 제자들 위에 내립니다.",
+        "마리아는 육신과 영혼이 함께 하늘에 들어올려집니다.",
+        "마리아는 천상의 모후로 관을 받으십니다."
+      ]
+    },
+    "en": {
+      "joyful": [
+        "The angel Gabriel announces to Mary that she will bear the Savior; she answers, \"Let it be done to me according to your word.\"",
+        "Mary visits Elizabeth, who greets her as blessed among women.",
+        "The Savior is born in a manger in Bethlehem.",
+        "Mary and Joseph present the child in the Temple; Simeon sees salvation.",
+        "After three days the boy Jesus is found in his Father's house."
+      ],
+      "luminous": [
+        "At the Jordan a voice is heard over Jesus: \"This is my beloved Son.\"",
+        "At Cana water becomes wine, the first of his signs.",
+        "\"The kingdom of God is at hand. Repent, and believe in the gospel.\"",
+        "On the mountain his face shines like the sun.",
+        "At the Last Supper he gives bread and wine as his body and blood."
+      ],
+      "sorrowful": [
+        "In Gethsemane he prays until his sweat falls like drops of blood.",
+        "By Pilate's order he is scourged at the pillar.",
+        "He is crowned with thorns and mocked.",
+        "He carries the cross toward Golgotha.",
+        "Nailed to the cross he says, \"It is finished,\" and dies."
+      ],
+      "glorious": [
+        "At dawn on the third day the tomb is empty; the Lord lives.",
+        "Before the eyes of his disciples he is taken up into heaven.",
+        "At Pentecost the Spirit descends on the disciples like tongues of fire.",
+        "Mary is taken up, body and soul, into heaven.",
+        "Mary is crowned Queen of heaven and earth."
+      ]
+    }
+  }
+}

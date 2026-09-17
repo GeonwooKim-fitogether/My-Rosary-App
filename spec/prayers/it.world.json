@@ -1,0 +1,18 @@
+{
+  "$schema_note": "시안이 담아 온 기도문. 이 저장소의 spec/prayers.ko.json 과 달리 앞 절(a)·뒷 절(b)로 나뉘어 있지 않다. 교대 낭송(FR-11)은 그 나눔 위에 서 있으므로, 나누기 전에는 이 판본을 낭송에 연결하지 않는다.",
+  "language": "it",
+  "verified": false,
+  "split": false,
+  "source": "docs/design/world/data.js (Claude Design 인계본, 2026-09-16). 공식 기도서와 대조되지 않았다.",
+  "todo": "① 공식 기도서와 대조해 verified 를 올린다(D-4). ② 그 언어의 전례 관습을 아는 사람이 앞 절·뒷 절로 나눈다.",
+  "prayers": {
+    "sign": "Nel nome del Padre e del Figlio e dello Spirito Santo. Amen.",
+    "kiss": "Si bacia il crocifisso.",
+    "creed": "Io credo in Dio, Padre onnipotente, creatore del cielo e della terra; e in Gesù Cristo, suo unico Figlio, nostro Signore, il quale fu concepito di Spirito Santo, nacque da Maria Vergine, patì sotto Ponzio Pilato, fu crocifisso, morì e fu sepolto; discese agli inferi; il terzo giorno risuscitò da morte; salì al cielo, siede alla destra di Dio Padre onnipotente; di là verrà a giudicare i vivi e i morti.\nCredo nello Spirito Santo, la santa Chiesa cattolica, la comunione dei santi, la remissione dei peccati, la risurrezione della carne, la vita eterna. Amen.",
+    "our": "Padre nostro, che sei nei cieli, sia santificato il tuo nome, venga il tuo regno, sia fatta la tua volontà, come in cielo così in terra.\nDacci oggi il nostro pane quotidiano, e rimetti a noi i nostri debiti come anche noi li rimettiamo ai nostri debitori, e non abbandonarci alla tentazione, ma liberaci dal male. Amen.",
+    "hail": "Ave, o Maria, piena di grazia, il Signore è con te. Tu sei benedetta fra le donne e benedetto è il frutto del tuo seno, Gesù.\nSanta Maria, Madre di Dio, prega per noi peccatori, adesso e nell'ora della nostra morte. Amen.",
+    "glory": "Gloria al Padre e al Figlio e allo Spirito Santo. Come era nel principio, e ora e sempre nei secoli dei secoli. Amen.",
+    "fatima": "Gesù mio, perdona le nostre colpe, preservaci dal fuoco dell'inferno, porta in cielo tutte le anime, specialmente le più bisognose della tua misericordia.",
+    "salve": "Salve, Regina, Madre di misericordia; vita, dolcezza e speranza nostra, salve. A Te ricorriamo, noi esuli figli di Eva; a Te sospiriamo, gementi e piangenti in questa valle di lacrime.\nOrsù dunque, avvocata nostra, rivolgi a noi gli occhi tuoi misericordiosi. E mostraci, dopo questo esilio, Gesù, il frutto benedetto del tuo seno.\nO clemente, o pia, o dolce Vergine Maria."
+  }
+}

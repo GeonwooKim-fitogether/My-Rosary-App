@@ -10,6 +10,9 @@ import type { PaceKey, RecitationMode } from '../domain/types';
 import type { KeyValueStore } from './position';
 
 /** 저장 열쇠. */
+import { ENABLED_LANGUAGES, REGION_DEFAULT_LANGUAGE, type LanguageKey } from '../i18n';
+import { REGION_ORDER, type RegionKey } from '../theme/worldTokens';
+
 export const SETTINGS_KEY = 'myrosary.settings.v1';
 
 /** 낮과 밤 — 기기 설정을 따를 수도 있다 (v5 설정의 `기기 설정 따름`). */
@@ -39,6 +42,13 @@ export interface AppSettings {
   rosary: RosaryKey;
   /** 낮과 밤 (06-b §2-2). */
   theme: ThemePreference;
+  /**
+   * 지역 (결정 11 의 새 시안). 색 벌과 성화 묶음이 이 값으로 갈린다.
+   * 옛 기기에는 이 값이 없으므로 아래 파서가 한국으로 메운다.
+   */
+  region: RegionKey;
+  /** 화면 문구의 언어. 기도문의 언어는 이것과 갈릴 수 있다 (`src/i18n` 의 `prayerLanguage`). */
+  language: LanguageKey;
 }
 
 /** 묵주의 우리말 이름. */
@@ -113,6 +123,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   handsFree: true,
   rosary: 'rose',
   theme: 'day',
+  region: 'korea',
+  language: 'ko',
 };
 
 /** 읽어 들인 값에서 아는 것만 골라 쓴다. 모르는 값은 기본값으로 메운다. */
@@ -134,6 +146,18 @@ export function parseSettings(raw: string | null): AppSettings {
         value.theme === 'day' || value.theme === 'night' || value.theme === 'system'
           ? value.theme
           : DEFAULT_SETTINGS.theme,
+      region: REGION_ORDER.includes(value.region as RegionKey)
+        ? (value.region as RegionKey)
+        : DEFAULT_SETTINGS.region,
+      // 켜지지 않은 언어가 저장돼 있으면 그 지역의 기본 언어로 떨어뜨린다. 언어를 끄는
+      // 결정이 나중에 나도 그 언어로 앱이 열리지 않게 하려는 것이다.
+      language: ENABLED_LANGUAGES.includes(value.language as LanguageKey)
+        ? (value.language as LanguageKey)
+        : REGION_DEFAULT_LANGUAGE[
+            REGION_ORDER.includes(value.region as RegionKey)
+              ? (value.region as RegionKey)
+              : DEFAULT_SETTINGS.region
+          ],
     };
   } catch {
     return { ...DEFAULT_SETTINGS };
