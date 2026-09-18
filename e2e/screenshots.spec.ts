@@ -279,3 +279,42 @@ test('W2 · 이어서 바치는 홈과 다시 바치기 확인 시트를 찍는�
   await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
   await page.screenshot({ path: `${W2}/home-again-sheet.png` });
 });
+
+/**
+ * W2 슬라이스 B — 오늘의 신비와 신비 해설, 그리고 새 어법으로 옮긴 시트.
+ *
+ * 세 장 모두 **홈에서 눌러 들어간 자리에서** 찍는다. 주소를 직접 열고 찍으면 배선이 없어도
+ * 사진이 나오므로, 사진 자체가 "닿을 수 있다"의 증거가 되게 하려는 것이다.
+ *
+ * 셋째 장(`sheet-leave.png`)이 여기 있는 까닭을 적어 둔다. W1 이 남긴
+ * `docs/plan/w1-screens/pray-leave.png` 은 **옛 한지 벌의 시트**가 어두운 기도 화면 위에
+ * 겉돌던 그 상태의 기록이고(그것이 Q-56 이 태어난 자리다), 그 자리를 다시 찍으면 W1 의
+ * 기록이 덮인다. 그래서 고친 뒤의 모습은 이 폴더에 따로 남긴다 — 두 장을 나란히 놓으면
+ * 무엇이 바뀌었는지 한눈에 보인다.
+ */
+test('W2 · 오늘의 신비와 신비 해설을 찍는다', async ({ page }) => {
+  await openApp(page);
+  await enterHome(page);
+
+  // 오늘의 신비 — 홈의 `오늘의 신비 보기` 를 눌러 들어간다.
+  await page.getByTestId('home-today-link').click();
+  await expect(page.getByTestId('mystery-set')).toHaveText('고통의 신비');
+  await page.waitForTimeout(400); // 성화가 떠오르는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W2}/mystery.png` });
+
+  // 신비 해설 — 그 화면의 링크를 눌러 들어간다.
+  await page.getByTestId('mystery-guide-link').click();
+  await expect(page.getByTestId('guide-set')).toHaveText('고통의 신비');
+  await page.screenshot({ path: `${W2}/guide.png` });
+});
+
+test('W2 · 새 어법으로 옮긴 시트를 기도 화면 위에서 찍는다', async ({ page }) => {
+  await openApp(page);
+  await enterHome(page);
+  await enterPrayerFromHome(page);
+
+  await page.getByTestId('pray-back').click();
+  await expect(page.getByTestId('sheet-leave')).toBeVisible();
+  await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W2}/sheet-leave.png` });
+});

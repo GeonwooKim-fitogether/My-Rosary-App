@@ -39,7 +39,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
-import { Platform, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { artSession } from '../src/art';
@@ -56,6 +56,7 @@ import { loadPinnedArt, pinArt } from '../src/state/appStore';
 import { useAppState } from '../src/state/useAppState';
 import {
   doneTitleSizeFor,
+  koWordBreak,
   onScrim,
   paletteFor,
   worldDoneType,
@@ -254,7 +255,7 @@ const doneStyles = (palette: WorldPalette) =>
        * 끊으라는 뜻이고, iOS·안드로이드는 원래 그렇게 끊으므로 웹에만 준다.
        * 시안은 같은 일을 `text-wrap: balance` 로 하는데 React Native 에는 그 속성이 없다.
        */
-      ...Platform.select({ web: { wordBreak: 'keep-all' as const }, default: {} }),
+      ...koWordBreak,
     },
     stats: {
       flexDirection: 'row',

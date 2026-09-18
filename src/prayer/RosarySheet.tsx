@@ -13,7 +13,13 @@ import { Text, View } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { BottomSheet, ChoiceRow } from '../ui/Sheet';
 import { ROSARY_CHOICES, type RosaryKey } from '../storage/settings';
-import { type2, useThemedStyles, type Theme } from '../theme';
+import { useAppState } from '../state/useAppState';
+import {
+  paletteFor,
+  worldSheetMetrics,
+  worldSheetType,
+  type WorldPalette,
+} from '../theme/worldTokens';
 import { RosaryPreview } from './RosaryPreview';
 
 export function RosarySheet({
@@ -32,7 +38,8 @@ export function RosarySheet({
   onClose: () => void;
   testID?: string;
 }) {
-  const styles = useThemedStyles(sheetStyles);
+  const { settings } = useAppState();
+  const styles = sheetStyles(paletteFor(settings.region));
   return (
     <BottomSheet visible={visible} label="묵주" onClose={onClose} testID={testID}>
       {/*
@@ -58,18 +65,24 @@ export function RosarySheet({
   );
 }
 
-const sheetStyles = ({ colors }: Theme) =>
+/*
+ * 시트의 뼈대(`src/ui/Sheet.tsx`)가 W2 §3 에서 새 시안의 어법으로 옮겨 가면서, 이 파일이
+ * 따로 갖고 있던 두 값도 함께 옮겼다. 그러지 않으면 판은 그 지역의 종이색인데 그 안의
+ * 미리보기 자리만 옛 한지 벌의 색으로 남아, 시트 한 장 안에서 두 벌이 섞인다.
+ */
+const sheetStyles = (palette: WorldPalette) =>
   StyleSheet.create({
     /*
      * 미리보기가 앉는 자리. 기도 화면에서 묵주가 성화 위에 놓이듯, 여기서도 바탕에서 한 겹
-     * 물러난 면 위에 놓아 알의 빛과 그늘이 배경과 섞이지 않게 한다.
+     * 물러난 면 위에 놓아 알의 빛과 그늘이 배경과 섞이지 않게 한다. 그 "한 겹 물러난 면"이
+     * 새 어법에서는 그 지역의 덮개색이다 — 기도 화면이 묵주를 얹는 바로 그 색이다.
      */
     stage: {
-      backgroundColor: colors.background,
+      backgroundColor: palette.scrim,
       borderWidth: 1,
-      borderColor: colors.rule,
+      borderColor: worldSheetMetrics.rule,
       marginBottom: 18,
       paddingHorizontal: 4,
     },
-    note: { ...type2.noteSmall, color: colors.inkMuted, marginTop: 14 },
+    note: { ...worldSheetType.rowNote, color: palette.muted, marginTop: 14 },
   });

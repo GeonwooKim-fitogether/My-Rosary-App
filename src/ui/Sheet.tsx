@@ -1,29 +1,61 @@
 /**
- * 바텀 시트 일곱의 뼈대 — **v5 에 없어 M2 가 파생한 것이다** (`decisions.md` Q-14).
+ * 바텀 시트 일곱의 뼈대 — **v5 에 없어 M2 가 파생했고, W2 가 새 시안의 어법으로 옮겼다**
+ * (`decisions.md` Q-14 · Q-56 · `docs/plan/w2-work-order.md` §3).
  *
- * 파생이 창작이 아니라 적용이었음을 보이기 위해, 여기 쓰인 값이 v5 의 어디에서 왔는지
- * 하나도 빼지 않고 적는다.
+ * ── 왜 이 파일 하나를 고쳤나 ──────────────────────────────────────────────────
  *
- * | 이 파일의 자리 | 값 | v5 의 출처 |
+ * 시트 일곱이 모두 이 부품을 쓴다. W1 이 기도 화면을 새 시안의 어법(지역의 덮개색으로
+ * 어두운 화면)으로 옮긴 뒤, 그 위에 뜨는 나가기 시트만 **옛 한지 벌의 밝은 판**으로
+ * 올라와 화면과 겉돌았다(`docs/plan/w1-screens/pray-leave.png` 에서 보인다). 부품 하나를
+ * 옮기면 일곱이 함께 옮겨지므로, 시트마다 손대지 않고 여기만 고쳤다. 감싸고 있는 파일들
+ * (`LeavePrayerSheet` · `RestartTodaySheet` · `RemoveJourneySheet` · `RosarySheet`)은
+ * 문구와 이름표만 정하므로 한 줄도 바뀌지 않았다.
+ *
+ * ── 값이 어디서 왔나 ─────────────────────────────────────────────────────────
+ *
+ * **시안에는 시트가 한 장도 없다.** 그래서 값은 두 곳에서 왔고, 어느 쪽인지 칸마다 밝힌다.
+ *
+ * | 이 파일의 자리 | 값 | 출처 |
  * |---|---|---|
- * | 시트 안쪽 여백 | 좌우 24 · 아래 26 | 모든 화면의 바깥 틀 (`padding:56 24 26`) |
- * | 시트 머리 | 자간 넓은 라벨 + `닫기`, 아래 괘선 1px | `s-new` · `s-settings` 의 머리 그대로 |
- * | 고르는 줄 | 높이 80 · 좌우 16 · 테두리 1px(고른 줄은 치자, 아닌 줄은 옅은 선) · 위 변은 첫 줄만 | `s-new` 의 낭송 세 줄 (`rec-0`~`rec-2`) 그대로 |
- * | 고른 줄의 표시 | **테두리 색 하나로만** 표시한다 (글자를 덧붙이지 않는다) | 같은 자리 — v5 가 고른 줄을 그렇게 표시한다 |
- * | 줄 안의 글자 | 이름 500 14px · 설명 11px/1.5 회색 | 같은 자리 |
- * | 아래 단추 둘 | 채운 단추 80 + 조용한 글 단추 80 | `s-allDone` 의 단추 두 줄 |
- * | 시트의 면 | `--surface` (낮 `#F5F1E6` · 밤 `#18202C`) | 06-design-system §2-2 가 "카드·시트"라고 적어 둔 값 |
+ * | 판의 바탕 | 그 지역의 종이색 (`palette.paper`) | W2 §3 — 시트는 어느 화면 위에 뜨든 종이색이다 |
+ * | 판의 위 모서리 | 반지름 4 | 「Classical」 의 `--radius-md` (거의 각진 체계다) |
+ * | 판의 여백 | 좌우 24 · 위아래 22 | 시안이 모든 화면에 쓰는 좌우 여백 24 |
+ * | 괘선 | `rgba(0,0,0,.14)` | 시안이 화면마다 쓰는 가는 선 |
+ * | 머리 라벨의 자간 | 12px · `.14em` | 시안이 화면 머리마다 쓰는 작은 라벨 |
+ * | 글자에 쓰는 강조 | `accentText` | `decisions.md` Q-51 |
+ * | 테두리에 쓰는 강조 | `accent` | 같은 곳 — 선은 글자가 아니다 |
+ * | 판 아래 덮개 | 그 지역의 덮개색 (`palette.scrim`) 을 0.72 로 | W2 §3 — 아래 설명 |
  *
- * 새로 만든 값은 **그늘(scrim) 하나뿐**이고, 그것도 팔레트 안의 색에 투명도를 준 것이다
- * (`src/theme/tokens.ts` 의 `scrim` 주석 참고). 시트가 v5 에 한 장도 없었다는 점을 생각하면,
- * 이 정도가 "값을 새로 정하지 않는다"를 지키면서 시트를 세울 수 있는 최소치다.
+ * 서체와 크기의 출처는 `src/theme/worldTokens.ts` 의 `worldSheetType` · `worldSheetMetrics`
+ * 가 칸마다 적어 두었다.
  *
- * 붉은 경고색은 쓰지 않는다 — 지우기·해산 같은 되돌릴 수 없는 일도 먹빛 단추다
- * (06-design-system §2-4: "기도에서 붉은 경고는 벌주는 인상을 준다").
+ * **덮개를 짙게 한 까닭.** 시안은 어두운 화면 위에 시트를 띄우는 그림을 주지 않았으므로 이
+ * 저장소가 정했다 — 밝은 종이 판을 그대로 쓰되, 판 아래 덮개를 그 지역의 덮개색으로 짙게 깔아
+ * 기도 화면과의 경계를 만든다. 새 색을 만들지 않고 지역의 색 벌 안에서 해결한 것이다.
+ *
+ * **붉은 경고색은 쓰지 않는다.** 지우기·해산 같은 되돌릴 수 없는 일도 먹빛 단추다
+ * (06-design-system §2-4: "기도에서 붉은 경고는 벌주는 인상을 준다"). 그 규칙은 그대로이고,
+ * 먹빛이 한지 벌의 `#1F2530` 에서 그 지역의 `ink` 로 바뀐 것만 다르다.
+ *
+ * **밤 벌은 더 따르지 않는다.** 그전에는 이 부품이 낮·밤 두 벌을 갈아 끼웠는데, 결정 12 가
+ * 밤 벌을 접기로 했고 새 시안에는 지역 다섯의 색 벌만 있다. 그래서 시트는 지금 어느 벌에서도
+ * 그 지역의 종이색으로 선다.
  */
 import type { ReactNode } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { metrics, metrics2, type as type1, type2, useThemedStyles, type Theme } from '../theme';
+import { useAppState } from '../state/useAppState';
+import {
+  paletteFor,
+  worldSheetMetrics,
+  worldSheetType,
+  type WorldPalette,
+} from '../theme/worldTokens';
+
+/** 지금 지역의 색 벌. 시트 넷이 모두 이것으로 그린다. */
+function useSheetPalette(): WorldPalette {
+  const { settings } = useAppState();
+  return paletteFor(settings.region);
+}
 
 export function BottomSheet({
   visible,
@@ -39,7 +71,8 @@ export function BottomSheet({
   children: ReactNode;
   testID?: string;
 }) {
-  const styles = useThemedStyles(sheetStyles);
+  const palette = useSheetPalette();
+  const styles = sheetStyles(palette);
   if (!visible) return null;
   return (
     <Modal visible transparent animationType="slide" onRequestClose={onClose}>
@@ -61,7 +94,7 @@ export function BottomSheet({
   );
 }
 
-/** 고르는 줄 하나 — v5 `s-new` 의 낭송 줄과 같은 모양이다. */
+/** 고르는 줄 하나 — 고른 줄은 강조색 테 하나로만 표시한다 (글자를 덧붙이지 않는다). */
 export function ChoiceRow({
   name,
   note,
@@ -74,14 +107,15 @@ export function ChoiceRow({
   name: string;
   note?: string;
   selected: boolean;
-  /** 줄 오른쪽에 붙는 짧은 글. v5 는 기본값 줄에 `기본` 을 붙인다. */
+  /** 줄 오른쪽에 붙는 짧은 글. 기본값 줄에 `기본` 을 붙인다. */
   mark?: string;
   /** 첫 줄만 위쪽 변을 갖는다. 둘째 줄부터 위 변을 두면 위 줄의 아래 변과 겹쳐 2px 가 된다. */
   first: boolean;
   onPress: () => void;
   testID?: string;
 }) {
-  const styles = useThemedStyles(choiceStyles);
+  const palette = useSheetPalette();
+  const styles = choiceStyles(palette);
   return (
     <Pressable
       style={[styles.row, selected ? styles.rowSelected : styles.rowPlain, first ? null : styles.rowStacked]}
@@ -120,7 +154,7 @@ export function ChoiceSheet<T extends string>({
   onClose: () => void;
   testID?: string;
 }) {
-  const styles = useThemedStyles(sheetStyles);
+  const styles = sheetStyles(useSheetPalette());
   return (
     <BottomSheet visible={visible} label={label} onClose={onClose} testID={testID}>
       {choices.map((choice, index) => (
@@ -160,7 +194,7 @@ export function ConfirmSheet({
   onClose: () => void;
   testID?: string;
 }) {
-  const styles = useThemedStyles(sheetStyles);
+  const styles = sheetStyles(useSheetPalette());
   return (
     <BottomSheet visible={visible} label={label} onClose={onClose} testID={testID}>
       <Text style={styles.message}>{message}</Text>
@@ -184,63 +218,74 @@ export function ConfirmSheet({
   );
 }
 
-const sheetStyles = ({ colors }: Theme) =>
+const sheetStyles = (palette: WorldPalette) =>
   StyleSheet.create({
     root: { flex: 1, justifyContent: 'flex-end' },
-    scrim: { flex: 1, backgroundColor: colors.scrim },
+    /*
+      덮개는 그 지역의 덮개색이다. 기도 화면이 같은 색으로 칠해져 있으므로, 시트가 그 위에
+      뜨면 화면이 한 단계 더 어두워지면서 판의 경계가 선다.
+    */
+    scrim: { flex: 1, backgroundColor: palette.scrim, opacity: worldSheetMetrics.scrimOpacity },
     panel: {
-      backgroundColor: colors.surface,
+      backgroundColor: palette.paper,
+      borderTopLeftRadius: worldSheetMetrics.radius,
+      borderTopRightRadius: worldSheetMetrics.radius,
       borderTopWidth: 1,
-      borderTopColor: colors.rule,
-      paddingHorizontal: metrics.screenPadding,
-      paddingTop: metrics2.screenBottom,
-      paddingBottom: metrics2.screenBottom,
+      borderTopColor: worldSheetMetrics.rule,
+      paddingHorizontal: worldSheetMetrics.padding,
+      paddingTop: worldSheetMetrics.paddingVertical,
+      paddingBottom: worldSheetMetrics.paddingVertical,
       maxHeight: '86%',
     },
     header: {
       flexDirection: 'row',
       alignItems: 'baseline',
       justifyContent: 'space-between',
-      paddingBottom: 16,
+      gap: 12,
+      paddingBottom: 14,
       borderBottomWidth: 1,
-      borderBottomColor: colors.rule,
+      borderBottomColor: worldSheetMetrics.rule,
     },
-    headerLabel: { ...type1.label, color: colors.inkMuted },
-    headerAction: { ...type2.navLabel, color: colors.inkMuted },
-    content: { marginTop: 18 },
+    headerLabel: { ...worldSheetType.label, color: palette.accentText, flexShrink: 1 },
+    headerAction: { ...worldSheetType.action, color: palette.muted },
+    content: { marginTop: 16 },
     contentInner: { paddingBottom: 4 },
-    note: { ...type2.noteSmall, color: colors.inkMuted, marginTop: 14 },
-    message: { ...type1.bodySmall, color: colors.ink, marginBottom: 26 },
+    note: { ...worldSheetType.rowNote, color: palette.muted, marginTop: 14 },
+    message: { ...worldSheetType.message, color: palette.ink, marginBottom: 22 },
+    /* 먹빛으로 채운 단추 — 되돌릴 수 없는 일을 맡는 자리다 (머리의 설명). */
     confirm: {
-      height: metrics.touchTargetHeight,
-      backgroundColor: colors.fill,
+      minHeight: 56,
+      borderRadius: worldSheetMetrics.radius,
+      backgroundColor: palette.ink,
       alignItems: 'center',
       justifyContent: 'center',
     },
-    confirmLabel: { ...type1.button, color: colors.onFill },
+    confirmLabel: { ...worldSheetType.confirm, color: palette.paper },
     cancel: {
-      height: metrics.touchTargetHeight,
+      minHeight: 52,
       alignItems: 'center',
       justifyContent: 'center',
     },
-    cancelLabel: { ...type1.tertiary, color: colors.inkMuted },
+    cancelLabel: { ...worldSheetType.cancel, color: palette.muted },
   });
 
-const choiceStyles = ({ colors }: Theme) =>
+const choiceStyles = (palette: WorldPalette) =>
   StyleSheet.create({
     row: {
-      height: metrics.touchTargetHeight,
+      minHeight: worldSheetMetrics.rowHeight,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
+      gap: 12,
       paddingHorizontal: 16,
+      paddingVertical: 12,
       borderWidth: 1,
     },
-    rowSelected: { borderColor: colors.accent },
-    rowPlain: { borderColor: colors.rowBorder },
+    rowSelected: { borderColor: palette.accent },
+    rowPlain: { borderColor: worldSheetMetrics.rule },
     rowStacked: { borderTopWidth: 0 },
     rowText: { flexShrink: 1 },
-    rowName: { ...type1.buttonCompact, color: colors.ink },
-    rowNote: { ...type2.rowSub, color: colors.inkMuted, marginTop: 5 },
-    rowMark: { ...type2.navLabel, color: colors.accent },
+    rowName: { ...worldSheetType.rowName, color: palette.ink },
+    rowNote: { ...worldSheetType.rowNote, color: palette.muted, marginTop: 4 },
+    rowMark: { ...worldSheetType.action, color: palette.accentText },
   });

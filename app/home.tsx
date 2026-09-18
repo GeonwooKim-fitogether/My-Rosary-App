@@ -33,9 +33,12 @@
  *    자리가 아예 없다(계정도 여정도 없는 시안이기 때문이다). 이 앱에서 그 둘을 빼면
  *    **여정을 시작할 길이 없어진다.** 그래서 주 단추 아래에 테두리 단추 하나로, 초대 코드는
  *    화면 맨 아래 조용한 글 한 줄로 남겨 두었다.
- * 5. **`오늘의 신비 보기` 링크가 아직 없다** — 그 링크가 가는 화면(오늘의 신비 · 신비 해설)은
- *    W2 의 슬라이스 B 에서 선다. 눌러도 아무 데도 가지 않는 링크를 남기지 않으려고 이번에는
- *    자리를 비웠다. 슬라이스 B 에서 이 자리에 링크가 들어온다.
+ * 5. **`오늘의 신비 보기` 링크의 글자가 시안과 다르다** — 시안은 이 자리에 `신비 해설 →`
+ *    이라 적어 놓고 누르면 **오늘의 신비** 화면으로 보낸다(`goMystery`). 이름과 목적지가
+ *    어긋난 자리이고, 시안의 해설 화면은 그 때문에 어느 곳에서도 닿지 않는다. 이 저장소는
+ *    둘을 갈랐다 — 이 링크는 가는 곳의 이름대로 `오늘의 신비 보기` 이고(`app/mystery.tsx`),
+ *    해설 화면으로 가는 길은 그 화면 안에 둔다(`app/guide.tsx`).
+ *    슬라이스 A 에서 비워 두었던 자리가 슬라이스 B 에서 이렇게 채워졌다.
  * 6. **오른쪽 위의 지역 표시가 아직 단추가 아니다** — 지역·언어 화면은 슬라이스 C 에서 선다.
  *    눌리지 않는 것이 단추처럼 보이면 고장으로 읽히므로, 시안의 테두리와 지구본을 빼고
  *    **글자 표시**로만 두었다. 슬라이스 C 에서 단추가 된다. 성화를 전체 화면으로 여는 단추도
@@ -59,9 +62,10 @@ import { artSession } from '../src/art';
 import { MYSTERY_SETS, mysteryForWeekday } from '../src/domain/mysteries';
 import { stringsFor } from '../src/i18n';
 import { cardStatus, resumeLine, type CardStatus } from '../src/journey/card';
-import { monthDayKo, relativeTimeKo } from '../src/journey/format';
+import { relativeTimeKo } from '../src/journey/format';
 import { dayIndexOn, dayLabelOn, journeyLength, notStartedLabel } from '../src/journey/rules';
 import { mysteryOf, type Journey } from '../src/journey/session';
+import { todayLabelKo } from '../src/mystery/text';
 import { primeSpeech } from '../src/prayer/channels';
 import { buildDayQueue } from '../src/prayer/steps';
 import { useAppState } from '../src/state/useAppState';
@@ -83,14 +87,6 @@ import { TAB_BAR_HEIGHT, WorldTabBar } from '../src/ui/WorldTabBar';
 
 /** 성화 위에 얹는 글자의 색. 시안의 `color:#f6efe2`. */
 const ON_ART_INK = '#f6efe2';
-
-/** 요일 이름. `Date#getDay()` 와 같은 차례로 0 이 일요일이다. */
-const WEEKDAY_KO = ['일', '월', '화', '수', '목', '금', '토'] as const;
-
-/** `9월 5일 토요일` — 시안의 `todayLabel`(달·날·요일을 긴 이름으로)과 같은 모양이다. */
-function todayLabelKo(today: Date): string {
-  return `${monthDayKo(today)} ${WEEKDAY_KO[today.getDay()]}요일`;
-}
 
 export default function HomeScreen() {
   const { ready, journeys, settings } = useAppState();
@@ -234,6 +230,19 @@ export default function HomeScreen() {
               <Text style={styles.todayFirst} testID="home-today-first">
                 {MYSTERY_SETS[todaySet].decades[0]}
               </Text>
+              {/*
+                오늘 바칠 다섯 단을 다 펼쳐 보는 자리로 간다 (W2 슬라이스 B).
+                값(13px · 자간 .04em · 밑줄 · 최소 높이 44)은 시안의 같은 자리에서 왔고,
+                글자만 가는 곳의 이름으로 바꿨다 — 까닭은 이 파일 머리의 5 번에 있다.
+              */}
+              <Pressable
+                style={styles.todayLink}
+                onPress={() => router.push('/mystery')}
+                accessibilityRole="button"
+                testID="home-today-link"
+              >
+                <Text style={styles.todayLinkLabel}>오늘의 신비 보기 →</Text>
+              </Pressable>
             </View>
           ) : null}
 
@@ -564,6 +573,12 @@ const homeStyles = (palette: WorldPalette) =>
       ...Platform.select({ web: { wordBreak: 'keep-all' as const }, default: {} }),
     },
     todayFirst: { ...worldHomeType.todayFirst, color: palette.ink, opacity: 0.82 },
+    todayLink: { marginTop: 8, minHeight: 44, justifyContent: 'center' },
+    todayLinkLabel: {
+      ...worldHomeType.todayLink,
+      color: palette.accentText,
+      textDecorationLine: 'underline',
+    },
     actions: { gap: 10 },
     /*
       주 단추는 면을 채우지 않는다. 「Classical」 체계의 `.btn-primary` 가 **투명한 바탕에

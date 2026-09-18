@@ -25,7 +25,7 @@
  */
 import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, G, Path } from 'react-native-svg';
-import { useTheme } from '../theme';
+import { onScrim } from '../theme/worldTokens';
 import type { RosaryKey } from '../storage/settings';
 import { Bead, BeadGlow, BeadGradients, Cross, Medal, gradientIds } from './beadPaint';
 import { materialFor } from './rosaryMaterials';
@@ -62,9 +62,25 @@ const PREFIX = 'rosaryPreview';
 const THREAD = { outer: 4.4, core: 2 } as const;
 const CHAIN_DASH = [5.4, 3.2];
 
+/**
+ * 어느 재질 벌로 그리나 — 기도 화면과 **같은 것**을 쓴다 (`src/prayer/Rosary.tsx` 의 `SURFACE`).
+ *
+ * 2026-09-18 에 이 값이 화면의 낮·밤 벌을 따르던 것에서 붙박이로 바뀌었다. 까닭은 둘이다.
+ *
+ * 첫째, **기도 화면은 낮이든 밤이든 언제나 그 지역의 덮개색으로 어둡다**(W1). 그 화면은
+ * 그래서 밤 벌 재질로 붙박여 있고, 미리보기가 낮 벌 재질을 보여 주면 고르는 사람이 본 것과
+ * 실제로 만나는 것이 달라진다 — 이 파일의 머리가 "두 곳이 다르면 미리보기가 거짓말을 하는
+ * 셈"이라 적어 둔 바로 그 상태다.
+ *
+ * 둘째, W2 §3 이 시트를 새 어법으로 옮기면서 이 미리보기가 앉는 면도 그 덮개색이 됐다.
+ * 낮 벌 재질은 그 면 위에서 대비가 가장 빠듯한 조합이 1.31 로 기준(3:1)에 한참 못 미치고,
+ * 밤 벌은 4.04 로 전부 통과한다 — 값은 `rosaryMaterials.test.ts` 가 다섯 지역 전부에 대해
+ * 매번 다시 잰다.
+ */
+const SURFACE = 'night' as const;
+
 export function RosaryPreview({ rosary }: { rosary: RosaryKey }) {
-  const { colors, mode } = useTheme();
-  const material = materialFor(mode, rosary);
+  const material = materialFor(SURFACE, rosary);
   const id = gradientIds(PREFIX);
   const dash = material.link === 'chain' ? CHAIN_DASH : undefined;
   const line = `M${AT.cross} ${LINE} L${AT.medal} ${LINE}`;
@@ -73,7 +89,7 @@ export function RosaryPreview({ rosary }: { rosary: RosaryKey }) {
     <View style={styles.box} testID="rosary-preview">
       <Svg width="100%" height={BOX.height} viewBox={`0 0 ${BOX.width} ${BOX.height}`}>
         <Defs>
-          <BeadGradients prefix={PREFIX} material={material} accent={colors.accentFill} mode={mode} />
+          <BeadGradients prefix={PREFIX} material={material} accent={onScrim.glow} mode={SURFACE} />
         </Defs>
 
         <G>
@@ -107,9 +123,9 @@ export function RosaryPreview({ rosary }: { rosary: RosaryKey }) {
           이미 바친 알들의 빛무리 — 기도 화면과 같은 이유로 알보다 먼저 한꺼번에 깐다.
           빛무리가 이웃 알을 덮을 만큼 넓어, 알을 그린 뒤에 얹으면 앞의 알이 씻긴다.
         */}
-        <BeadGlow cx={AT.big} cy={LINE} r={SIZE.big} prefix={PREFIX} mode={mode} />
+        <BeadGlow cx={AT.big} cy={LINE} r={SIZE.big} prefix={PREFIX} mode={SURFACE} />
         {AT.done.map((x) => (
-          <BeadGlow key={x} cx={x} cy={LINE} r={SIZE.small} prefix={PREFIX} mode={mode} />
+          <BeadGlow key={x} cx={x} cy={LINE} r={SIZE.small} prefix={PREFIX} mode={SURFACE} />
         ))}
 
         <Bead
@@ -140,7 +156,7 @@ export function RosaryPreview({ rosary }: { rosary: RosaryKey }) {
           cx={AT.current}
           cy={LINE}
           r={SIZE.current}
-          fill={colors.accentFill}
+          fill={onScrim.bead}
           material={material}
           prefix={PREFIX}
           lit
