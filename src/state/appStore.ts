@@ -105,7 +105,20 @@ let artSeed: number | undefined;
  * 성화가 달랐다(2026-09-18 실측).
  */
 function reopenArt(region: RegionKey): Promise<void> {
-  const first = configureArtSession({ region, pinned: pinnedArt, avoid: lastArt, seed: artSeed });
+  artSeedInUse = artSeed ?? null;
+  /*
+   * 씨앗이 걸려 있으면 **직전 그림 피하기를 끈다.**
+   *
+   * 씨앗은 순서를 고정하지만, 피하기는 기기에 기억된 직전 그림을 읽어 그 순서의 첫 자리를
+   * 한 칸 밀어낸다. 그 기억이 기기에 닿는 시점이 화면을 다시 여는 속도에 따라 갈리므로,
+   * 씨앗을 물려도 사진이 돌릴 때마다 달라지는 자리가 남았다 — 여정 완주와 이어서 바치는
+   * 홈 석 장이 그랬다(2026-09-18 실측, `decisions.md` Q-57).
+   *
+   * 씨앗이 있다는 것은 "지금은 재현이 목적"이라는 뜻이므로 피하기를 끄는 것이 옳다.
+   * 실제 사용자에게는 씨앗이 걸리지 않으므로 피하기가 그대로 산다.
+   */
+  const avoid = artSeed === undefined ? lastArt : null;
+  const first = configureArtSession({ region, pinned: pinnedArt, avoid, seed: artSeed });
   if (!first) return Promise.resolve();
   lastArt = first.file;
   return lastArtStore.save(first.file);
@@ -160,10 +173,35 @@ export interface NewJourneyInput {
   startDate: Date;
 }
 
+/** 성화 씨앗이 걸려 있으면 그 값. 여정 번호를 세는 수로 만들지를 이 값이 정한다. */
+let artSeedInUse: number | null = null;
+
+/*
+ * 새 여정의 번호를 만든다.
+ *
+ * 보통은 시각과 난수를 붙여 만든다 — 여정 번호는 기기 안에서만 겹치지 않으면 되고,
+ * 같은 밀리초에 둘을 만드는 일은 사람 손으로는 일어나지 않기 때문이다.
+ *
+ * **다만 성화 씨앗(`?art=<숫자>`)이 걸려 있으면 번호도 세는 수로 만든다.** 성화를 고르는
+ * 규칙이 여정 번호에서 출발하므로(`artSession.forJourney`), 번호가 매번 달라지면 씨앗을
+ * 물려도 그림이 달라진다. 실제로 그랬다 — 씨앗을 넣은 뒤에도 여정 완주 화면의 사진이
+ * 돌릴 때마다 바뀌어, 사진 커밋에 뜻 없는 변경이 계속 섞였다(2026-09-18, `decisions.md`
+ * Q-57). 씨앗은 사진을 찍는 e2e 에서만 걸리는 진단용 손잡이이므로 실제 사용자는 이 길을
+ * 지나가지 않는다.
+ */
+let journeySeq = 0;
+function newJourneyId(): string {
+  if (artSeedInUse !== null) {
+    journeySeq += 1;
+    return `jseed${artSeedInUse}-${journeySeq}`;
+  }
+  return `j${Date.now().toString(36)}${Math.floor(Math.random() * 1296).toString(36)}`;
+}
+
 /** 새 여정을 만들어 목록 맨 앞에 둔다. 만들어진 여정을 돌려준다. */
 export function addJourney(input: NewJourneyInput, today: Date = new Date()): Journey {
   const journey: Journey = {
-    id: `j${Date.now().toString(36)}${Math.floor(Math.random() * 1296).toString(36)}`,
+    id: newJourneyId(),
     title: input.title,
     format: input.format,
     startDate: input.startDate,
