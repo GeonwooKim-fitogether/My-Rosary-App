@@ -118,6 +118,7 @@ import {
   type WorldPalette,
 } from '../src/theme/worldTokens';
 import { RosarySheet } from '../src/prayer/RosarySheet';
+import { AboutSheet } from '../src/ui/AboutSheet';
 import { BottomSheet, ChoiceSheet, ConfirmSheet } from '../src/ui/Sheet';
 import { TAB_BAR_HEIGHT, WorldTabBar } from '../src/ui/WorldTabBar';
 
@@ -560,24 +561,15 @@ export default function SettingsScreen() {
       {/*
         S7 소개 — 08 검증 참가자에게 이 빌드가 무엇을 묻는지 알린다.
 
-        **이 시트의 글자색이 W2 슬라이스 C 에서 고쳐졌다.** 그전에는 이 화면이 한지 벌이라
-        시트 안의 글도 한지 벌의 색을 썼는데, 슬라이스 B 가 시트 부품을 새 시안의 어법으로
-        옮기면서 판은 종이색이 되고 글만 옛 벌에 남았다. 밤 벌에서는 밝은 종이 위에 밝은
-        글자가 얹혀 읽히지 않았다. 이제 글도 그 지역의 색 벌에서 색을 고른다.
+        **W4 슬라이스 C 에서 글과 모양이 부품으로 떠났다**(`src/ui/AboutSheet.tsx`). 같은 글이
+        이제 두 자리에서 뜨기 때문이다 — 이 줄과, 앱을 처음 여는 자리. 한쪽만 고치면 두 말이
+        갈리므로 한 곳에 두고 둘이 함께 부른다. 이 줄이 여는 것은 `firstRun` 이 아닌 쪽이라
+        맨 아래 `시작하기` 단추가 서지 않는다 — 이 자리에서는 이미 앱을 쓰고 있다.
+
+        그전 판에서 이 시트의 글자색이 W2 슬라이스 C 에 고쳐진 일이 있었다(밤 벌에서 밝은
+        종이 위에 밝은 글자가 얹혀 읽히지 않았다). 그 고침은 부품으로 그대로 옮겨 갔다.
       */}
-      <BottomSheet visible={sheet === 'about'} label="소개" onClose={close} testID="sheet-about">
-        <Text style={styles.aboutTitle}>이 앱이 지금 묻는 것</Text>
-        <Text style={styles.aboutBody}>
-          화면을 보지 않고 손을 쓰지 않고도 다섯 단을 끝까지 바칠 수 있는가 — 이 하나를
-          알아보려고 만든 검증 빌드입니다. 흔들기와 이어폰 단추로 알을 넘기고, 앱이 앞 절을
-          읽으면 뒷 절을 소리 내어 받습니다.
-        </Text>
-        <Text style={styles.aboutTitle}>아직 아닌 것</Text>
-        <Text style={styles.aboutBody}>
-          함께 바치기와 계정 연결은 아직 붙지 않았습니다. 기도문은 임시 판본이고, 성화도
-          검증 기간용입니다. 결제는 없습니다.
-        </Text>
-      </BottomSheet>
+      <AboutSheet visible={sheet === 'about'} onClose={close} testID="sheet-about" />
 
       {/*
         홈 화면에 추가 — 방법을 알려 주는 시트 (W4 슬라이스 A).

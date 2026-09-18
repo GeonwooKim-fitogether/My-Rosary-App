@@ -162,13 +162,16 @@ export const FIXED_TODAY = new Date('2026-09-05T09:00:00');
  *   사진을 찍는 시험과, 그림이 바뀌는 것 자체를 재는 시험이 이것을 쓴다 — 뽑기가 난수인
  *   채로 두면 아무것도 고치지 않아도 사진이 달라지고, "지역이 바뀌어서 그림이 바뀐 것"과
  *   "그냥 다른 그림이 나온 것"을 가릴 수 없다.
+ * @param intro 소개 시트를 **아직 보지 않은 기기**로 열 것인가 (W4 슬라이스 C). 기본은
+ *   `false` — 이미 본 것으로 두고 연다. 까닭은 아래 `markIntroSeen` 이 적는다.
  */
 export async function openApp(
   page: Page,
-  options: { demo?: boolean; at?: Date; fontScale?: number; art?: number } = {},
+  options: { demo?: boolean; at?: Date; fontScale?: number; art?: number; intro?: boolean } = {},
 ): Promise<void> {
   await page.clock.install({ time: options.at ?? FIXED_TODAY });
   await installDeviceStubs(page);
+  if (options.intro !== true) await markIntroSeen(page);
   if (options.fontScale && options.fontScale !== 1) await installFontScale(page, options.fontScale);
   const query = new URLSearchParams();
   if (options.demo !== false) query.set('demo', '1');
@@ -199,6 +202,24 @@ export async function installFontScale(page: Page, fontScale: number): Promise<v
     new MutationObserver(apply).observe(document, { childList: true });
     document.addEventListener('DOMContentLoaded', apply);
   }, `${16 * fontScale}px`);
+}
+
+/**
+ * 소개 시트를 **이미 본 기기**로 만들어 둔다 (W4 슬라이스 C).
+ *
+ * `openApp` 이 기본으로 이것을 부른다. 왜 기본이 "이미 봤다" 인가. 소개는 앱을 **처음** 여는
+ * 사람에게 한 번 뜨는 것이고, 시험은 매번 빈 브라우저에서 시작하므로 그냥 두면 **모든 시험이
+ * 소개 시트에 막힌다.** 시험이 재려는 것은 기도와 여정과 설정이지 소개가 아니므로, 시험의
+ * 기본 상태를 "이 앱을 두 번째로 여는 사람" 으로 둔다 — 실제 사용자도 첫 열기 뒤로는 줄곧
+ * 그 상태다.
+ *
+ * 처음 여는 사람의 자리를 재는 시험은 `openApp(page, { intro: true })` 로 이것을 건너뛴다
+ * (`e2e/intro.spec.ts`).
+ */
+export async function markIntroSeen(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('myrosary.introSeen.v1', '1');
+  });
 }
 
 /**

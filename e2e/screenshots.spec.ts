@@ -721,3 +721,20 @@ test('W4 슬라이스 B · 영어로 바꾼 화면 넷을 찍는다', async ({ p
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${W4}/en-pray.png` });
 });
+
+/**
+ * W4 슬라이스 C · 소개 시트 — **앱을 처음 여는 사람이 아무것도 누르기 전에 보는 화면**이다.
+ *
+ * 이 한 장이 묻는 것은 하나다. 08 검증에 들어온 사람이 이 앱이 무엇을 하는 앱인지 **한 장을
+ * 읽고 알 수 있는가.** 그래서 손짓 없이 앱을 열자마자 찍는다 — 찍히는 상태가 곧 그 사람이
+ * 보는 상태다.
+ *
+ * 다른 사진들과 달리 `intro: true` 로 연다. 시험의 기본은 "이미 소개를 본 기기" 인데
+ * (그러지 않으면 모든 시험이 이 시트에 막힌다), 이 한 장만은 처음 여는 기기여야 한다.
+ */
+test('W4 슬라이스 C · 처음 여는 자리의 소개 시트를 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED, intro: true });
+  await expect(page.getByTestId('sheet-intro')).toBeVisible();
+  await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W4}/intro-sheet.png` });
+});
