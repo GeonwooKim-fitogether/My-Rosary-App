@@ -161,7 +161,9 @@ test('날짜를 쉰네 날째로 돌린 뒤 하루를 바치면 여정 완주 �
 
   await expect(page.getByTestId('all-done-screen')).toBeVisible();
   await expect(page.getByTestId('all-done-head')).toHaveText('쉰네 번째 날 · 10월 6일');
-  await expect(page.getByTestId('all-done-title')).toContainText('쉰네 날을');
+  // 제목은 `다 바쳤습니다` 가 아니라 `마쳤습니다` 다 — 이 여정은 두 날을 걸렀으므로
+  // `다 바쳤다` 는 사실이 아니다 (06-screen-spec 화면 C′ 2026-09-18 개정).
+  await expect(page.getByTestId('all-done-title')).toContainText('쉰네 날의 여정을 마쳤습니다');
   // 스무 날 바치고 두 날 걸렀던 여정에, 오늘 하루가 더해져 스물한 날이다.
   await expect(page.getByTestId('all-done-note')).toHaveText('성모송 1,113번');
   await expect(page.getByTestId('all-done-summary')).toHaveText('54일 중 21일을 바쳤습니다');
