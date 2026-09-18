@@ -10,14 +10,14 @@
 
 글을 쓰기 전에 걸린 자리가 둘 있다. 지어내지 않고 그대로 올린다.
 
-1. **앱 이름이 저장소 안에서 두 가지다.** 앱 설정 파일(`app.json`)의 이름은 **`묵주`** 이고, 화면에 보이는 이름(`src/i18n/strings/ko.json` 의 `appName`)은 **`MyRosary World`** 다. 스토어에 올리는 이름은 하나여야 하므로 사람이 정해야 한다. 아래 원고는 **`MyRosary World`** 를 썼다 — 화면에 실제로 보이는 이름이 그쪽이기 때문이며, 정해지면 이 문서와 `app.json` 을 함께 맞춘다.
+1. **앱 이름은 `MyRosary` 다 (2026-09-18 공방장 결정, `decisions.md` Q-82).** 그전에는 저장소 안에서 두 가지였다 — 앱 설정 파일의 이름이 `묵주`, 화면에 보이는 이름이 `MyRosary World` 였다. 지금은 다섯 자리를 모두 `MyRosary` 로 맞췄다: `app.json` · 화면 문구 일곱 벌 · 설치형 웹앱 설명서의 이름과 짧은 이름 · 웹 껍데기의 애플용 제목.
 2. **부제의 한국어를 무엇으로 할지.** 앱 안에 이미 있는 한 줄(`tagline`)이 `손에 든 묵주, 눈앞의 성화` 인데, 이것은 시안이 지은 분위기 문구이지 "이 앱이 무엇을 해 주는가"를 말하지 않는다. 아래에 둘을 나란히 적었으니 사람이 고른다.
 
 ## 1. 이름과 부제
 
 | 칸 | 한국어 | 영어 | 글자 수 제한 |
 |---|---|---|---|
-| **앱 이름** | MyRosary World | MyRosary World | 두 스토어 모두 30자 |
+| **앱 이름** | MyRosary | MyRosary | 두 스토어 모두 30자 |
 | **부제 (안) 가** | 손에 든 묵주, 눈앞의 성화 | A rosary in hand, sacred art before the eyes | 애플 30자 |
 | **부제 (안) 나** | 54일을 끝까지 바치는 묵주기도 (17자) | 54 days of the Rosary (21자) | 애플 30자 |
 
@@ -41,7 +41,7 @@
 ### 3-1. 한국어
 
 ```
-MyRosary World 는 바람 하나를 정하고 54일 동안 날마다 묵주기도를 바쳐
+MyRosary 는 바람 하나를 정하고 54일 동안 날마다 묵주기도를 바쳐
 완주하게 하는 묵주기도 앱입니다.
 
 묵주와 기도문 책이 없어도, 화면을 보지 않고도, 중간에 끊겨도 이어서
@@ -81,7 +81,7 @@ MyRosary World 는 바람 하나를 정하고 54일 동안 날마다 묵주기�
 ### 3-2. 영어
 
 ```
-MyRosary World helps you choose one intention and pray the Rosary every
+MyRosary helps you choose one intention and pray the Rosary every
 day for fifty-four days, all the way to the end.
 
 It is made so you can do that without a rosary or a prayer book, without

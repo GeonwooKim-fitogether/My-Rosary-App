@@ -89,7 +89,7 @@ export default function Document({ children }: PropsWithChildren) {
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="묵주" />
+        <meta name="apple-mobile-web-app-title" content="MyRosary" />
 
         <ScrollViewStyleReset />
         {headNodes}

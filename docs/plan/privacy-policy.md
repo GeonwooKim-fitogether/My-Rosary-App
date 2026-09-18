@@ -30,7 +30,7 @@
 
 최종 수정일: [승인일]
 
-MyRosary World(이하 "이 앱")는 이용자의 개인정보를 수집하지 않습니다.
+MyRosary(이하 "이 앱")는 이용자의 개인정보를 수집하지 않습니다.
 
 1. 수집하지 않는 것
 
@@ -120,7 +120,7 @@ Privacy Policy
 
 Last updated: [date of approval]
 
-MyRosary World ("the app") does not collect any personal information.
+MyRosary ("the app") does not collect any personal information.
 
 1. What we do not collect
 
