@@ -661,7 +661,7 @@ const settingsStyles = (palette: WorldPalette, isKorean: boolean) =>
       담지 못하는데, 그냥 두면 브라우저가 한국어를 글자 단위로 끊어 `아주 크 / 게` 가 된다.
       이 값이 있으면 띄어쓰기에서만 끊겨 `아주 / 크게` 가 된다 — 줄이 하나 늘 뿐 낱말은 산다.
     */
-    segLabel: { fontFamily: worldFontStack('body', isKorean), color: palette.muted, ...koWordBreak },
+    segLabel: { fontFamily: worldFontStack('body', isKorean), color: palette.ink, ...koWordBreak },
     segLabelOn: { color: palette.accentText },
 
     /* 토글 — 시안의 44×26. 켠 바탕은 글자가 아니므로 `accent` 를 그대로 쓴다. */

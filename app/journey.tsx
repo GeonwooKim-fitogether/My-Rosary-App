@@ -677,7 +677,17 @@ const journeyStyles = (palette: WorldPalette, isKorean: boolean) =>
     segLabel: {
       ...worldJourneyType.segLabel,
       fontFamily: worldFontStack('body', isKorean),
-      color: palette.muted,
+      /*
+        고르지 않은 칸의 글자는 **본문과 같은 먹빛**이다. 시안이 그렇게 그린다 —
+        「Classical」 의 `.seg-opt` 가 글자색을 주지 않아 화면이 정한 `--ink` 를
+        그대로 물려받는다. 한때 이 자리에 흐린 회색(`palette.muted`)을 썼는데,
+        2026-09-18 에 시안 자신의 렌더(`docs/plan/world-screens/5-gallery.jpg`)와
+        화소를 맞춰 보고 되돌렸다 — 시안의 고르지 않은 탭 글자는 (20,21,16) 으로
+        본문 글자 (32,20,4) 과 같은 짙기였고, 우리 것은 (107,100,90) 이었다.
+        **고른 칸은 흐리게 만들지 않아도 이미 두 가지로 말한다** — 금빛 테두리와
+        금빛 글자다. `decisions.md` Q-75.
+      */
+      color: palette.ink,
       ...koWordBreak,
     },
     segLabelOn: { color: palette.accentText },
