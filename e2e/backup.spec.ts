@@ -11,7 +11,7 @@
  * 세 갈래를 모두 지난다 — 깨진 파일을 넣었을 때, 확인 시트에서 물러섰을 때, 그리고 들여왔을 때.
  * 가운데 갈래가 특히 중요하다: **묻기만 하고 아직 바꾸지 않는다**는 것을 보이는 자리다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import { readFileSync } from 'node:fs';
 import { collectConsoleErrors, enterHome, openApp, openSettings } from './support/harness';
 

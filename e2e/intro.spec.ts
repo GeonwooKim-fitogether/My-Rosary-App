@@ -15,7 +15,7 @@
  * 열리며, 그러지 않으면 모든 시험이 이 시트에 막힌다(`e2e/support/harness.ts` 의
  * `markIntroSeen`).
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import { collectConsoleErrors, enterHome, openApp, openSettings, reopenApp } from './support/harness';
 
 test.use({ reducedMotion: 'reduce' });

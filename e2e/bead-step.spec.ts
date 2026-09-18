@@ -12,7 +12,7 @@
  * 시계는 세워 둔다. 시간이 흐르면 앱이 스스로도 알을 넘기므로 "무엇 때문에 옮겨졌는지"를
  * 가릴 수 없기 때문이다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   collectConsoleErrors,
   enterHome,

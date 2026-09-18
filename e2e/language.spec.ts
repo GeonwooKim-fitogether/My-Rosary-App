@@ -17,7 +17,7 @@
  * 3. 문서의 언어(`<html lang>`)가 앱의 언어를 따라온다. 화면 낭독기가 한국어 문장을 영어
  *    발음으로 읽으려 하는 것을 막는 자리다(`src/i18n/documentLanguage.ts`).
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   collectConsoleErrors,
   enterHome,

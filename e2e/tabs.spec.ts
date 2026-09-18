@@ -12,7 +12,7 @@
  *    탭마다 그 화면이 자기 것임을 말하는 자리 하나를 함께 본다. 갤러리 탭은 W3 슬라이스 B
  *    까지 "곧 만들어집니다" 한 줄이었고, 이제 성화 격자가 선다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import { collectConsoleErrors, enterHome, openApp, tapTab } from './support/harness';
 
 test.use({ reducedMotion: 'reduce' });

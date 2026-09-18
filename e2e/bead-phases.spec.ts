@@ -23,7 +23,7 @@
  * 아니라 **정지된 모양의 차이**로 다섯 상태가 갈리는지를 보여 준다 — 동작 줄이기를 켠 기기의
  * 사용자가 실제로 보는 모습이다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   collectConsoleErrors,
   enterHome,

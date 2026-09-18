@@ -10,7 +10,7 @@
  * 길게 누르기는 마우스를 누른 채 기다리는 것으로 만든다. react-native-web 의 `Pressable` 은
  * 450ms 를 넘겨 누르면 길게 누른 것으로 보고 `onPress` 를 부르지 않는다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import { collectConsoleErrors, enterHome, openApp } from './support/harness';
 
 test.use({ reducedMotion: 'reduce' });

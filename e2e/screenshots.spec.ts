@@ -11,7 +11,7 @@
  * 사진을 찍을 때는 본보기 여정을 세우고(`?demo=1`) 시계를 9월 5일에 세운다 — 그래야 화면의
  * 날짜가 v5 시안의 값과 글자까지 같아져 나란히 놓고 대조할 수 있다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   enterHome,
   enterPrayerFromHome,

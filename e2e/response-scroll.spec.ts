@@ -12,7 +12,7 @@
  * 글자 크기를 `아주 크게`(27px)로 올려 두고 잰다. 기본 크기(20px)에서는 주님의 기도가 화면에
  * 다 들어와 굴릴 것이 없고, 그러면 이 시험이 아무것도 재지 못한 채 통과한다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   collectConsoleErrors,
   enterHome,

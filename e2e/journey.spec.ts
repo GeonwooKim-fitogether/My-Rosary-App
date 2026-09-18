@@ -14,7 +14,7 @@
  *    청원에서 감사로 바뀌고 신비가 환희·고통·영광으로 도는 것을 함께 본다 (FR-35 · FR-43).
  * 5. **지우기는 확인을 거친다** — 시안은 묻지 않고 지우지만 이 저장소는 묻는다 (FR-05 · S6).
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   collectConsoleErrors,
   enterHome,

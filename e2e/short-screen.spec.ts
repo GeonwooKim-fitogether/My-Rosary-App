@@ -20,7 +20,7 @@
  * 정해지는가**를 잰다 — 고정값과 견주는 것보다 식과 견주는 쪽이 화면 크기가 달라져도 산다.
  * 나머지 둘(기도문이 묵주를 침범하지 않는가, 잘리지 않고 흐르는가)은 뜻이 그대로다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import { collectConsoleErrors, enterHome, enterPrayerFromHome, openApp } from './support/harness';
 
 /** 브라우저 주소창이 높이를 가져간 실제 폰에 가까운 크기. */

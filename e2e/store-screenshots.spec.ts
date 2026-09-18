@@ -27,7 +27,7 @@
  * 폰도 없기 때문이며, 그래서 상태 표시줄(시각·배터리)이 없고 기기 테두리도 없다. 두 스토어
  * 모두 그런 사진을 받지만, 실기기 사진으로 바꿀지는 제출 전에 사람이 정한다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   enterHome,
   enterPrayerFromHome,

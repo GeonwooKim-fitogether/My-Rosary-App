@@ -12,7 +12,7 @@
  *    `src/i18n/index.ts` 의 `prayerLanguage`). 확인되지 않은 기도문을 사람이 바치게 되는
  *    일을 막는 장치이므로, 화면 문구만 바뀌는 것까지가 한 벌이다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import { collectConsoleErrors, enterHome, openApp, openHomeTab, openSettings } from './support/harness';
 
 test.use({ reducedMotion: 'reduce' });
