@@ -22,7 +22,7 @@
  * 기도 화면에 들어선 직후 시간을 멈춘다(`freezeClock`). 그래야 단추로 옮긴 자리가 재는 동안
  * 앱이 스스로 넘긴 자리와 섞이지 않는다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   collectConsoleErrors,
   enterHome,

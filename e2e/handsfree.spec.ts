@@ -4,7 +4,7 @@
  * 시계를 세워 두고 시험한다. 시간이 흐르면 앱이 스스로도 알을 넘기므로 "무엇 때문에
  * 넘어갔는지"를 가릴 수 없기 때문이다. 시계가 서 있으면 알이 움직인 이유는 하나뿐이다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   collectConsoleErrors,
   enterHome,

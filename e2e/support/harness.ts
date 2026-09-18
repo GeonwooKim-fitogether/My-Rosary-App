@@ -374,3 +374,43 @@ export async function reopenApp(
   const path = options.path ?? '/home';
   await page.goto(search === '' ? path : `${path}?${search}`);
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   얼린 화면 사진을 덮어쓰지 못하게 막는 감시
+
+   저장소의 화면 사진에는 성격이 다른 두 종류가 섞여 있다. **살아 있는 사진**은 지금
+   앱의 화면이라 시험이 돌 때마다 다시 찍히는 것이 맞고, **얼린 사진**은 그때 그 화면이
+   어땠는지의 기록이라 다시 찍으면 그 기록이 사라진다.
+
+   구분이 글에만 있던 동안 같은 사고가 세 번 났다 — 전체 e2e 를 돌린 세션이 사진 스물일곱
+   장이 바뀐 것을 보고 "얼린 사진이 덮였구나" 하고 `git checkout` 으로 되돌렸는데, 실은
+   **살아 있는 사진이 옳게 갱신된 것**이어서 갱신을 버린 것이었다(`decisions.md` Q-83).
+
+   그래서 구분을 `docs/plan/screens.json` 으로 옮기고, 그 목록을 여기서 강제한다. 아래의
+   `test` 는 Playwright 의 `test` 를 그대로 감싼 것이며, 화면 사진을 파일로 남기려는
+   호출마다 목록을 물어보고 얼린 자리면 **찍기 전에** 시험을 실패시킨다. 덮어쓴 뒤에
+   알아차리는 것이 아니라 덮어쓰기 전에 멈추는 것이 핵심이다.
+
+   시험 파일은 `@playwright/test` 대신 이 파일에서 `test` 와 `expect` 를 가져온다. 그래야
+   감시가 빠짐없이 걸린다 — 한 파일이라도 원래 것을 가져오면 그 파일만 조용히 뚫린다.
+   그 누락은 `node tools/screens-registry.cjs check` 가 따로 잡는다.
+   ───────────────────────────────────────────────────────────────────────── */
+
+import { test as playwrightTest } from '@playwright/test';
+import { frozenEntryFor, frozenMessage } from '../../tools/screens-registry.cjs';
+
+export const test = playwrightTest.extend({
+  page: async ({ page }, use) => {
+    const original = page.screenshot.bind(page);
+    page.screenshot = (async (options?: { path?: string }) => {
+      if (options?.path) {
+        const frozen = frozenEntryFor(options.path);
+        if (frozen) throw new Error(frozenMessage(options.path, frozen));
+      }
+      return original(options as Parameters<typeof original>[0]);
+    }) as typeof page.screenshot;
+    await use(page);
+  },
+});
+
+export { expect } from '@playwright/test';

@@ -26,7 +26,8 @@
  * 앱이 스스로 알을 넘기기에는 턱없이 짧고, 사건의 시각은 매번 달라져 끌기가 그대로 전해진다.
  * **실기기에서는 이런 일이 없다** — 시계가 멈추지 않으므로 가드에 걸리지 않는다.
  */
-import { expect, test, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   collectConsoleErrors,
   enterHome,

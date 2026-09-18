@@ -5,7 +5,7 @@
  * 그 약속을 화면에서 직접 확인한다. 저장된 값을 들여다보는 대신 사용자가 하는 그대로
  * 한다 — 조금 바치다 멈추고, 나갔다가, 다시 들어와서 같은 자리인지 본다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   collectConsoleErrors,
   enterHome,

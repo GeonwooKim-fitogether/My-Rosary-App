@@ -16,7 +16,7 @@
  * 주 단추의 글자도 함께 본다. 시안은 멈춘 자리가 있으면 `이어서 기도하기`, 없으면
  * `오늘의 기도 시작` 이라고 적는데, 그 갈림이 실제로 갈리는지 눈이 아니라 글자로 확인한다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   collectConsoleErrors,
   enterHome,

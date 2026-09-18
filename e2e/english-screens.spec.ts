@@ -27,7 +27,8 @@
  * 사람이 하는 그대로 — 아래 탭 바의 설정으로 들어가 지역·언어에서 English 를 고르고,
  * 탭 바로 화면들을 돈다. 주소를 직접 열지 않는다.
  */
-import { expect, test, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   collectConsoleErrors,
   enterHome,

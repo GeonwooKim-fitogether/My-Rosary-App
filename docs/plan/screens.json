@@ -1,0 +1,202 @@
+{
+  "_why": [
+    "저장소에 남은 화면 사진 하나하나가 '살아 있는 사진'인지 '얼린 사진'인지를 적어 둔 목록이다.",
+    "살아 있는 사진은 e2e 가 돌 때마다 지금 화면으로 다시 찍히는 사진이고, 화면이 바뀌면 사진도 함께 바뀌는 것이 맞다.",
+    "얼린 사진은 그때 그 화면이 어땠는지를 남긴 기록이라 다시 찍으면 안 된다. 다시 찍는 순간 그 기록은 사라지고 되살릴 방법이 없다.",
+    "이 구분이 지금까지 글(CLAUDE.md 의 문장)에만 있었고, 그래서 세션마다 매번 다시 추론해야 했다. 세 번 연속으로 틀리게 추론했다 (decisions.md Q-80 · Q-83).",
+    "이 파일이 그 구분의 정본이다. e2e 는 얼린 자리에 찍으려 하면 그 자리에서 멈추고, 자동 검사는 목록과 실제 코드가 어긋나면 PR 을 막는다."
+  ],
+  "_how_to_change": [
+    "얼린 사진을 다시 찍어야 한다고 판단되면 frozen 에서 그 줄을 지우고 live 로 옮긴다. 그 편집이 커밋에 남아 리뷰에 보이는 것이 의도된 유일한 출구다.",
+    "새로 사진을 찍는 시험을 만들면 그 자리를 live 에 먼저 등재한다. 등재하지 않으면 자동 검사가 막는다."
+  ],
+  "live": [
+    {
+      "glob": "docs/plan/m1-screens/day-done.png",
+      "shot_by": "e2e/screenshots.spec.ts",
+      "note": "하루 완주 화면의 유일한 사진이다. 같은 폴더의 pray.png 와 달리 이 화면을 대신 찍는 새 폴더가 없어, 살아 있는 사진으로 남는다."
+    },
+    {
+      "glob": "docs/plan/m2-screens/sheet-pace.png",
+      "shot_by": "e2e/screenshots.spec.ts",
+      "note": "낭송 속도 시트의 유일한 사진이다. 이 시트를 다시 세운 마일스톤이 아직 없다."
+    },
+    {
+      "glob": "docs/plan/w1-screens/*.png",
+      "shot_by": "e2e/screenshots.spec.ts · e2e/font-scale.spec.ts · e2e/store-screenshots.spec.ts",
+      "note": "W1 이 세운 기도 화면. 지금 앱의 기도 화면이므로 화면이 바뀌면 함께 바뀐다."
+    },
+    {
+      "glob": "docs/plan/w2-screens/home.png",
+      "shot_by": "e2e/screenshots.spec.ts",
+      "note": "W2 가 세운 홈. 지금 앱의 홈이다."
+    },
+    {
+      "glob": "docs/plan/w2-screens/home-empty.png",
+      "shot_by": "e2e/screenshots.spec.ts"
+    },
+    {
+      "glob": "docs/plan/w2-screens/home-resume.png",
+      "shot_by": "e2e/screenshots.spec.ts"
+    },
+    {
+      "glob": "docs/plan/w2-screens/home-again-sheet.png",
+      "shot_by": "e2e/screenshots.spec.ts"
+    },
+    {
+      "glob": "docs/plan/w2-screens/mystery.png",
+      "shot_by": "e2e/screenshots.spec.ts"
+    },
+    {
+      "glob": "docs/plan/w2-screens/guide.png",
+      "shot_by": "e2e/screenshots.spec.ts"
+    },
+    {
+      "glob": "docs/plan/w2-screens/sheet-leave.png",
+      "shot_by": "e2e/screenshots.spec.ts"
+    },
+    {
+      "glob": "docs/plan/w2-screens/region.png",
+      "shot_by": "e2e/screenshots.spec.ts"
+    },
+    {
+      "glob": "docs/plan/w2-screens/region-southamerica.png",
+      "shot_by": "e2e/screenshots.spec.ts"
+    },
+    {
+      "glob": "docs/plan/w3-screens/*.png",
+      "shot_by": "e2e/screenshots.spec.ts",
+      "note": "W3 이 세운 여정 화면 · 성화 갤러리 · 전체 화면 감상 · 설정의 기록 줄. 지금 앱의 화면들이다."
+    },
+    {
+      "glob": "docs/plan/w4-screens/*.png",
+      "shot_by": "e2e/screenshots.spec.ts · e2e/offline.spec.ts · e2e/english-screens.spec.ts",
+      "note": "W4 가 세운 설치형 웹앱 · 기록 내보내기 · 영어 화면."
+    },
+    {
+      "glob": "docs/plan/bead-phases/*.png",
+      "shot_by": "e2e/bead-phases.spec.ts",
+      "note": "지금 알의 다섯 상태 (FR-15)."
+    },
+    {
+      "glob": "docs/plan/font-scale/*.png",
+      "shot_by": "e2e/font-scale.spec.ts",
+      "note": "글자 크기 200% (FR-28)."
+    },
+    {
+      "glob": "docs/plan/store-screenshots/*.png",
+      "shot_by": "e2e/store-screenshots.spec.ts",
+      "note": "스토어에 올릴 사진. 화면이 바뀌면 반드시 다시 찍어야 하는 자리라, 얼리지 않는다는 것이 그 폴더 README 에 이미 적혀 있다."
+    }
+  ],
+  "frozen": [
+    {
+      "glob": "docs/plan/m1-screens/pray.png",
+      "frozen_on": "2026-09-18",
+      "decision": "결정 11 (2026-09-17) — 시안 정본이 「MyRosary World」 로 바뀌었고, W1 이 기도 화면을 새 어법으로 다시 세웠다",
+      "instead": "docs/plan/w1-screens/pray-390.png"
+    },
+    {
+      "glob": "docs/plan/m2-screens/home.png",
+      "frozen_on": "2026-09-18",
+      "decision": "W2 가 홈을 새 어법으로 다시 세웠다 (CLAUDE.md 의 M1·M2 사진 줄)",
+      "instead": "docs/plan/w2-screens/home.png"
+    },
+    {
+      "glob": "docs/plan/m2-screens/journey.png",
+      "frozen_on": "2026-09-18",
+      "decision": "W3 이 여정 상세와 새 기도를 여정 화면 하나로 합쳤다",
+      "instead": "docs/plan/w3-screens/journeys.png"
+    },
+    {
+      "glob": "docs/plan/m2-screens/new.png",
+      "frozen_on": "2026-09-18",
+      "decision": "W3 이 새 기도를 여정 화면 안으로 옮겼다",
+      "instead": "docs/plan/w3-screens/journeys-open-390.png"
+    },
+    {
+      "glob": "docs/plan/m2-screens/all-done.png",
+      "frozen_on": "2026-09-18",
+      "decision": "W3 이 여정 완주를 새 어법으로 옮겼다",
+      "instead": "docs/plan/w3-screens/all-done.png"
+    },
+    {
+      "glob": "docs/plan/m2-screens/settings.png",
+      "frozen_on": "2026-09-18",
+      "decision": "W2 와 W3 이 설정을 다시 세웠다",
+      "instead": "docs/plan/w3-screens/settings-backup.png"
+    },
+    {
+      "glob": "docs/plan/m2-screens/invite.png",
+      "frozen_on": "2026-09-18",
+      "decision": "결정 12-1 — 계정과 조를 V1.5 로 미뤘으므로 초대 코드 화면은 지금 앱에 없다",
+      "instead": "없다. 계정이 V1.5 에서 돌아오면 그때 새로 찍는다"
+    },
+    {
+      "glob": "docs/plan/m2-screens/home-night.png",
+      "frozen_on": "2026-09-18",
+      "decision": "결정 12-2 — 밤 벌을 접었다",
+      "instead": "없다"
+    },
+    {
+      "glob": "docs/plan/m2-screens/pray-night.png",
+      "frozen_on": "2026-09-18",
+      "decision": "결정 12-2 — 밤 벌을 접었다",
+      "instead": "없다"
+    },
+    {
+      "glob": "docs/plan/m2-screens/settings-night.png",
+      "frozen_on": "2026-09-18",
+      "decision": "결정 12-2 — 밤 벌을 접었다",
+      "instead": "없다"
+    },
+    {
+      "glob": "docs/plan/w2-screens/gallery.png",
+      "frozen_on": "2026-09-18",
+      "decision": "W3 슬라이스 B 가 자리 지킴이였던 갤러리를 시안의 갤러리로 채웠다",
+      "instead": "docs/plan/w3-screens/gallery-region.png"
+    },
+    {
+      "glob": "docs/plan/w2-screens/settings.png",
+      "frozen_on": "2026-09-18",
+      "decision": "W3 슬라이스 C 가 설정 아래쪽에 기록 내보내기·들여오기 두 줄을 세웠다",
+      "instead": "docs/plan/w3-screens/settings-backup.png"
+    },
+    {
+      "glob": "docs/plan/rosary-full/*.png",
+      "frozen_on": "2026-09-18",
+      "decision": "결정 6 — 알 쉰아홉을 다 그린 뒤의 기록",
+      "instead": "docs/plan/w1-screens/"
+    },
+    {
+      "glob": "docs/plan/prayer-order/*.png",
+      "frozen_on": "2026-09-18",
+      "decision": "결정 7 — 기도 순서를 표준 도해에 맞춘 뒤의 기록. 결정 12-2 로 묵주 기하가 바뀌어 지금 화면과 다르다",
+      "instead": "docs/plan/w1-screens/"
+    },
+    {
+      "glob": "docs/plan/rosary-materials/*.png",
+      "frozen_on": "2026-09-18",
+      "decision": "결정 8 · 9 — 늘어진 묵주와 재질 넷의 기록. 늘어진 고리는 이제 앱에 없다",
+      "instead": "docs/plan/w1-screens/"
+    },
+    {
+      "glob": "docs/plan/rosary-lit/*.png",
+      "frozen_on": "2026-09-18",
+      "decision": "결정 10 — 알을 다 채우고 진행을 빛으로 말하게 된 뒤의 기록",
+      "instead": "docs/plan/w1-screens/"
+    },
+    {
+      "glob": "docs/plan/rosary-before-after/*.png",
+      "frozen_on": "2026-09-18",
+      "decision": "묵주 그림을 사실적으로 다듬은 일의 전/후 비교. 전/후 비교는 성격상 다시 찍을 수 없다",
+      "instead": "없다"
+    },
+    {
+      "glob": "docs/plan/world-screens/*.jpg",
+      "frozen_on": "2026-09-18",
+      "decision": "결정 11 — 시안 자체를 이 컨테이너에서 렌더한 사진이다. 앱의 화면이 아니라 시안의 화면이므로 앱이 바뀌어도 바뀌지 않는다",
+      "instead": "없다"
+    }
+  ]
+}

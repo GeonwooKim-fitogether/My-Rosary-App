@@ -13,7 +13,7 @@
  * 재는 시험은 결정을 되돌리라는 요구가 되므로, 두 자리 대신 **그 자리에 새로 선 것**을
  * 잰다 — 지역의 종이색, 지역·언어 화면으로 가는 줄, 진동과 움직임 줄이기 토글, 글자 크기.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import { collectConsoleErrors, enterHome, openApp, openSettings } from './support/harness';
 
 test.use({ reducedMotion: 'reduce' });

@@ -24,7 +24,7 @@
  * **담아 둔 적이 없는 주소**를 한 번 불러 보고, 그것이 실패하는 것을 확인한 뒤에 본 판정으로
  * 들어간다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import { enterHome, enterPrayerFromHome, openApp, reopenApp } from './support/harness';
 
 test.use({ reducedMotion: 'reduce' });

@@ -14,7 +14,8 @@
  * 세 화면이 표식에 그림의 번호를 싣는다(`home-art-10` · `gallery-open-10` · `art-image-10`).
  * 시험은 그 번호를 읽어 세 화면이 같은 그림을 말하는지 대조한다.
  */
-import { expect, test, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect, test } from './support/harness';
 import { collectConsoleErrors, enterHome, openApp, tapTab } from './support/harness';
 
 test.use({ reducedMotion: 'reduce' });

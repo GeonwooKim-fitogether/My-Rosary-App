@@ -14,7 +14,7 @@
  * 라고 말하면 규칙을 새로 쓰지 않고 이미 있는 엔진(`src/domain/mysteries.ts`)을 불렀다는
  * 뜻이고, `환희의 신비` 라고 말하면 시안의 규칙이 슬쩍 들어온 것이다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import { collectConsoleErrors, enterHome, openApp } from './support/harness';
 
 test.use({ reducedMotion: 'reduce' });

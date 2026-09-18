@@ -8,7 +8,7 @@
  * 3. **기기에 말을 거는가** — 소리와 진동이 실제로 나는지가 아니라 요청되었는지를 센다.
  * 4. **조용한가** — 콘솔에 오류가 하나도 없다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   collectConsoleErrors,
   enterHome,
