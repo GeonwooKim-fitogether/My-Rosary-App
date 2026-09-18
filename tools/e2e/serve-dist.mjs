@@ -53,7 +53,7 @@ async function resolveFile(pathname) {
   return null;
 }
 
-createServer(async (request, response) => {
+const server = createServer(async (request, response) => {
   const { pathname } = new URL(request.url ?? '/', 'http://localhost');
   const file = await resolveFile(pathname);
   if (!file) {
@@ -78,8 +78,29 @@ createServer(async (request, response) => {
    */
   const stream = createReadStream(file);
   stream.on('error', () => response.destroy());
+  /*
+   * 응답 쪽 오류도 반드시 듣는다 — 안 들으면 **서버 프로세스가 통째로 꺼진다.**
+   *
+   * 브라우저가 화면을 옮기면서 받던 중인 그림 요청을 끊으면, 아직 쓰고 있던 응답이
+   * `EPIPE` 나 `ECONNRESET` 을 낸다. Node 의 스트림은 `error` 를 듣는 사람이 없으면 그것을
+   * 처리되지 않은 예외로 올리고, 그러면 프로세스가 죽는다. 서버가 죽으면 그다음 시험은
+   * 전부 `ERR_CONNECTION_REFUSED` 로 무너지는데, **앞선 시험들은 멀쩡히 통과한 뒤라
+   * "묶음 뒤쪽에서만 깨지는 간헐 결함"처럼 보인다.** 실제로 그렇게 보였고, 하나씩 돌리면
+   * 모두 통과해 원인을 찾는 데 시간이 걸렸다(2026-09-18 실측).
+   */
+  response.on('error', () => stream.destroy());
   response.on('close', () => stream.destroy());
   stream.pipe(response);
-}).listen(port, '127.0.0.1', () => {
+});
+
+/*
+ * 소켓 층의 오류도 같은 이유로 듣는다. 잘못된 요청이나 끊긴 연결이 서버를 죽이지 않고
+ * 그 연결 하나만 닫히게 한다.
+ */
+server.on('clientError', (_error, socket) => {
+  if (socket.writable) socket.destroy();
+});
+
+server.listen(port, '127.0.0.1', () => {
   process.stdout.write(`dist 를 http://127.0.0.1:${port} 로 내보냅니다\n`);
 });

@@ -1,60 +1,113 @@
 /**
- * A 홈 (여정 목록) — v5 시안 `docs/design/v5/index.html` 의 `s-home` 블록을 옮긴 화면.
+ * A 홈 — 「MyRosary World」 시안의 `data-screen-label="Home"` 블록을 옮긴 화면 (W2 슬라이스 A).
  *
- * 값(색·크기·간격·문구)은 그 블록에서 그대로 가져왔고, 색과 서체는 `src/theme` 의 토큰
- * 이름으로 쓴다. 시안과 다른 곳은 셋이고 모두 이유가 있다.
+ * 값(색·크기·간격·문구)은 그 블록에서 그대로 가져왔고, 색은 지역 다섯의 색 벌
+ * (`src/theme/worldTokens.ts`)에서 이름으로 고른다. 화면이 스스로 정하는 색은 없다.
  *
- * 1. **카드가 예시가 아니라 저장된 여정이다.** v5 는 카드 둘을 마크업에 박아 두었지만
- *    여기서는 기기에 저장된 여정을 그린다. 여정이 하나도 없는 것이 처음의 정상 상태이며
- *    (06-screen-spec 화면 A), 그때는 빈 홈 문구 두 줄이 대신 선다.
- * 2. **함께 바치기 카드는 아직 없다.** v5 의 둘째 카드는 조 기도인데 조는 M3 의 일이다.
- *    카드의 넷째 줄(`내 몫 제2단 · 오늘 다섯 중 셋`)도 그때 선다.
- * 3. **날짜가 달력에서 온다.** v5 는 리본의 `today` 칸으로 며칠째를 셌지만, 저장된 여정은
- *    앱을 안 켠 날에도 날짜가 흘러야 하므로 시작일과 오늘로 센다 (`src/journey/rules.ts`).
+ * ── 이 화면이 2026-09-18 에 어떻게 달라졌나 ─────────────────────────────────────
  *
- * 시안에 없고 요구사항이 정한 것이 하나 더 있다 — **카드를 길게 누르면 여정을 지우는 확인
- * 시트가 뜬다** (FR-05 · 시트 S6). 여정 상세의 `이 여정 그만두기` 와 같은 시트를 쓴다.
+ * 그전까지 홈은 v5 시안의 **여정 목록**이었다. 머리(`내 기도 · 하나`)와 `설정` 글자 아래로
+ * 큰 카드가 쌓였고, 카드마다 성화 썸네일 · 바람 · 며칠째 · 오늘 자리 · 54칸 리본 · 시작일과
+ * 마치는 날이 들어 있었다. 새 시안은 같은 화면을 **오늘 하루를 여는 문**으로 다시 그렸다.
+ *
+ * | 무엇 | 옛 화면 (v5) | 이 화면 (World) |
+ * |---|---|---|
+ * | 맨 위 | 자간 넓은 라벨과 `설정` 글자 | 화면의 절반을 채우는 성화, 아래로 종이색에 녹아든다 |
+ * | 무엇이 먼저 오나 | 여정 카드 목록 | **오늘의 신비**(큰 제목)와 기도를 여는 주 단추 |
+ * | 여정 | 카드 — 썸네일·리본·날짜가 딸린 큰 덩어리 | 줄 — 바람 한 줄, 상태, 오른쪽에 며칠째 |
+ * | 설정으로 가는 길 | 머리 오른쪽의 `설정` 글자 | **아래 탭 바**(`src/ui/WorldTabBar.tsx`) |
+ *
+ * ── 시안과 다르게 한 자리 여섯 (그리고 그 이유) ──────────────────────────────────
+ *
+ * 1. **`다시 바치기` 가 곧바로 지우지 않고 한 번 묻는다** — 시안의 결함 10 번을 고친 자리다.
+ *    시안은 확인 없이 오늘 바치던 자리를 지운다. 자리를 지우는 조작에는 확인을 둔다는 것이
+ *    이 저장소의 규칙이고(FR-18), 같은 일을 하는 여정 상세는 이미 묻는다.
+ *    시트는 `src/ui/RestartTodaySheet.tsx` 에 있다.
+ * 2. **끝난 여정도 목록에 남는다** — 시안은 진행 중인 여정만 추린다(`filter(x => x.i.active)`).
+ *    이 앱에서 여정의 끝은 완주이지 사라짐이 아니므로, 끝난 것은 목록 **아래로 내리되**
+ *    `54일 중 21일을 바쳤습니다` 처럼 결과를 말하게 둔다.
+ * 3. **줄을 누르는 곳이 둘이다** — 왼쪽(바람)을 누르면 그 여정의 기도로 들어가고(FR-42),
+ *    오른쪽(며칠째)을 누르면 여정 상세로 간다(FR-37). 시안의 줄은 누르는 곳이 하나인데,
+ *    이 앱은 두 곳으로 가는 길이 모두 필요하다. 길게 누르면 지우는 확인 시트가 뜬다(FR-05).
+ * 4. **`새 기도` 와 `초대 코드로 들어가기` 가 남아 있다** — 시안의 홈에는 여정을 새로 만드는
+ *    자리가 아예 없다(계정도 여정도 없는 시안이기 때문이다). 이 앱에서 그 둘을 빼면
+ *    **여정을 시작할 길이 없어진다.** 그래서 주 단추 아래에 테두리 단추 하나로, 초대 코드는
+ *    화면 맨 아래 조용한 글 한 줄로 남겨 두었다.
+ * 5. **`오늘의 신비 보기` 링크가 아직 없다** — 그 링크가 가는 화면(오늘의 신비 · 신비 해설)은
+ *    W2 의 슬라이스 B 에서 선다. 눌러도 아무 데도 가지 않는 링크를 남기지 않으려고 이번에는
+ *    자리를 비웠다. 슬라이스 B 에서 이 자리에 링크가 들어온다.
+ * 6. **오른쪽 위의 지역 표시가 아직 단추가 아니다** — 지역·언어 화면은 슬라이스 C 에서 선다.
+ *    눌리지 않는 것이 단추처럼 보이면 고장으로 읽히므로, 시안의 테두리와 지구본을 빼고
+ *    **글자 표시**로만 두었다. 슬라이스 C 에서 단추가 된다. 성화를 전체 화면으로 여는 단추도
+ *    같은 이유로 놓지 않았다(그 화면은 W3 이다).
  */
 import { useCallback, useState } from 'react';
 import { Image } from 'expo-image';
 import { router, useFocusEffect } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { artSession } from '../src/art';
-import { MYSTERY_SETS } from '../src/domain/mysteries';
-import { cardStatus, resumeLine, type CardStatus } from '../src/journey/card';
-import { countKo, monthDayKo, relativeTimeKo } from '../src/journey/format';
 import {
-  dayIndexOn,
-  dayLabelOn,
-  finishDateOf,
-  journeyLength,
-  notStartedLabel,
-} from '../src/journey/rules';
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { artSession } from '../src/art';
+import { MYSTERY_SETS, mysteryForWeekday } from '../src/domain/mysteries';
+import { stringsFor } from '../src/i18n';
+import { cardStatus, resumeLine, type CardStatus } from '../src/journey/card';
+import { monthDayKo, relativeTimeKo } from '../src/journey/format';
+import { dayIndexOn, dayLabelOn, journeyLength, notStartedLabel } from '../src/journey/rules';
 import { mysteryOf, type Journey } from '../src/journey/session';
+import { primeSpeech } from '../src/prayer/channels';
 import { buildDayQueue } from '../src/prayer/steps';
 import { useAppState } from '../src/state/useAppState';
 import { positionStore } from '../src/storage/asyncStore';
 import type { PrayerPosition } from '../src/storage/position';
+import { fonts } from '../src/theme';
+import { TEXT_SCALE } from '../src/theme/fontScale';
 import {
-  metrics2,
-  type as type1,
-  type2,
-  useThemedStyles,
-  type Theme,
-} from '../src/theme';
+  homeArtHeightFor,
+  homeTitleSizeFor,
+  paletteFor,
+  worldHomeType,
+  worldRadius,
+  type WorldPalette,
+} from '../src/theme/worldTokens';
 import { RemoveJourneySheet } from '../src/ui/RemoveJourneySheet';
-import { PrimaryButton, QuietButton, Ribbon, ScreenBody, ScreenHeader } from '../src/ui/Screen';
-import { primeSpeech } from '../src/prayer/channels';
+import { RestartTodaySheet } from '../src/ui/RestartTodaySheet';
+import { TAB_BAR_HEIGHT, WorldTabBar } from '../src/ui/WorldTabBar';
+
+/** 성화 위에 얹는 글자의 색. 시안의 `color:#f6efe2`. */
+const ON_ART_INK = '#f6efe2';
+
+/** 요일 이름. `Date#getDay()` 와 같은 차례로 0 이 일요일이다. */
+const WEEKDAY_KO = ['일', '월', '화', '수', '목', '금', '토'] as const;
+
+/** `9월 5일 토요일` — 시안의 `todayLabel`(달·날·요일을 긴 이름으로)과 같은 모양이다. */
+function todayLabelKo(today: Date): string {
+  return `${monthDayKo(today)} ${WEEKDAY_KO[today.getDay()]}요일`;
+}
 
 export default function HomeScreen() {
-  const { ready, journeys } = useAppState();
-  const styles = useThemedStyles(homeStyles);
+  const { ready, journeys, settings } = useAppState();
+  const window = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const palette = paletteFor(settings.region);
+  const strings = stringsFor(settings.language);
+  const styles = homeStyles(palette);
+
   const [position, setPosition] = useState<PrayerPosition | null>(null);
   /** 길게 눌러 지우려는 여정. null 이면 시트가 닫혀 있다 (FR-05). */
   const [removing, setRemoving] = useState<Journey | null>(null);
+  /** `다시 바치기` 확인 시트가 떠 있나 (시안 결함 10). */
+  const [restarting, setRestarting] = useState(false);
   const today = new Date();
 
-  // 화면으로 돌아올 때마다 오늘 자리를 다시 읽는다. 기도하다 나온 직후의 카드가
+  // 화면으로 돌아올 때마다 오늘 자리를 다시 읽는다. 기도하다 나온 직후의 홈이
   // "어디까지 왔나"를 곧바로 말해야 하기 때문이다.
   useFocusEffect(
     useCallback(() => {
@@ -74,197 +127,377 @@ export default function HomeScreen() {
     return rank(a) - rank(b);
   });
 
-  return (
-    <ScreenBody testID="home-screen">
-      <ScreenHeader
-        label={journeys.length > 0 ? `내 기도 · ${countKo(journeys.length)}` : '내 기도'}
-        action="설정"
-        wideAction
-        onAction={() => router.push('/settings')}
-        actionTestID="home-settings"
-      />
+  /**
+   * 주 단추가 여는 여정 — 오늘 바칠 수 있는 첫 번째 것.
+   *
+   * 시안은 여정이 없는 앱이라 주 단추가 언제나 "오늘의 기도"를 연다. 이 앱에서 기도는
+   * 언제나 어떤 여정의 하루이므로, 아직 시작 전인 것과 이미 끝난 것을 빼고 첫 번째를 고른다.
+   * 고를 것이 없으면(여정이 없거나 전부 끝났으면) 주 단추 자리에 `새 기도` 만 선다.
+   */
+  const openable = ordered.find((journey) => {
+    const status = cardStatus(journey, today, position);
+    return status !== 'notStarted' && status !== 'ended';
+  });
+  const openableStatus = openable ? cardStatus(openable, today, position) : null;
+  const resuming = openableStatus === 'resume' && position !== null;
 
-      <ScrollView style={styles.list} contentContainerStyle={styles.listInner}>
-        {ready && journeys.length === 0 ? (
-          <View style={styles.empty} testID="home-empty">
-            <Text style={styles.emptyTitle}>아직 바치는 기도가 없습니다.</Text>
-            <Text style={styles.emptyNote}>
-              바람 하나를 적고 시작해 보세요. 54일이든 하루든, 끊겨도 그 자리가 남습니다.
+  /** 오늘의 신비. 여는 여정이 있으면 그 여정의 규칙을, 없으면 요일 규칙을 따른다 (FR-43). */
+  const todaySet = openable ? mysteryOf(openable, today) : mysteryForWeekday(today.getDay());
+
+  /** 성화. 여는 여정이 있으면 그 여정의 그림을 써서 홈과 기도 배경이 같은 그림으로 이어진다. */
+  const plate = openable
+    ? artSession.forJourney(openable.id)
+    : artSession.forKey('screen:home', ['login']);
+
+  const artHeight = homeArtHeightFor(window.height);
+  const titleFontSize = homeTitleSizeFor(window.width) * TEXT_SCALE.font;
+
+  /** 기도로 들어간다. 누른 자리에서 소리 엔진을 깨우는 것은 v5 부터의 배선 그대로다. */
+  const openPrayer = (id: string) => {
+    primeSpeech();
+    router.push({ pathname: '/pray', params: { id } });
+  };
+
+  return (
+    <View style={styles.screen} testID="home-screen">
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={[styles.scrollInner, { paddingBottom: TAB_BAR_HEIGHT + 16 }]}
+      >
+        {/* ── 1층 · 성화 큰 그림 ───────────────────────────────────────────── */}
+        <View style={[styles.art, { height: artHeight }]}>
+          {plate ? (
+            <Image
+              source={plate.source}
+              style={StyleSheet.absoluteFill}
+              contentFit="cover"
+              contentPosition={{ left: plate.focus.login.x, top: plate.focus.login.y }}
+              accessible={false}
+            />
+          ) : null}
+          {/*
+            덮개 둘을 겹친다. 시안은 하나의 `linear-gradient` 로 검정에서 종이색까지 잇지만,
+            SVG 의 그러데이션은 서로 다른 두 색 사이를 지날 때 잿빛 안개를 만든다. 그래서
+            위(검정이 옅어지는 쪽)와 아래(종이색이 짙어지는 쪽)를 따로 그려 같은 결과를 낸다.
+          */}
+          <Svg style={StyleSheet.absoluteFill} width="100%" height="100%" pointerEvents="none">
+            <Defs>
+              <LinearGradient id="homeTop" x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0" stopColor="#000000" stopOpacity={0.34} />
+                <Stop offset="0.28" stopColor="#000000" stopOpacity={0} />
+              </LinearGradient>
+              <LinearGradient id="homeBottom" x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0.56" stopColor={palette.paper} stopOpacity={0} />
+                <Stop offset="0.82" stopColor={palette.paper} stopOpacity={0.75} />
+                <Stop offset="0.96" stopColor={palette.paper} stopOpacity={1} />
+                <Stop offset="1" stopColor={palette.paper} stopOpacity={1} />
+              </LinearGradient>
+            </Defs>
+            <Rect x="0" y="0" width="100%" height="100%" fill="url(#homeTop)" />
+            <Rect x="0" y="0" width="100%" height="100%" fill="url(#homeBottom)" />
+          </Svg>
+
+          <View style={[styles.artHeader, { paddingTop: insets.top + 14 }]} pointerEvents="none">
+            <Text style={styles.brand}>{strings.appName}</Text>
+            <Text style={styles.region} testID="home-region">
+              {`${settings.language.toUpperCase()} · ${strings[settings.region]}`}
             </Text>
           </View>
-        ) : null}
+        </View>
 
-        {ordered.map((journey, index) => (
-          <JourneyCard
-            key={journey.id}
-            journey={journey}
-            today={today}
-            position={position}
-            index={index}
-            onLongPress={() => setRemoving(journey)}
-          />
-        ))}
+        <View style={styles.body}>
+          {/*
+            ── 2층 · 오늘의 신비 ──────────────────────────────────────────
+
+            **저장된 것을 다 읽기 전까지는 그리지 않는다(`ready`).** 이 세 줄은 화면에서
+            유일하게 "지금이 언제인가"에 따라 글이 달라지는 자리인데, 설치형 웹앱은 화면을
+            **만들 때 미리 그려 둔 HTML** 로 먼저 뜨고 그 위에 앱이 얹힌다. 미리 그려 둔 글은
+            빌드한 날의 날짜와 신비이므로, 앱이 오늘 날짜로 다시 그리면 두 글이 어긋나고
+            브라우저 콘솔에 맞춤 실패(React #418)가 찍힌다 — 실제로 2026-09-18 에 e2e 셋이
+            그 오류로 걸렸다. `ready` 가 false 인 동안은 양쪽 모두 이 블록을 그리지 않으므로
+            어긋날 글 자체가 없고, 읽기가 끝난 뒤 한 번에 채워진다.
+          */}
+          {ready ? (
+            <View style={styles.todayBlock}>
+              <Text style={styles.todayLabel} testID="home-today-label">
+                {`${strings.today} · ${todayLabelKo(today)}`}
+              </Text>
+              <Text
+                style={[
+                  styles.todayTitle,
+                  { fontSize: titleFontSize, lineHeight: titleFontSize * 1.05 },
+                ]}
+                testID="home-today-set"
+              >
+                {MYSTERY_SETS[todaySet].name}
+              </Text>
+              <Text style={styles.todayFirst} testID="home-today-first">
+                {MYSTERY_SETS[todaySet].decades[0]}
+              </Text>
+            </View>
+          ) : null}
+
+          {/* ── 3층 · 주 단추와 진행선 ───────────────────────────────────── */}
+          <View style={styles.actions}>
+            {openable ? (
+              <Pressable
+                style={styles.primary}
+                onPress={() => openPrayer(openable.id)}
+                accessibilityRole="button"
+                testID="home-primary"
+              >
+                <Text style={styles.primaryLabel}>
+                  {resuming ? strings.resume : strings.start}
+                </Text>
+              </Pressable>
+            ) : null}
+
+            {resuming && openable && position ? (
+              <SessionRow
+                palette={palette}
+                position={position}
+                againLabel={strings.again}
+                onAgain={() => setRestarting(true)}
+              />
+            ) : null}
+
+            {/*
+              `새 기도` 는 여는 여정이 있을 때는 둘째 단추이고, 없을 때는 **화면에 하나뿐인
+              단추**다. 하나뿐일 때까지 흐린 테두리로 두면 화면이 아무것도 권하지 않는 것처럼
+              보이므로, 그때는 주 단추의 모양을 입는다.
+            */}
+            <Pressable
+              style={openable ? styles.secondary : styles.primary}
+              onPress={() => router.push('/new')}
+              accessibilityRole="button"
+              testID="home-new"
+            >
+              <Text style={openable ? styles.secondaryLabel : styles.primaryLabel}>새 기도</Text>
+            </Pressable>
+          </View>
+
+          {/* ── 4층 · 여정 목록 ─────────────────────────────────────────── */}
+          {ready && journeys.length === 0 ? (
+            <View style={styles.empty} testID="home-empty">
+              <Text style={styles.emptyTitle}>아직 바치는 기도가 없습니다.</Text>
+              <Text style={styles.emptyNote}>
+                바람 하나를 적고 시작해 보세요. 54일이든 하루든, 끊겨도 그 자리가 남습니다.
+              </Text>
+            </View>
+          ) : null}
+
+          {journeys.length > 0 ? (
+            <View style={styles.list}>
+              <Text style={styles.listLabel}>{strings.journeys}</Text>
+              {ordered.map((journey, index) => (
+                <JourneyRow
+                  key={journey.id}
+                  palette={palette}
+                  journey={journey}
+                  today={today}
+                  position={position}
+                  index={index}
+                  onOpen={() => openPrayer(journey.id)}
+                  onLongPress={() => setRemoving(journey)}
+                />
+              ))}
+            </View>
+          ) : null}
+
+          <Pressable
+            style={styles.quiet}
+            onPress={() => router.push('/invite')}
+            accessibilityRole="button"
+            testID="home-invite"
+          >
+            <Text style={styles.quietLabel}>초대 코드로 들어가기</Text>
+          </Pressable>
+        </View>
       </ScrollView>
 
-      {/*
-        S6 — 카드를 길게 누르면 뜨는 확인 시트. 여정 상세의 `이 여정 그만두기` 와 같은 것이다.
-        조 여정의 "조 해산 · 조에서 나가기"는 조가 M3 에 생긴 뒤의 일이라 여기 없다.
-      */}
+      <WorldTabBar current="home" />
+
+      {/* 시안 결함 10 — `다시 바치기` 는 묻고 나서 지운다. */}
+      <RestartTodaySheet
+        visible={restarting}
+        onConfirm={() => {
+          setRestarting(false);
+          if (!openable) return;
+          primeSpeech();
+          void positionStore.clear().then(() => {
+            setPosition(null);
+            router.push({ pathname: '/pray', params: { id: openable.id } });
+          });
+        }}
+        onClose={() => setRestarting(false)}
+      />
+
+      {/* S6 — 줄을 길게 누르면 뜨는 확인 시트. 여정 상세의 `이 여정 그만두기` 와 같은 것이다. */}
       <RemoveJourneySheet
         journeyId={removing?.id ?? null}
         onRemoved={() => setRemoving(null)}
         onClose={() => setRemoving(null)}
       />
-
-      <PrimaryButton
-        label="새 기도"
-        onPress={() => router.push('/new')}
-        testID="home-new"
-        style={styles.newButton}
-      />
-      <QuietButton
-        label="초대 코드로 들어가기"
-        onPress={() => router.push('/invite')}
-        testID="home-invite"
-      />
-    </ScreenBody>
+    </View>
   );
 }
 
 /**
- * 카드 한 장. 탭하면 기도로 들어가고(FR-42), 리본을 탭하면 여정 상세로 간다(FR-37).
- * **길게 누르면 지우는 확인 시트가 뜬다**(FR-05) — 짧게 누르기는 그대로다.
+ * 진행선 한 줄 — 시안의 `hasSession` 블록.
  *
- * 리본이 "자세히"의 자리를 대신하는 것은 v5 의 배선 그대로다 — 시안에서도 카드는 기도로,
- * 리본은 여정 상세로 간다.
+ * 왼쪽에 가는 선이 눕고 그 위로 바친 만큼이 강조색으로 덮인다. 오른쪽에 멈춘 자리와
+ * `다시 바치기` 가 선다. **선은 글자가 아니므로 시안의 `accent` 를 그대로 쓴다**
+ * (`decisions.md` Q-51 이 가른 기준이 바로 그것이다).
  */
-function JourneyCard({
+function SessionRow({
+  palette,
+  position,
+  againLabel,
+  onAgain,
+}: {
+  palette: WorldPalette;
+  position: PrayerPosition;
+  againLabel: string;
+  onAgain: () => void;
+}) {
+  const styles = homeStyles(palette);
+  const queue = buildDayQueue(position.mystery);
+  const stepName = queue[position.stepIndex]?.label.split(' · ')[1];
+  // 시안의 `Math.round(sess.step / 80 * 100)` — 마지막 단계가 100% 가 되도록 나눈다.
+  const percent = Math.max(
+    0,
+    Math.min(100, Math.round((position.stepIndex / Math.max(1, queue.length - 1)) * 100)),
+  );
+
+  return (
+    <View style={styles.sessionRow}>
+      <View style={styles.sessionTrack}>
+        <View style={[styles.sessionFill, { width: `${percent}%` }]} />
+      </View>
+      <Text style={styles.sessionWhere} numberOfLines={1} testID="home-session-where">
+        {resumeLine(position, stepName)}
+      </Text>
+      <Pressable onPress={onAgain} accessibilityRole="button" testID="home-again" hitSlop={10}>
+        <Text style={styles.sessionAgain}>{againLabel}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+/**
+ * 여정 한 줄 — 시안의 `homeJourneys` 줄.
+ *
+ * 왼쪽에 바람과 상태, 오른쪽에 며칠째. 이름표 넷(`home-card-*` · `home-ribbon-*`)은 옛
+ * 카드에서 그대로 물려받았다. 카드가 줄이 되면서 모양은 바뀌었지만 **그 이름표들이 가리키던
+ * 것과 말하던 글은 한 글자도 바뀌지 않았다** — 바람은 `home-card-title-*`, 오늘 자리는
+ * `home-card-status-*`, 며칠째는 `home-card-meta-*` 다.
+ *
+ * `home-ribbon-*` 만 가리키는 것이 달라졌다. 옛 카드에서는 54칸 리본이었고 지금은 며칠째를
+ * 감싼 누르는 자리인데, **하는 일(여정 상세로 간다)은 같다.** 새 시안의 줄에는 리본이 없고,
+ * 여정 상세로 가는 길은 아래 탭 바에도 따로 났다.
+ */
+function JourneyRow({
+  palette,
   journey,
   today,
   position,
   index,
+  onOpen,
   onLongPress,
 }: {
+  palette: WorldPalette;
   journey: Journey;
   today: Date;
   position: PrayerPosition | null;
   index: number;
-  /** 카드를 길게 눌렀을 때 — 홈이 지우는 시트를 연다. */
+  onOpen: () => void;
   onLongPress: () => void;
 }) {
-  const styles = useThemedStyles(homeStyles);
-  const plate = artSession.forJourney(journey.id);
+  const styles = homeStyles(palette);
   const status = cardStatus(journey, today, position);
   const dayIndex = dayIndexOn(journey.startDate, today);
-  const finish = finishDateOf(journey);
-  const mystery = mysteryOf(journey, today);
 
-  const openPrayer = () => {
+  const open = () => {
     if (status === 'notStarted') return;
-    // 누른 이 자리에서 소리 엔진을 깨운다. 브라우저는 사용자가 누른 조작에서 곧바로
-    // 이어진 소리만 내보내는데, 기도 화면은 뜬 뒤에 기다림이 두 번 끼어 자격이 끊긴다.
-    primeSpeech();
-
     if (status === 'ended') {
       router.push({ pathname: '/journey', params: { id: journey.id } });
       return;
     }
-    router.push({ pathname: '/pray', params: { id: journey.id } });
+    onOpen();
   };
 
   return (
-    <View style={[styles.card, status === 'notStarted' ? styles.cardDim : null]}>
+    <View style={[styles.row, status === 'notStarted' ? styles.rowDim : null]}>
       <Pressable
-        style={styles.cardRow}
-        onPress={openPrayer}
+        style={styles.rowMain}
+        onPress={open}
         onLongPress={onLongPress}
         accessibilityRole="button"
         accessibilityHint="길게 누르면 이 기도를 지웁니다"
         testID={`home-card-${index}`}
       >
-        {plate ? (
-          <Image
-            source={plate.source}
-            style={styles.thumb}
-            contentFit="cover"
-            contentPosition={{ left: plate.focus.thumb.x, top: plate.focus.thumb.y }}
-            accessible={false}
-          />
-        ) : (
-          <View style={styles.thumb} />
-        )}
-        <View style={styles.cardText}>
-          <Text style={styles.cardTitle} testID={`home-card-title-${index}`}>
-            {journey.title}
-          </Text>
-          <Text style={styles.cardMeta} testID={`home-card-meta-${index}`}>
-            {status === 'notStarted' ? '시작 전' : dayLabelOn(journey, dayIndex)}
-          </Text>
-          <CardStatusLines
-            status={status}
-            journey={journey}
-            today={today}
-            position={position}
-            mysteryName={MYSTERY_SETS[mystery].name}
-            index={index}
-          />
-        </View>
+        <Text style={styles.rowTitle} numberOfLines={1} testID={`home-card-title-${index}`}>
+          {journey.title}
+        </Text>
+        <RowStatus
+          palette={palette}
+          status={status}
+          journey={journey}
+          today={today}
+          position={position}
+          index={index}
+        />
       </Pressable>
 
-      {status === 'notStarted' ? null : (
-        <>
-          <Pressable
-            onPress={() => router.push({ pathname: '/journey', params: { id: journey.id } })}
-            accessibilityRole="button"
-            accessibilityLabel="여정 상세"
-            testID={`home-ribbon-${index}`}
-            style={styles.ribbonTap}
-          >
-            <Ribbon days={journey.days} height={metrics2.ribbonHome} />
-          </Pressable>
-          <View style={styles.dates}>
-            <Text style={styles.dateText}>{monthDayKo(journey.startDate)} 시작</Text>
-            {finish ? <Text style={styles.dateText}>{monthDayKo(finish)} 마침</Text> : null}
-          </View>
-        </>
-      )}
+      <Pressable
+        onPress={() => router.push({ pathname: '/journey', params: { id: journey.id } })}
+        accessibilityRole="button"
+        accessibilityLabel="여정 상세"
+        testID={`home-ribbon-${index}`}
+        style={styles.rowDayTap}
+        hitSlop={8}
+      >
+        <Text style={styles.rowDay} testID={`home-card-meta-${index}`}>
+          {status === 'notStarted' ? '시작 전' : dayLabelOn(journey, dayIndex)}
+        </Text>
+      </Pressable>
     </View>
   );
 }
 
-/** 카드의 셋째·넷째 줄 — 오늘 자리와 그 시각. */
-function CardStatusLines({
+/** 줄의 둘째 줄 — 오늘 이 기도가 어디까지 왔나. 갈래와 글은 옛 카드의 것 그대로다. */
+function RowStatus({
+  palette,
   status,
   journey,
   today,
   position,
-  mysteryName,
   index,
 }: {
+  palette: WorldPalette;
   status: CardStatus;
   journey: Journey;
   today: Date;
   position: PrayerPosition | null;
-  mysteryName: string;
   index: number;
 }) {
-  const styles = useThemedStyles(homeStyles);
+  const styles = homeStyles(palette);
 
   if (status === 'notStarted') {
-    return <Text style={styles.cardResume}>{notStartedLabel(journey, today)}</Text>;
+    return <Text style={styles.rowState}>{notStartedLabel(journey, today)}</Text>;
   }
   if (status === 'ended') {
     const length = journeyLength(journey.format) ?? journey.days.length;
     const prayed = journey.days.filter((state) => state === 'prayed').length;
     return (
-      <Text style={styles.cardResume} testID={`home-card-status-${index}`}>
+      <Text style={styles.rowState} testID={`home-card-status-${index}`}>
         {length}일 중 {prayed}일을 바쳤습니다
       </Text>
     );
   }
   if (status === 'prayedToday') {
     return (
-      <Text style={styles.cardResume} testID={`home-card-status-${index}`}>
+      <Text style={styles.rowState} testID={`home-card-status-${index}`}>
         오늘 바쳤습니다
       </Text>
     );
@@ -274,53 +507,124 @@ function CardStatusLines({
     const name = step?.label.split(' · ')[1];
     return (
       <>
-        <Text style={styles.cardResume} testID={`home-card-status-${index}`}>
+        <Text style={styles.rowState} testID={`home-card-status-${index}`}>
           {MYSTERY_SETS[position.mystery].name}
           {'\n'}
           {resumeLine(position, name)}
         </Text>
-        <Text style={styles.cardWhen}>{relativeTimeKo(new Date(position.savedAt), today)}</Text>
+        <Text style={styles.rowWhen}>{relativeTimeKo(new Date(position.savedAt), today)}</Text>
       </>
     );
   }
   return (
-    <Text style={styles.cardResume} testID={`home-card-status-${index}`}>
-      {mysteryName}
+    <Text style={styles.rowState} testID={`home-card-status-${index}`}>
+      {MYSTERY_SETS[mysteryOf(journey, today)].name}
       {'\n'}
       아직
     </Text>
   );
 }
 
-const homeStyles = ({ colors }: Theme) =>
+/**
+ * 크기와 간격은 시안의 홈 마크업에서 그대로 옮겼다 — 본문 좌우 여백 24, 위 16, 층 사이 18,
+ * 주 단추 높이 56과 모서리 4, 여정 줄 높이 48과 아래 괘선 1px.
+ *
+ * 색은 지역의 색 벌에서만 온다. 글자에 쓰는 강조는 `accentText`, 선과 면에 쓰는 강조는
+ * `accent` 다 (`decisions.md` Q-51).
+ */
+const homeStyles = (palette: WorldPalette) =>
   StyleSheet.create({
-    list: { flex: 1 },
-    listInner: { paddingBottom: 8 },
-    empty: { paddingTop: 40 },
-    emptyTitle: { ...type1.body, color: colors.ink },
-    emptyNote: { ...type2.noteSmall, color: colors.inkMuted, marginTop: 10 },
-    card: {
-      paddingTop: 26,
-      paddingBottom: 24,
+    screen: { flex: 1, backgroundColor: palette.paper },
+    scroll: { flex: 1 },
+    scrollInner: { flexGrow: 1 },
+    art: { backgroundColor: palette.scrim, overflow: 'hidden' },
+    artHeader: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      top: 0,
+      paddingHorizontal: 20,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 12,
+    },
+    brand: { ...worldHomeType.brand, color: ON_ART_INK, textTransform: 'uppercase' },
+    region: { ...worldHomeType.region, color: ON_ART_INK },
+    body: { paddingHorizontal: 24, paddingTop: 16, gap: 18 },
+    todayBlock: {},
+    todayLabel: { ...worldHomeType.todayLabel, color: palette.accentText },
+    todayTitle: {
+      fontFamily: fonts.serif,
+      color: palette.ink,
+      marginTop: 8,
+      marginBottom: 10,
+      // 브라우저는 한국어를 글자 단위로 끊으므로 큰 제목이 낱말 가운데서 갈라진다.
+      // iOS·안드로이드는 원래 띄어쓰기에서 끊으므로 웹에만 준다 (하루 완주 화면과 같다).
+      ...Platform.select({ web: { wordBreak: 'keep-all' as const }, default: {} }),
+    },
+    todayFirst: { ...worldHomeType.todayFirst, color: palette.ink, opacity: 0.82 },
+    actions: { gap: 10 },
+    /*
+      주 단추는 면을 채우지 않는다. 「Classical」 체계의 `.btn-primary` 가 **투명한 바탕에
+      강조색 테두리와 강조색 글자**로 정의돼 있고(`_ds/…/styles.css` 129 행), 시안의 홈이
+      그 class 를 그대로 쓴다. 테두리는 글자가 아니므로 시안의 `accent` 를, 글자는 밝은
+      종이 위에 놓이므로 짙은 짝인 `accentText` 를 쓴다 (`decisions.md` Q-51).
+    */
+    primary: {
+      minHeight: 56,
+      borderRadius: worldRadius.md,
+      borderWidth: 1,
+      borderColor: palette.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    primaryLabel: { ...worldHomeType.primary, color: palette.accentText },
+    /* 둘째 단추는 같은 체계의 `.btn-secondary` — 테두리가 괘선 색이고 글자는 본문색이다. */
+    secondary: {
+      minHeight: 48,
+      borderRadius: worldRadius.md,
+      borderWidth: 1,
+      borderColor: 'rgba(0,0,0,.14)',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    secondaryLabel: { ...worldHomeType.secondary, color: palette.ink },
+    sessionRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+    sessionTrack: { flex: 1, height: 3, backgroundColor: 'rgba(0,0,0,.14)' },
+    sessionFill: { height: 3, backgroundColor: palette.accent },
+    sessionWhere: { ...worldHomeType.session, color: palette.muted, flexShrink: 1 },
+    sessionAgain: {
+      ...worldHomeType.session,
+      color: palette.muted,
+      textDecorationLine: 'underline',
+    },
+    empty: { paddingTop: 6 },
+    emptyTitle: { ...worldHomeType.todayFirst, color: palette.ink },
+    emptyNote: { ...worldHomeType.rowState, color: palette.muted, marginTop: 8 },
+    list: { borderTopWidth: 1, borderTopColor: 'rgba(0,0,0,.14)', paddingTop: 10 },
+    listLabel: { ...worldHomeType.listLabel, color: palette.muted, marginBottom: 2 },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 12,
+      minHeight: 48,
       borderBottomWidth: 1,
-      borderBottomColor: colors.rule,
+      borderBottomColor: 'rgba(0,0,0,.09)',
+      paddingVertical: 10,
     },
-    cardDim: { opacity: 0.5 },
-    cardRow: { flexDirection: 'row', gap: 16, alignItems: 'flex-start' },
-    thumb: {
-      width: metrics2.thumbWidth, // 96
-      height: metrics2.thumbHeight, // 124
-      flexGrow: 0,
-      flexShrink: 0,
-      backgroundColor: colors.rule,
+    rowDim: { opacity: 0.5 },
+    rowMain: { flex: 1, minWidth: 0 },
+    rowTitle: { ...worldHomeType.rowTitle, color: palette.ink },
+    rowState: { ...worldHomeType.rowState, color: palette.muted, marginTop: 2 },
+    rowWhen: { ...worldHomeType.rowState, color: palette.muted, marginTop: 2 },
+    rowDayTap: { flexShrink: 0, justifyContent: 'center', minHeight: 44 },
+    quiet: { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+    quietLabel: {
+      ...worldHomeType.session,
+      color: palette.muted,
+      textDecorationLine: 'underline',
     },
-    cardText: { flex: 1, minWidth: 0 },
-    cardTitle: { ...type2.cardTitle, color: colors.ink, marginBottom: 10 },
-    cardMeta: { ...type2.cardMeta, color: colors.accent },
-    cardResume: { ...type2.cardResume, color: colors.ink, marginTop: 14 },
-    cardWhen: { ...type1.caption, color: colors.inkMuted, marginTop: 8 },
-    ribbonTap: { marginTop: 18 },
-    dates: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 },
-    dateText: { ...type2.micro, color: colors.inkMuted },
-    newButton: { marginBottom: 14 },
+    rowDay: { ...worldHomeType.rowDay, color: palette.accentText },
   });

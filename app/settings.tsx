@@ -34,6 +34,10 @@ import { metrics, type as type1, type2, useThemedStyles, type Theme } from '../s
 import { RosarySheet } from '../src/prayer/RosarySheet';
 import { BottomSheet, ChoiceSheet, ConfirmSheet } from '../src/ui/Sheet';
 import { ScreenBody, ScreenHeader } from '../src/ui/Screen';
+import { WorldTabBar } from '../src/ui/WorldTabBar';
+
+/** 화면 전체를 감싸는 틀 — 글의 칸 아래에 탭 바가 화면 끝까지 붙게 한다. */
+const settingsShell = StyleSheet.create({ shell: { flex: 1 } });
 
 /** 낮과 밤 셋. `기기 설정 따름` 은 v5 가 그 줄에 적어 둔 값이다. */
 const THEME_CHOICES: ReadonlyArray<{ key: ThemePreference; name: string; note?: string }> = [
@@ -64,7 +68,21 @@ export default function SettingsScreen() {
   const close = () => setSheet('none');
 
   return (
-    <ScreenBody testID="settings-screen">
+    /*
+      W2 슬라이스 A 에서 이 화면에 더해진 것은 **맨 아래 탭 바 한 줄뿐**이다. 설정의 줄과
+      시트와 색은 슬라이스 C 에서 시안의 어법으로 옮기므로 여기서 손대지 않았다.
+
+      탭 바를 `ScreenBody` 안이 아니라 밖에 두는 이유가 있다. `ScreenBody` 는 좌우 24,
+      아래 26 의 여백을 가진 글의 칸이라, 그 안에 넣으면 탭 바가 화면 끝까지 닿지 못하고
+      가운데에 떠 보인다. 시안의 탭 바는 화면 아래 변에 붙으므로 칸 밖에 세운다.
+
+      **지금은 여기에 어긋남이 하나 있다.** 이 화면은 아직 옛 한지 벌(낮·밤)로 서 있고
+      탭 바는 새 시안의 종이색으로 서 있어서, `밤` 을 고르면 어두운 화면 아래에 밝은 탭
+      바가 붙는다. 슬라이스 C 가 이 화면을 시안의 어법으로 옮기면 함께 해소된다 —
+      새 시안에는 밤 벌이 없다(`decisions.md` 결정 12).
+    */
+    <View style={settingsShell.shell}>
+      <ScreenBody testID="settings-screen">
       <ScreenHeader
         label="설정"
         action="닫기"
@@ -266,7 +284,9 @@ export default function SettingsScreen() {
           검증 기간용입니다. 결제는 없습니다.
         </Text>
       </BottomSheet>
-    </ScreenBody>
+      </ScreenBody>
+      <WorldTabBar current="settings" />
+    </View>
   );
 }
 

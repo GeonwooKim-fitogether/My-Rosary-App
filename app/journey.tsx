@@ -43,6 +43,10 @@ import {
   ScreenBody,
   ScreenHeader,
 } from '../src/ui/Screen';
+import { WorldTabBar } from '../src/ui/WorldTabBar';
+
+/** 화면 전체를 감싸는 틀 — 글의 칸 아래에 탭 바가 화면 끝까지 붙게 한다. */
+const journeyShell = StyleSheet.create({ shell: { flex: 1 } });
 
 /** 1,050 처럼 세 자리마다 쉼표. v5 가 성모송 수를 그렇게 적었다. */
 function grouped(n: number): string {
@@ -74,14 +78,17 @@ export default function JourneyDetailScreen() {
   const journey = journeys.find((item) => item.id === id) ?? journeys[0];
   if (!journey) {
     return (
-      <ScreenBody testID="journey-screen">
-        <ScreenHeader
-          label="여정"
-          action="돌아가기"
-          onAction={() => router.back()}
-          actionTestID="journey-back"
-        />
-      </ScreenBody>
+      <View style={journeyShell.shell}>
+        <ScreenBody testID="journey-screen">
+          <ScreenHeader
+            label="여정"
+            action="돌아가기"
+            onAction={() => router.back()}
+            actionTestID="journey-back"
+          />
+        </ScreenBody>
+        <WorldTabBar current="journeys" />
+      </View>
     );
   }
 
@@ -94,7 +101,15 @@ export default function JourneyDetailScreen() {
   const canResume = isResumable(journey, today, position);
 
   return (
-    <ScreenBody testID="journey-screen">
+    /*
+      W2 슬라이스 A 에서 이 화면에 더해진 것은 **맨 아래 탭 바 한 줄뿐**이다. 이 화면을
+      시안의 어법으로 옮기는 일은 W3 이고, 지금은 `기도 여정` 탭이 닿는 자리를 여는 것까지가
+      할 일이다(W2 지시서 §6). 탭 바를 `ScreenBody` 밖에 두는 까닭은 설정 화면과 같다 —
+      `ScreenBody` 는 좌우 여백을 가진 글의 칸이라, 그 안에 넣으면 탭 바가 화면 끝까지
+      닿지 못한다.
+    */
+    <View style={journeyShell.shell}>
+      <ScreenBody testID="journey-screen">
       <ScreenHeader
         label="여정"
         action="돌아가기"
@@ -211,7 +226,9 @@ export default function JourneyDetailScreen() {
         }}
         onClose={() => setQuitSheet(false)}
       />
-    </ScreenBody>
+      </ScreenBody>
+      <WorldTabBar current="journeys" />
+    </View>
   );
 }
 

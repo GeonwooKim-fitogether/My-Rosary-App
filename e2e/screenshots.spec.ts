@@ -15,15 +15,21 @@ import { expect, test } from '@playwright/test';
 import {
   enterHome,
   enterPrayerFromHome,
+  freezeClock,
+  leavePrayer,
   openApp,
+  openSettings,
   pressMediaButton,
   runUntilVisible,
+  tapTab,
 } from './support/harness';
 
 const M1 = 'docs/plan/m1-screens';
 const M2 = 'docs/plan/m2-screens';
 /** 새 시안의 어법으로 다시 세운 기도 화면 (W1) 을 찍어 두는 자리. */
 const W1 = 'docs/plan/w1-screens';
+/** 새 시안의 어법으로 다시 세운 홈과 탭 바 (W2) 를 찍어 두는 자리. */
+const W2 = 'docs/plan/w2-screens';
 
 
 test.use({ reducedMotion: 'reduce' });
@@ -62,9 +68,16 @@ test('M2 · 홈 · 여정 상세 · 새 기도 · 초대 코드 · 설정을 찍
   await openApp(page);
   await enterHome(page);
 
-  // 홈 — 본보기 여정이 23일째에 서 있다.
+  /*
+    홈 — 본보기 여정이 23일째에 서 있다.
+
+    **여기서 `m2-screens/home.png` 를 더 찍지 않는다.** 그 한 장은 v5 어법의 홈(카드 목록)을
+    담은 M2 의 기록이고, W2 가 홈을 새 시안의 어법으로 다시 세웠으므로 같은 자리에 다시
+    찍으면 M2 의 기록이 W2 의 화면으로 덮인다. W1 이 묵주 사진 스무 장에서 겪은 일과 같은
+    모양이다(이 파일 가운데의 은퇴 주석). 새 홈의 사진은 아래 `W2 · …` 시험이
+    `docs/plan/w2-screens/` 에 찍는다. 재던 판정문은 그대로 둔다.
+  */
   await expect(page.getByTestId('home-card-meta-0')).toHaveText('23일째 · 청원');
-  await page.screenshot({ path: `${M2}/home.png` });
 
   // 여정 상세 — 54칸 격자와 통계.
   await page.getByTestId('home-ribbon-0').click();
@@ -85,8 +98,8 @@ test('M2 · 홈 · 여정 상세 · 새 기도 · 초대 코드 · 설정을 찍
   await page.screenshot({ path: `${M2}/invite.png` });
   await page.getByTestId('invite-close').click();
 
-  // 설정 — 묶음 셋.
-  await page.getByTestId('home-settings').click();
+  // 설정 — 묶음 셋. 들어가는 길이 홈 머리의 글자에서 아래 탭 바로 바뀌었다 (W2).
+  await openSettings(page);
   await expect(page.getByTestId('settings-screen')).toBeVisible();
   await page.screenshot({ path: `${M2}/settings.png` });
 
@@ -208,4 +221,61 @@ test('W1 · 기도 화면을 나가는 방법을 묻는 시트를 찍는다', as
   await expect(page.getByTestId('pray-stop')).toContainText('오늘 처음부터');
   await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
   await page.screenshot({ path: `${W1}/pray-leave.png` });
+});
+
+
+/**
+ * W2 — 새 시안의 어법으로 다시 세운 홈과, 탭 바가 닿는 자리들을 찍는다 (통과 조건 6).
+ *
+ * 세 가지 상태를 찍는다. 여정이 서 있는 홈, 여정이 하나도 없는 홈, 그리고 아직 비어 있는
+ * 성화 갤러리다. 빈 홈을 함께 찍는 이유는 그것이 **처음 설치한 사람이 보는 화면**이기
+ * 때문이다 — 여정이 있는 홈만 찍으면 그 첫인상을 아무도 보지 못한다.
+ */
+test('W2 · 새 홈과 성화 갤러리 자리를 찍는다', async ({ page }) => {
+  await openApp(page);
+  await enterHome(page);
+
+  // 본보기 여정이 23일째에 서 있는 홈.
+  await expect(page.getByTestId('home-card-meta-0')).toHaveText('23일째 · 청원');
+  await expect(page.getByTestId('home-today-set')).toBeVisible();
+  await page.waitForTimeout(400); // 성화가 떠오르는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W2}/home.png` });
+
+  // 갤러리 탭 — W3 의 화면이라 아직 "곧 만들어집니다" 한 줄만 선다.
+  await tapTab(page, 'gallery');
+  await expect(page.getByTestId('gallery-soon')).toBeVisible();
+  await page.screenshot({ path: `${W2}/gallery.png` });
+});
+
+test('W2 · 여정이 하나도 없는 홈을 찍는다', async ({ page }) => {
+  await openApp(page, { demo: false });
+  await enterHome(page);
+  await expect(page.getByTestId('home-empty')).toBeVisible();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${W2}/home-empty.png` });
+});
+
+/**
+ * W2 — 이어서 바치는 홈과, `다시 바치기` 가 여는 확인 시트를 찍는다 (시안 결함 10).
+ *
+ * 이 두 장이 있어야 하는 이유가 있다. 시안의 홈은 `다시 바치기` 를 누르면 **아무것도 묻지
+ * 않고** 오늘 바치던 자리를 지운다. 이 저장소가 그 앞에 확인 한 장을 세웠다는 것은 글로만
+ * 적으면 확인할 수 없고, 사진은 그 단추가 이제 **묻기만 한다**는 것을 보여 준다.
+ */
+test('W2 · 이어서 바치는 홈과 다시 바치기 확인 시트를 찍는다', async ({ page }) => {
+  await openApp(page);
+  await enterHome(page);
+  await enterPrayerFromHome(page);
+  await page.clock.runFor(40000);
+  await freezeClock(page);
+  await leavePrayer(page, 'pause');
+
+  await expect(page.getByTestId('home-session-where')).toBeVisible();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${W2}/home-resume.png` });
+
+  await page.getByTestId('home-again').click();
+  await expect(page.getByTestId('sheet-again')).toBeVisible();
+  await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W2}/home-again-sheet.png` });
 });

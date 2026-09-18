@@ -350,3 +350,98 @@ export const worldDoneType = scaleTypeScale(
 export function doneTitleSizeFor(width: number): number {
   return Math.min(42, Math.max(32, width * 0.09));
 }
+
+/**
+ * 홈 화면(W2 §2 슬라이스 A)의 서체 — 시안의 `data-screen-label="Home"` 블록에 인라인으로
+ * 적혀 있던 크기와 자간을 그대로 옮긴 것이다. 기도 화면의 `worldPrayType`, 하루 완주의
+ * `worldDoneType` 과 같은 이유로 화면 이름으로 모았다 — 시안은 화면마다 크기를 직접 정하고,
+ * 그 값이 그 화면의 정본이다.
+ *
+ * **여기 없는 것 하나.** 큰 제목(오늘의 신비 이름)의 크기는 시안이 `clamp(34px, 10vw, 44px)`
+ * 로 적어 화면 너비에 따라 달라지므로 고정값이 아니다. 아래 `homeTitleSizeFor` 가 그 식을 쓴다.
+ *
+ * 제목 자리에 한글 명조를 쓰는 것은 기도 화면·하루 완주와 같은 이유다. 시안의 제목 글꼴
+ * (Cormorant Garamond)에는 한글 글리프가 없어 `환희의 신비` 가 네모로 나온다.
+ */
+export const worldHomeType = scaleTypeScale(
+  {
+    /**
+     * 13px · 자간 .18em · 대문자. 성화 위 왼쪽의 앱 이름 (시안의 `t.appName`).
+     * 시안이 이 자리에 제목용 라틴 글꼴을 쓰고, 앱 이름은 어느 언어에서나 라틴이라 그대로 쓴다.
+     */
+    brand: {
+      fontFamily: worldFonts.heading,
+      fontSize: 13,
+      lineHeight: 13 * 1.25,
+      letterSpacing: 13 * 0.18,
+    },
+    /** 12px · 자간 .08em. 성화 위 오른쪽의 지역 표시 (시안의 `regionShort`). */
+    region: {
+      fontFamily: fonts.sans,
+      fontSize: 12,
+      lineHeight: 12 * 1.25,
+      letterSpacing: 12 * 0.08,
+    },
+    /** 12px · 자간 .14em. 큰 제목 위의 작은 라벨 (시안의 `t.today · todayLabel`). */
+    todayLabel: {
+      fontFamily: fonts.sans,
+      fontSize: 12,
+      lineHeight: 12 * 1.25,
+      letterSpacing: 12 * 0.14,
+    },
+    /** 15px · 줄 높이 1.6. 오늘 신비의 첫 단 한 줄 (시안의 `todayFirstMystery`). */
+    todayFirst: { fontFamily: fonts.sans, fontSize: 15, lineHeight: 15 * 1.6 },
+    /** 19px 명조 · 자간 .01em. 주 단추의 글자 (시안의 `primaryLabel`). */
+    primary: {
+      fontFamily: fonts.serif,
+      fontSize: 19,
+      lineHeight: 19 * 1.25,
+      letterSpacing: 19 * 0.01,
+    },
+    /**
+     * 14px 명조. 둘째 단추(`새 기도`)의 글자.
+     *
+     * 시안의 홈에는 이 단추가 없으므로 값을 화면에서 가져올 수 없다. 대신 「Classical」
+     * 체계가 정한 단추의 기본값(`styles.css` 의 `.btn` — 제목 글꼴 14px, 줄 높이 1.2)을
+     * 그대로 쓴다. 테두리 색만 `.btn-secondary` 를 따라 괘선 색이다.
+     */
+    secondary: { fontFamily: fonts.serif, fontSize: 14, lineHeight: 14 * 1.2 },
+    /** 12.5px. 진행선 옆의 자리 표시와 `다시 바치기` (시안의 `sessionWhere` · `t.again`). */
+    session: { fontFamily: fonts.sans, fontSize: 12.5, lineHeight: 12.5 * 1.3 },
+    /** 11.5px · 자간 .12em. 여정 목록 위의 작은 라벨 (시안의 `t.journeys`). */
+    listLabel: {
+      fontFamily: fonts.sans,
+      fontSize: 11.5,
+      lineHeight: 11.5 * 1.25,
+      letterSpacing: 11.5 * 0.12,
+    },
+    /** 14.5px · 줄 높이 1.35. 여정 줄의 바람 한 줄 (시안의 `hj.intention`). */
+    rowTitle: { fontFamily: fonts.sans, fontSize: 14.5, lineHeight: 14.5 * 1.35 },
+    /** 11.5px. 여정 줄의 상태 (시안의 `hj.state`). */
+    rowState: { fontFamily: fonts.sans, fontSize: 11.5, lineHeight: 11.5 * 1.4 },
+    /** 12px · 자간 .06em. 여정 줄 오른쪽의 며칠째 (시안의 `hj.day`). */
+    rowDay: {
+      fontFamily: fonts.sans,
+      fontSize: 12,
+      lineHeight: 12 * 1.25,
+      letterSpacing: 12 * 0.06,
+    },
+  },
+  TEXT_SCALE,
+);
+
+/**
+ * 홈 큰 제목의 크기 — 시안의 `clamp(34px, 10vw, 44px)`.
+ * 하루 완주의 `doneTitleSizeFor` 와 같은 모양이며, 계수만 그 화면의 값이다.
+ */
+export function homeTitleSizeFor(width: number): number {
+  return Math.min(44, Math.max(34, width * 0.1));
+}
+
+/**
+ * 성화 큰 그림의 높이 — 시안의 `min(52dvh, 470px)`.
+ * `dvh` 는 브라우저 주소창을 뺀 실제 화면 높이라, React Native 에서는 창 높이가 그 값이다.
+ */
+export function homeArtHeightFor(windowHeight: number): number {
+  return Math.min(470, windowHeight * 0.52);
+}

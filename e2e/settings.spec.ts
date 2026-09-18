@@ -6,7 +6,7 @@
  * 열고, 시트를 띄우고, 고르고, 화면이 바뀌는 것을 보고, 다시 열어 그대로인지 본다.
  */
 import { expect, test } from '@playwright/test';
-import { collectConsoleErrors, enterHome, openApp } from './support/harness';
+import { collectConsoleErrors, enterHome, openApp, openSettings } from './support/harness';
 
 test.use({ reducedMotion: 'reduce' });
 
@@ -22,8 +22,8 @@ test('설정에서 고른 것이 화면에 반영되고 다시 열어도 남는�
   await openApp(page);
   await enterHome(page);
 
-  // 홈 오른쪽 위의 `설정` 으로 들어간다 (v5 의 배선 그대로).
-  await page.getByTestId('home-settings').click();
+  // 아래 탭 바의 `설정` 탭으로 들어간다 (W2 에서 홈 머리의 `설정` 글자가 탭으로 옮겨 갔다).
+  await openSettings(page);
   await expect(page.getByTestId('settings-screen')).toBeVisible();
   expect(await background(page, 'settings-screen')).toBe('rgb(237, 231, 216)'); // 낮 벌 한지
 
