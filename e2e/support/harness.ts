@@ -158,15 +158,23 @@ export const FIXED_TODAY = new Date('2026-09-05T09:00:00');
  * 앱을 연다. 기기를 흉내 내고, 시계를 세우고, 첫 화면을 띄운다.
  *
  * @param demo 본보기 여정을 세울 것인가. 빈 홈에서 시작하는 시험은 false 로 부른다.
+ * @param art 성화 뽑기의 씨앗 (`decisions.md` Q-57). 주면 **그림이 언제나 같아진다.**
+ *   사진을 찍는 시험과, 그림이 바뀌는 것 자체를 재는 시험이 이것을 쓴다 — 뽑기가 난수인
+ *   채로 두면 아무것도 고치지 않아도 사진이 달라지고, "지역이 바뀌어서 그림이 바뀐 것"과
+ *   "그냥 다른 그림이 나온 것"을 가릴 수 없다.
  */
 export async function openApp(
   page: Page,
-  options: { demo?: boolean; at?: Date; fontScale?: number } = {},
+  options: { demo?: boolean; at?: Date; fontScale?: number; art?: number } = {},
 ): Promise<void> {
   await page.clock.install({ time: options.at ?? FIXED_TODAY });
   await installDeviceStubs(page);
   if (options.fontScale && options.fontScale !== 1) await installFontScale(page, options.fontScale);
-  await page.goto(options.demo === false ? '/' : '/?demo=1');
+  const query = new URLSearchParams();
+  if (options.demo !== false) query.set('demo', '1');
+  if (options.art !== undefined) query.set('art', String(options.art));
+  const search = query.toString();
+  await page.goto(search === '' ? '/' : `/?${search}`);
 }
 
 /**
@@ -246,4 +254,41 @@ export async function runUntilVisible(
     await page.clock.runFor(stepMs);
   }
   return target.isVisible();
+}
+
+/* ── W2 슬라이스 A 가 더한 받침대 — 홈의 머리가 아래 탭 바로 옮겨 갔다 ──────────────────
+   M2 의 홈은 오른쪽 위에 `설정` 글자를 달고 있었고(`home-settings`), 시험들은 그것을 눌러
+   설정으로 들어갔다. 새 시안의 홈에는 그 글자가 없고 설정은 **아래 탭 바**로 간다
+   (`src/ui/WorldTabBar.tsx`). 시험마다 그 사실을 다시 적지 않도록 여는 동작을 여기 한 번만
+   적는다 — W1 이 `leavePrayer` 를 여기 둔 것과 같은 까닭이다.
+
+   **시험이 재던 것은 한 줄도 바뀌지 않았다.** 설정 화면이 무엇을 보여 주고 무엇을 저장하는지
+   묻는 판정문은 그대로이고, 그 화면을 여는 손짓만 글자에서 탭으로 바뀌었다.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/**
+ * 탭 하나를 누른다.
+ *
+ * **왜 감싸개가 필요한가.** 화면은 쌓이고, 쌓인 화면은 사라지지 않고 아래에 남는다. 탭 바는
+ * 화면마다 한 줄씩 서 있으므로 두 화면이 쌓이면 `tab-settings` 라는 이름표가 둘이 되고,
+ * 시험은 "어느 쪽을 누를까"를 정하지 못해 멈춘다(2026-09-18 에 실제로 그렇게 걸렸다).
+ * 사람이 실제로 누르는 것은 **지금 보이는** 탭 바 하나뿐이므로 그 하나만 고른다.
+ */
+export async function tapTab(
+  page: Page,
+  tab: 'home' | 'gallery' | 'journeys' | 'settings',
+): Promise<void> {
+  await page.locator(`[data-testid="tab-${tab}"]:visible`).click();
+}
+
+/** 아래 탭 바로 설정에 들어간다. */
+export async function openSettings(page: Page): Promise<void> {
+  await tapTab(page, 'settings');
+  await page.getByTestId('settings-screen').waitFor();
+}
+
+/** 아래 탭 바로 홈에 돌아온다. */
+export async function openHomeTab(page: Page): Promise<void> {
+  await tapTab(page, 'home');
+  await page.getByTestId('home-screen').waitFor();
 }

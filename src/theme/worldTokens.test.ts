@@ -82,21 +82,24 @@ describe('본문이 읽힌다 — 다섯 벌 모두 4.5:1 을 넘는다', () => 
 });
 
 /**
- * 강조색은 지금 기준에 미달한다 — 그 사실을 값으로 붙들어 둔다.
+ * 강조색 두 개의 역할이 갈렸다 — Q-51 이 닫힌 자리 (2026-09-18 · W2 지시서 §1).
  *
- * 시안은 강조색을 작은 글자에 쓴다(머리의 12px 라벨, 13px 링크, 주 단추의 글자와 테).
- * 그런데 다섯 벌 모두 종이 위에서 2.26~2.94 로, 본문 기준 4.5:1 은 물론 그림 요소 기준
- * 3:1 에도 닿지 않는다. 「Classical」 체계의 설명문 자신이 "강조와 바탕의 짝은 3:1 로
- * 맞췄으니 본문 크기 글자에는 더 짙은 단계를 쓰라"고 적어 두었는데, 시안의 화면은 그
- * 권고를 따르지 않고 강조색을 그대로 작은 글자에 썼다.
+ * 그전까지 이 블록은 "강조색이 기준에 미달한다"는 **사실만** 값으로 붙들어 두고 있었다.
+ * 시안이 강조색을 작은 글자(12px 라벨 · 13px 링크)에 쓰는데 다섯 벌 모두 종이 위에서
+ * 2.26~2.94 라, 본문 기준 4.5:1 은 물론 그림 요소 기준 3:1 에도 닿지 않았기 때문이다.
+ * 고치지 않고 기록만 한 이유는 강조색을 짙게 바꾸면 다섯 지역의 얼굴이 함께 바뀌므로
+ * 사람이 정할 일이었기 때문이다.
  *
- * **이 시험은 그것을 고치지 않는다.** 강조색을 짙게 바꾸면 다섯 지역의 얼굴이 함께
- * 바뀌므로 사람이 정할 일이고(`decisions.md` 결정 큐 Q-51), 시험이 할 수 있는 일은
- * 지금 값을 붙들어 두어 누군가 모르고 건드리면 먼저 알려 주는 것이다. 값이 4.5 를
- * 넘도록 고쳐지면 이 시험이 실패하고, 그때 이 블록을 위의 정상 기준으로 옮기면 된다.
+ * **결정이 났다.** 강조색은 그대로 두고, **글자에 쓸 짙은 짝(`accentText`)을 따로 앉힌다.**
+ * 그래서 이 파일이 재는 것도 둘로 갈린다.
+ *
+ * 1. `accent` 는 지금 값 그대로여야 한다 — 시안의 얼굴이므로, 누가 모르고 짙게 바꾸면
+ *    이 블록이 먼저 실패해 알려 준다. (아래 첫 블록)
+ * 2. `accentText` 는 다섯 지역 종이 위에서 **4.5:1 을 넘어야 한다** — 넘지 못하면 글자가
+ *    읽히지 않으므로 앉힌 의미가 없다. (아래 둘째 블록)
  */
-describe('강조색의 현재 대비 — 기준 미달을 값으로 기록해 둔다 (Q-51)', () => {
-  it.each(palettes)('%s — 강조색이 종이 위에서 3:1 에 닿지 않는다', (_region, palette: WorldPalette) => {
+describe('강조색은 시안의 값 그대로 붙들어 둔다 (Q-51)', () => {
+  it.each(palettes)('%s — 강조색이 종이 위에서 3:1 에 닿지 않는다 (시안 그대로)', (_region, palette: WorldPalette) => {
     const ratio = contrast(palette.accent, palette.paper);
     expect(ratio).toBeGreaterThan(2.2);
     expect(ratio).toBeLessThan(3.0);
@@ -104,6 +107,48 @@ describe('강조색의 현재 대비 — 기준 미달을 값으로 기록해 �
 
   it.each(palettes)('%s — 둘째 강조는 4:1 을 넘는다', (_region, palette: WorldPalette) => {
     expect(contrast(palette.accent2, palette.paper)).toBeGreaterThan(4.0);
+  });
+});
+
+/**
+ * 글자에 쓰는 강조색이 다섯 지역 종이 위에서 읽힌다 (W2 통과 조건 5).
+ *
+ * 값 다섯은 `docs/plan/w2-work-order.md` §1 의 표에서 왔고, 그 표는 "색상과 채도는 그대로
+ * 두고 명도만 4.5:1 을 넘길 때까지 낮춘다"는 규칙으로 계산된 것이다. 여기서 두 가지를 잰다.
+ *
+ * 첫째, **실제로 4.5:1 을 넘는가.** 표를 믿지 않고 이 시험이 매번 다시 계산한다 — 표가
+ * 틀렸거나 누가 값을 고치면 여기서 걸린다.
+ *
+ * 둘째, **값 다섯이 그 표와 글자까지 같은가.** 대비만 재면 "4.5 를 넘는 아무 색"으로 바꿔도
+ * 통과하므로, 지역의 얼굴(따뜻한 금빛)이 조용히 다른 색으로 바뀌는 것을 막지 못한다.
+ * 그래서 값 자체도 못 박는다. 바꾸려면 이 시험을 함께 고쳐야 하고, 그 커밋이 리뷰에 보인다.
+ */
+describe('글자에 쓰는 강조색 — 다섯 지역 종이 위에서 4.5:1 을 넘는다 (Q-51 · W2 §1)', () => {
+  /** `docs/plan/w2-work-order.md` §1 의 표. 이 값이 정본이다. */
+  const EXPECTED: Record<string, string> = {
+    europe: '#8e6529',
+    northamerica: '#886a30',
+    southamerica: '#8f661f',
+    asia: '#826c3d',
+    korea: '#8c6429',
+  };
+
+  it.each(palettes)('%s — 종이 위에서 본문 기준을 넘는다', (_region, palette: WorldPalette) => {
+    expect(contrast(palette.accentText, palette.paper)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it.each(palettes)('%s — 지시서 §1 의 표와 값이 같다', (region, palette: WorldPalette) => {
+    expect(palette.accentText).toBe(EXPECTED[region]);
+  });
+
+  it.each(palettes)('%s — 시안의 강조색보다 짙다 (명도만 낮춘 파생이다)', (_region, palette: WorldPalette) => {
+    expect(luminance(palette.accentText)).toBeLessThan(luminance(palette.accent));
+  });
+
+  it.each(palettes)('%s — 어두운 덮개 위에는 쓰지 않는다 (그 자리에서는 읽히지 않는다)', (_region, palette: WorldPalette) => {
+    // 이 시험은 금지를 값으로 적어 둔 것이다. 짙게 만든 색이라 어두운 바탕에서는 오히려
+    // 대비가 무너지므로, 덮개 위의 강조는 `onScrim.accent` 를 쓴다.
+    expect(contrast(palette.accentText, palette.scrim)).toBeLessThan(4.5);
   });
 });
 

@@ -133,4 +133,31 @@ describe('지역과 언어 (결정 11 의 새 시안)', () => {
     await store.save({ ...DEFAULT_SETTINGS, fontScale: 3 });
     expect((await store.load()).fontScale).toBe(3);
   });
+
+  /* ── 진동과 움직임 줄이기 (W2 슬라이스 C — 시안 설정의 토글 둘) ─────────────── */
+
+  it('진동은 켜짐, 움직임 줄이기는 꺼짐으로 시작한다 (시안의 기본값)', () => {
+    expect(DEFAULT_SETTINGS.haptic).toBe(true);
+    expect(DEFAULT_SETTINGS.reduceMotion).toBe(false);
+  });
+
+  it('둘이 없던 옛 기기는 기본값으로 열린다', () => {
+    const parsed = parseSettings(JSON.stringify({ recitation: 'silent' }));
+    expect(parsed.haptic).toBe(true);
+    expect(parsed.reduceMotion).toBe(false);
+  });
+
+  it('참·거짓이 아닌 값이 저장돼 있으면 기본값으로 떨어진다', () => {
+    const parsed = parseSettings(JSON.stringify({ haptic: '아니오', reduceMotion: 1 }));
+    expect(parsed.haptic).toBe(true);
+    expect(parsed.reduceMotion).toBe(false);
+  });
+
+  it('저장한 진동과 움직임 줄이기가 그대로 돌아온다', async () => {
+    const store = createSettingsStore(memoryStore());
+    await store.save({ ...DEFAULT_SETTINGS, haptic: false, reduceMotion: true });
+    const loaded = await store.load();
+    expect(loaded.haptic).toBe(false);
+    expect(loaded.reduceMotion).toBe(true);
+  });
 });

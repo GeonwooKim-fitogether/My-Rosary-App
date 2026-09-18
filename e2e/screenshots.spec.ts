@@ -15,15 +15,34 @@ import { expect, test } from '@playwright/test';
 import {
   enterHome,
   enterPrayerFromHome,
+  freezeClock,
+  leavePrayer,
   openApp,
+  openSettings,
   pressMediaButton,
   runUntilVisible,
+  tapTab,
 } from './support/harness';
+
+/**
+ * 성화 뽑기의 씨앗 (`decisions.md` Q-57).
+ *
+ * 이 한 줄이 있기 전에는 **아무것도 고치지 않고 e2e 를 다시 돌려도 사진의 그림이 달라졌다.**
+ * 뽑기가 난수였기 때문이고, 그래서 사진 커밋마다 뜻 없는 변경이 섞여 사람이 손으로 되돌려야
+ * 했다. 씨앗을 물리면 순서가 언제나 같아지므로, 사진이 달라졌다는 것은 **화면이 달라졌다는
+ * 뜻**이 된다 — 그때 비로소 사진이 대조의 근거가 된다.
+ *
+ * 값 자체에는 뜻이 없다. 이 사진들을 처음 찍은 날(2026-09-18)을 적어 두었을 뿐이며, 바꾸면
+ * 모든 사진의 그림이 한 번 바뀌므로 까닭 없이 바꾸지 않는다.
+ */
+const ART_SEED = 20260918;
 
 const M1 = 'docs/plan/m1-screens';
 const M2 = 'docs/plan/m2-screens';
 /** 새 시안의 어법으로 다시 세운 기도 화면 (W1) 을 찍어 두는 자리. */
 const W1 = 'docs/plan/w1-screens';
+/** 새 시안의 어법으로 다시 세운 홈과 탭 바 (W2) 를 찍어 두는 자리. */
+const W2 = 'docs/plan/w2-screens';
 
 
 test.use({ reducedMotion: 'reduce' });
@@ -50,7 +69,7 @@ async function moveToThirdDecadeFourthBead(page: import('@playwright/test').Page
 
 
 test('M1 · 하루 완주 화면을 찍는다', async ({ page }) => {
-  await openApp(page);
+  await openApp(page, { art: ART_SEED });
   await enterHome(page);
   await enterPrayerFromHome(page);
   await runUntilVisible(page, 'day-done-screen');
@@ -59,12 +78,19 @@ test('M1 · 하루 완주 화면을 찍는다', async ({ page }) => {
 });
 
 test('M2 · 홈 · 여정 상세 · 새 기도 · 초대 코드 · 설정을 찍는다', async ({ page }) => {
-  await openApp(page);
+  await openApp(page, { art: ART_SEED });
   await enterHome(page);
 
-  // 홈 — 본보기 여정이 23일째에 서 있다.
+  /*
+    홈 — 본보기 여정이 23일째에 서 있다.
+
+    **여기서 `m2-screens/home.png` 를 더 찍지 않는다.** 그 한 장은 v5 어법의 홈(카드 목록)을
+    담은 M2 의 기록이고, W2 가 홈을 새 시안의 어법으로 다시 세웠으므로 같은 자리에 다시
+    찍으면 M2 의 기록이 W2 의 화면으로 덮인다. W1 이 묵주 사진 스무 장에서 겪은 일과 같은
+    모양이다(이 파일 가운데의 은퇴 주석). 새 홈의 사진은 아래 `W2 · …` 시험이
+    `docs/plan/w2-screens/` 에 찍는다. 재던 판정문은 그대로 둔다.
+  */
   await expect(page.getByTestId('home-card-meta-0')).toHaveText('23일째 · 청원');
-  await page.screenshot({ path: `${M2}/home.png` });
 
   // 여정 상세 — 54칸 격자와 통계.
   await page.getByTestId('home-ribbon-0').click();
@@ -79,16 +105,31 @@ test('M2 · 홈 · 여정 상세 · 새 기도 · 초대 코드 · 설정을 찍
   await page.screenshot({ path: `${M2}/new.png` });
   await page.getByTestId('new-close').click();
 
-  // 초대 코드 — 네 자리를 넣은 도중 상태.
-  await page.getByTestId('home-invite').click();
-  await page.getByTestId('invite-input').fill('k7m4');
-  await page.screenshot({ path: `${M2}/invite.png` });
-  await page.getByTestId('invite-close').click();
+  /*
+    초대 코드 — 여기서 `m2-screens/invite.png` 를 더 찍지 않는다.
 
-  // 설정 — 묶음 셋.
-  await page.getByTestId('home-settings').click();
+    찍을 수가 없어졌다. 그 사진을 찍으려면 홈의 `초대 코드로 들어가기` 를 눌러 들어가야
+    하는데, 결정 12-2 의 카드 A 가 조 기도를 V1.5 로 미루면서 **그 줄이 홈에서 사라졌다**
+    (`decisions.md` Q-59). 화면 자체는 지우지 않았으므로 주소로는 열리지만, 사진은 "사람이
+    닿을 수 있다"의 증거이기도 하므로 닿지 않는 화면을 계속 찍지 않는다. 옛 사진은 그
+    자리에 그대로 두어 V1.5 에서 되살릴 때의 기준으로 쓴다.
+
+    이 시험의 이름에 남아 있는 `초대 코드` 와 `설정` 은 지우지 않았다. 이름표가 바뀌면
+    지휘하는 쪽이 세던 수가 흔들리기 때문이고, 두 자리에서 무엇이 왜 내려갔는지는 이
+    주석과 바로 아래 주석이 적는다.
+  */
+
+  /*
+    설정 — 여기서 `m2-screens/settings.png` 를 더 찍지 않는다.
+
+    그 한 장은 **v5 어법의 설정**(묶음 셋 · 높이 80 줄 · 한지 벌)을 담은 M2 의 기록이고,
+    W2 슬라이스 C 가 그 화면을 새 시안의 어법으로 다시 세웠으므로 같은 자리에 다시 찍으면
+    M2 의 기록이 W2 의 화면으로 덮인다. 같은 일을 이 파일이 홈(`m2-screens/home.png`)에서
+    이미 한 번 판정했고 같은 처방을 쓴다 — **재던 판정문은 그대로 두고 사진만 내린다.**
+    새 설정 화면의 사진은 이 파일 끝의 `W2 슬라이스 C · …` 시험이 찍는다.
+  */
+  await openSettings(page);
   await expect(page.getByTestId('settings-screen')).toBeVisible();
-  await page.screenshot({ path: `${M2}/settings.png` });
 
   // 시트 — S2 받는 사이. 파생한 일곱 중 하나를 대표로 남긴다.
   await page.getByTestId('settings-pace').click();
@@ -98,7 +139,7 @@ test('M2 · 홈 · 여정 상세 · 새 기도 · 초대 코드 · 설정을 찍
 });
 
 test('M2 · 여정 완주 화면을 찍는다', async ({ page }) => {
-  await openApp(page);
+  await openApp(page, { art: ART_SEED });
   await enterHome(page);
   await page.clock.setSystemTime(new Date('2026-10-06T09:00:00'));
   await page.reload();
@@ -148,7 +189,7 @@ test('M2 · 여정 완주 화면을 찍는다', async ({ page }) => {
  * 옛 화면과 나란히 놓고 대조할 수 있다.
  */
 test('W1 · 새 기도 화면을 네 너비로 찍는다', async ({ page }) => {
-  await openApp(page);
+  await openApp(page, { art: ART_SEED });
   await enterHome(page);
   await enterPrayerFromHome(page);
   await moveToThirdDecadeFourthBead(page);
@@ -174,7 +215,7 @@ test('W1 · 새 기도 화면을 네 너비로 찍는다', async ({ page }) => {
  * 새 화면은 알을 제자리에 두고 빛무리와 테로만 말한다(결정 12-2 의 카드 D).
  */
 test('W1 · 알이 부풀지 않는 새 화면에서 지금 자리가 보이는지 두 장으로 찍는다', async ({ page }) => {
-  await openApp(page);
+  await openApp(page, { art: ART_SEED });
   await enterHome(page);
   await enterPrayerFromHome(page);
 
@@ -198,7 +239,7 @@ test('W1 · 알이 부풀지 않는 새 화면에서 지금 자리가 보이는�
  * 이제 **묻기만 한다**는 것을 보여 준다.
  */
 test('W1 · 기도 화면을 나가는 방법을 묻는 시트를 찍는다', async ({ page }) => {
-  await openApp(page);
+  await openApp(page, { art: ART_SEED });
   await enterHome(page);
   await enterPrayerFromHome(page);
 
@@ -206,6 +247,147 @@ test('W1 · 기도 화면을 나가는 방법을 묻는 시트를 찍는다', as
   await expect(page.getByTestId('sheet-leave')).toBeVisible();
   await expect(page.getByTestId('pray-pause')).toContainText('자리가 남습니다');
   await expect(page.getByTestId('pray-stop')).toContainText('오늘 처음부터');
+  /*
+    **`w1-screens/pray-leave.png` 을 더 찍지 않는다** (W2 슬라이스 C 에서 닫은 자리).
+
+    그 한 장은 시트를 **고치기 전**의 기록이다 — 어두운 기도 화면 위에 옛 한지 벌의 밝은
+    판이 올라와 겉돌던 그 상태이고, 그것이 결정 큐 Q-56 이 태어난 자리다. 슬라이스 B 가
+    시트 부품을 새 어법으로 옮긴 뒤로는 이 시험을 돌릴 때마다 그 기록이 **고친 뒤의 모습**
+    으로 덮였고, 앞 슬라이스는 그 파일을 매번 손으로 되돌려 지켰다. 사람이 손으로 하는 일은
+    언젠가 빠지므로 여기서 닫는다 — 홈과 설정 사진에 쓴 처방과 같다. 고친 뒤의 모습은
+    `w2-screens/sheet-leave.png` 에 있고, 두 장을 나란히 놓으면 무엇이 바뀌었는지 보인다.
+
+    **재던 판정문은 위 세 줄에 그대로 있다.** 이 시험이 지키는 것(화살표가 곧바로 지우지
+    않고 묻는다)은 한 줄도 줄지 않았다.
+  */
+});
+
+
+/**
+ * W2 — 새 시안의 어법으로 다시 세운 홈과, 탭 바가 닿는 자리들을 찍는다 (통과 조건 6).
+ *
+ * 세 가지 상태를 찍는다. 여정이 서 있는 홈, 여정이 하나도 없는 홈, 그리고 아직 비어 있는
+ * 성화 갤러리다. 빈 홈을 함께 찍는 이유는 그것이 **처음 설치한 사람이 보는 화면**이기
+ * 때문이다 — 여정이 있는 홈만 찍으면 그 첫인상을 아무도 보지 못한다.
+ */
+test('W2 · 새 홈과 성화 갤러리 자리를 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+
+  // 본보기 여정이 23일째에 서 있는 홈.
+  await expect(page.getByTestId('home-card-meta-0')).toHaveText('23일째 · 청원');
+  await expect(page.getByTestId('home-today-set')).toBeVisible();
+  await page.waitForTimeout(400); // 성화가 떠오르는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W2}/home.png` });
+
+  // 갤러리 탭 — W3 의 화면이라 아직 "곧 만들어집니다" 한 줄만 선다.
+  await tapTab(page, 'gallery');
+  await expect(page.getByTestId('gallery-soon')).toBeVisible();
+  await page.screenshot({ path: `${W2}/gallery.png` });
+});
+
+test('W2 · 여정이 하나도 없는 홈을 찍는다', async ({ page }) => {
+  await openApp(page, { demo: false, art: ART_SEED });
+  await enterHome(page);
+  await expect(page.getByTestId('home-empty')).toBeVisible();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${W2}/home-empty.png` });
+});
+
+/**
+ * W2 — 이어서 바치는 홈과, `다시 바치기` 가 여는 확인 시트를 찍는다 (시안 결함 10).
+ *
+ * 이 두 장이 있어야 하는 이유가 있다. 시안의 홈은 `다시 바치기` 를 누르면 **아무것도 묻지
+ * 않고** 오늘 바치던 자리를 지운다. 이 저장소가 그 앞에 확인 한 장을 세웠다는 것은 글로만
+ * 적으면 확인할 수 없고, 사진은 그 단추가 이제 **묻기만 한다**는 것을 보여 준다.
+ */
+test('W2 · 이어서 바치는 홈과 다시 바치기 확인 시트를 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+  await enterPrayerFromHome(page);
+  await page.clock.runFor(40000);
+  await freezeClock(page);
+  await leavePrayer(page, 'pause');
+
+  await expect(page.getByTestId('home-session-where')).toBeVisible();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${W2}/home-resume.png` });
+
+  await page.getByTestId('home-again').click();
+  await expect(page.getByTestId('sheet-again')).toBeVisible();
   await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
-  await page.screenshot({ path: `${W1}/pray-leave.png` });
+  await page.screenshot({ path: `${W2}/home-again-sheet.png` });
+});
+
+/**
+ * W2 슬라이스 B — 오늘의 신비와 신비 해설, 그리고 새 어법으로 옮긴 시트.
+ *
+ * 세 장 모두 **홈에서 눌러 들어간 자리에서** 찍는다. 주소를 직접 열고 찍으면 배선이 없어도
+ * 사진이 나오므로, 사진 자체가 "닿을 수 있다"의 증거가 되게 하려는 것이다.
+ *
+ * 셋째 장(`sheet-leave.png`)이 여기 있는 까닭을 적어 둔다. W1 이 남긴
+ * `docs/plan/w1-screens/pray-leave.png` 은 **옛 한지 벌의 시트**가 어두운 기도 화면 위에
+ * 겉돌던 그 상태의 기록이고(그것이 Q-56 이 태어난 자리다), 그 자리를 다시 찍으면 W1 의
+ * 기록이 덮인다. 그래서 고친 뒤의 모습은 이 폴더에 따로 남긴다 — 두 장을 나란히 놓으면
+ * 무엇이 바뀌었는지 한눈에 보인다.
+ */
+test('W2 · 오늘의 신비와 신비 해설을 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+
+  // 오늘의 신비 — 홈의 `오늘의 신비 보기` 를 눌러 들어간다.
+  await page.getByTestId('home-today-link').click();
+  await expect(page.getByTestId('mystery-set')).toHaveText('고통의 신비');
+  await page.waitForTimeout(400); // 성화가 떠오르는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W2}/mystery.png` });
+
+  // 신비 해설 — 그 화면의 링크를 눌러 들어간다.
+  await page.getByTestId('mystery-guide-link').click();
+  await expect(page.getByTestId('guide-set')).toHaveText('고통의 신비');
+  await page.screenshot({ path: `${W2}/guide.png` });
+});
+
+test('W2 · 새 어법으로 옮긴 시트를 기도 화면 위에서 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+  await enterPrayerFromHome(page);
+
+  await page.getByTestId('pray-back').click();
+  await expect(page.getByTestId('sheet-leave')).toBeVisible();
+  await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W2}/sheet-leave.png` });
+});
+
+
+/**
+ * W2 슬라이스 C — 새 어법으로 옮긴 설정과, 새로 세운 지역·언어 화면.
+ *
+ * 세 장 모두 **아래 탭 바와 줄을 눌러 들어간 자리에서** 찍는다. 주소를 직접 열고 찍으면
+ * 배선이 없어도 사진이 나오므로, 사진 자체가 "닿을 수 있다"의 증거가 되게 하려는 것이다.
+ *
+ * 셋째 장(`region-southamerica.png`)이 있는 까닭을 적어 둔다. 지역을 고르는 일은 **앱의
+ * 얼굴을 통째로 바꾸는 일**인데, 한 지역만 찍으면 그 사실이 사진에 담기지 않는다. 남미를
+ * 고른 뒤의 같은 화면을 한 장 더 두면 종이색·강조색·대표 성화가 함께 옮겨 간 것이 보이고,
+ * 동시에 **언어 줄이 그대로 `한국어` 에 서 있는 것**(시안의 결함 9 를 고친 자리)도 보인다.
+ */
+test('W2 슬라이스 C · 설정과 지역·언어 화면을 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+
+  // 설정 — 아래 탭 바로 들어간다.
+  await openSettings(page);
+  await expect(page.getByTestId('settings-region-value')).toHaveText('한국 · 한국어');
+  await page.screenshot({ path: `${W2}/settings.png` });
+
+  // 지역·언어 — 설정의 맨 위 줄을 눌러 들어간다.
+  await page.getByTestId('settings-region').click();
+  await expect(page.getByTestId('region-screen')).toBeVisible();
+  await page.waitForTimeout(400); // 대표 성화 다섯이 다 뜬 뒤에 찍는다
+  await page.screenshot({ path: `${W2}/region.png` });
+
+  // 남미를 고른 뒤의 같은 화면 — 색 벌이 옮겨 가고 언어는 그대로다.
+  await page.getByTestId('region-southamerica').click();
+  await expect(page.getByTestId('language-ko-tag')).toHaveText('지금');
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${W2}/region-southamerica.png` });
 });
