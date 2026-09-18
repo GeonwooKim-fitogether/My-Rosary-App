@@ -2,7 +2,7 @@
 
 > 한 줄 요지: **W2 는 화면 다섯(홈·오늘의 신비·신비 해설·설정·지역 언어)과 아래 탭 바 넷을 새 시안의 어법으로 세우고, 성화를 고르는 규칙을 지역별 표로 옮긴다.** W1 이 기도 화면 하나를 옮겼다면 W2 는 그 화면으로 들어가는 **길 전체**를 옮긴다. 기도 엔진은 W1 과 마찬가지로 한 줄도 바꾸지 않는다.
 
-받는 사람 KimDeveloper · 쓴 사람 지휘 세션(KimLead) · 2026-09-18 · 브랜치 `claude/my-rosary-app-development-pmbcy9` · PR #5
+받는 사람 KimDeveloper · 쓴 사람 지휘 세션(KimLead) · 2026-09-18 · 브랜치 `claude/my-rosary-app-development-pmbcy9` · PR #6
 
 **먼저 읽을 것 셋.** `docs/plan/roadmap-world.md` 의 W2 행과 §5 의 결함 목록(9번·10번이 W2 의 것이다) · `decisions.md` 의 결정 12 와 결정 큐 Q-51·Q-56·Q-57 · `docs/design/world/MyRosary World.dc.html` 의 해당 화면 블록. 이 지시서는 그 셋을 대신하지 않는다.
 
