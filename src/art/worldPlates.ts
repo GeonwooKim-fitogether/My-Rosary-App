@@ -188,3 +188,21 @@ export const REGION_PLATES: Readonly<Record<RegionKey, readonly string[]>> = {
 export const MARKED_PLATES: readonly string[] = Object.values(WORLD_PLATES)
   .filter((plate) => plate.mark)
   .map((plate) => plate.id);
+
+/**
+ * 그림의 이름을 지금 언어로 고른다 (W3 슬라이스 B).
+ *
+ * 표에는 이름이 **한국어와 영어 둘**뿐인데 이 앱의 언어는 일곱이다. 시안도 마찬가지이고
+ * (`data.js` 의 `IMAGES` 가 `ko` 와 `en` 만 갖는다), 그래서 한국어가 아닌 언어는 모두 영어
+ * 이름을 본다. 없는 번역을 지어 넣지 않는 것이 이 저장소의 규칙이므로 그대로 둔다 —
+ * 실제로 켜진 언어도 한국어와 영어 둘이다(결정 12-C).
+ */
+export function plateTitle(plate: WorldPlate, language: string): string {
+  return language === 'ko' ? plate.title.ko : plate.title.en;
+}
+
+/** 파일 이름으로 그림을 찾는다. 표에 없는 이름이면 undefined 다. */
+export function plateByFile(file: string | null | undefined): WorldPlate | undefined {
+  if (!file) return undefined;
+  return Object.values(WORLD_PLATES).find((plate) => plate.file === file);
+}

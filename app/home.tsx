@@ -45,8 +45,12 @@
  *    단추로 그리는데, 이 화면은 글자만 둔다. 슬라이스 A 때는 갈 곳(지역·언어 화면)이 아직
  *    없어 "눌리지 않는 것이 단추처럼 보이면 고장으로 읽힌다"는 이유였고, 슬라이스 C 에서
  *    **목적지가 생겨 실제로 눌리게 됐다.** 모양을 글자로 둔 것은 성화 위의 얇은 글자가 시안의
- *    인상에 더 가깝고 이 화면의 다른 링크들도 테두리가 없기 때문이다. 성화를 전체 화면으로
- *    여는 단추는 여전히 놓지 않았다(그 화면은 W3 이다).
+ *    인상에 더 가깝고 이 화면의 다른 링크들도 테두리가 없기 때문이다.
+ * 7. **성화를 전체 화면으로 여는 단추는 W3 슬라이스 B 에서 들어왔다** — 이 자리는 시안의
+ *    값(오른쪽 16px · 성화 아래에서 22% · 44×44 동그라미)을 그대로 따르므로 시안과 다른
+ *    자리가 아니다. W2 때 놓지 않았던 것은 갈 곳(`app/art.tsx`)이 아직 없었기 때문이며,
+ *    그 사정이 없어졌으므로 이 줄은 **다른 자리의 목록에서 빠질 자격이 있다.** 기록으로
+ *    남기려고 번호만 두었다.
  */
 import { useCallback, useState } from 'react';
 import { Image } from 'expo-image';
@@ -60,9 +64,10 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { artSession } from '../src/art';
+import { plateByFile } from '../src/art/worldPlates';
 import { MYSTERY_SETS, mysteryForWeekday } from '../src/domain/mysteries';
 import { stringsFor } from '../src/i18n';
 import { cardStatus, resumeLine, type CardStatus } from '../src/journey/card';
@@ -149,6 +154,9 @@ export default function HomeScreen() {
     ? artSession.forJourney(openable.id)
     : artSession.forKey('screen:home', ['login']);
 
+  /** 지금 걸린 성화의 번호. 전체 화면으로 여는 단추가 이 값으로 목적지를 정한다 (W3). */
+  const plateId = plateByFile(plate?.file)?.id ?? null;
+
   const artHeight = homeArtHeightFor(window.height);
   const titleFontSize = homeTitleSizeFor(window.width) * TEXT_SCALE.font;
 
@@ -164,8 +172,18 @@ export default function HomeScreen() {
         style={styles.scroll}
         contentContainerStyle={[styles.scrollInner, { paddingBottom: TAB_BAR_HEIGHT + 16 }]}
       >
-        {/* ── 1층 · 성화 큰 그림 ───────────────────────────────────────────── */}
-        <View style={[styles.art, { height: artHeight }]}>
+        {/*
+          ── 1층 · 성화 큰 그림 ─────────────────────────────────────────────
+
+          표식에 **그림의 번호를 붙인다**(`home-art-10`). 이 화면이 지금 어느 그림을 걸고
+          있는지는 눈으로만 알 수 있어, 고정한 그림이 홈까지 닿았는지를 시험이 잴 방법이
+          없었다. 번호를 표식에 실으면 그 배선을 기계가 확인할 수 있다 — 갤러리의 칸들이
+          이미 같은 방식으로 번호를 싣고 있다(`gallery-open-10`).
+        */}
+        <View
+          style={[styles.art, { height: artHeight }]}
+          testID={plateId ? `home-art-${plateId}` : 'home-art'}
+        >
           {plate ? (
             <Image
               source={plate.source}
@@ -225,6 +243,39 @@ export default function HomeScreen() {
               </Text>
             </Pressable>
           </View>
+
+          {/*
+            성화를 전체 화면으로 여는 단추 (W3 슬라이스 B).
+
+            **W2 가 자리만 비워 두었던 곳이다** — 그때는 갈 곳(감상 화면)이 아직 없어
+            "눌리지 않는 것이 단추처럼 보이면 고장으로 읽힌다"는 이유로 놓지 않았다.
+            이제 `app/art.tsx` 가 섰으므로 시안의 그 자리에 시안의 값 그대로 놓는다 —
+            오른쪽에서 16px, 성화 아래에서 22%, 44×44 동그라미, 시안의 화살표 넷.
+
+            여는 그림의 번호를 **파일 이름으로 되찾는** 까닭을 적어 둔다. 뽑기가 화면에
+            내어 주는 것은 v5 모양의 그림(`ArtPlate`)이라 번호 칸이 없고, 감상 화면은
+            번호로 그림을 찾는다. 두 표를 잇는 다리가 `plateByFile` 이다.
+          */}
+          {plateId ? (
+            <Pressable
+              style={[styles.artExpand, { bottom: artHeight * 0.22 }]}
+              onPress={() => router.push({ pathname: '/art', params: { id: plateId } })}
+              accessibilityRole="button"
+              accessibilityLabel={strings.view}
+              testID="home-art-view"
+            >
+              <Svg width={18} height={18} viewBox="0 0 24 24">
+                <Path
+                  d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"
+                  fill="none"
+                  stroke={ON_ART_INK}
+                  strokeWidth={1.6}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </Svg>
+            </Pressable>
+          ) : null}
         </View>
 
         <View style={styles.body}>
@@ -597,6 +648,20 @@ const homeStyles = (palette: WorldPalette) =>
       alignItems: 'center',
       justifyContent: 'space-between',
       gap: 12,
+    },
+    /* 성화를 전체 화면으로 여는 단추 — 시안의 `right:16px; width/height:44px` 그대로다.
+       아래에서 얼마나 띄울지(22%)는 성화의 높이에 걸려 있어 화면이 값으로 넘긴다. */
+    artExpand: {
+      position: 'absolute',
+      right: 16,
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,.45)',
+      backgroundColor: 'rgba(0,0,0,.2)',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     brand: { ...worldHomeType.brand, color: ON_ART_INK, textTransform: 'uppercase' },
     region: { ...worldHomeType.region, color: ON_ART_INK },

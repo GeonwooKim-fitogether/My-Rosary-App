@@ -280,13 +280,19 @@ test('W1 · 기도 화면을 나가는 방법을 묻는 시트를 찍는다', as
 
 
 /**
- * W2 — 새 시안의 어법으로 다시 세운 홈과, 탭 바가 닿는 자리들을 찍는다 (통과 조건 6).
+ * W2 — 새 시안의 어법으로 다시 세운 홈을 찍는다 (통과 조건 6).
  *
- * 세 가지 상태를 찍는다. 여정이 서 있는 홈, 여정이 하나도 없는 홈, 그리고 아직 비어 있는
- * 성화 갤러리다. 빈 홈을 함께 찍는 이유는 그것이 **처음 설치한 사람이 보는 화면**이기
- * 때문이다 — 여정이 있는 홈만 찍으면 그 첫인상을 아무도 보지 못한다.
+ * 두 가지 상태를 찍는다. 여정이 서 있는 홈과 여정이 하나도 없는 홈(아래 시험)이다.
+ * 빈 홈을 함께 찍는 이유는 그것이 **처음 설치한 사람이 보는 화면**이기 때문이다 —
+ * 여정이 있는 홈만 찍으면 그 첫인상을 아무도 보지 못한다.
+ *
+ * **갤러리 한 장은 2026-09-18 에 이 시험에서 빠졌다.** 그때 찍던 것은 "곧 만들어집니다"
+ * 한 줄뿐인 자리 지킴이였고, W3 슬라이스 B 가 그 자리를 시안의 갤러리로 채웠다. 계속
+ * 찍으면 `w2-screens/gallery.png` 가 덮여 **자리 지킴이가 어떻게 생겼었는지의 기록이
+ * 사라지므로**, 그 한 장은 얼리고 새 갤러리의 사진은 `docs/plan/w3-screens/` 에 둔다.
+ * 홈 한 장을 M2 에서 W2 로 옮길 때와 같은 판단이다.
  */
-test('W2 · 새 홈과 성화 갤러리 자리를 찍는다', async ({ page }) => {
+test('W2 · 새 홈을 찍는다', async ({ page }) => {
   await openApp(page, { art: ART_SEED });
   await enterHome(page);
 
@@ -295,11 +301,6 @@ test('W2 · 새 홈과 성화 갤러리 자리를 찍는다', async ({ page }) =
   await expect(page.getByTestId('home-today-set')).toBeVisible();
   await page.waitForTimeout(400); // 성화가 떠오르는 움직임이 끝난 뒤에 찍는다
   await page.screenshot({ path: `${W2}/home.png` });
-
-  // 갤러리 탭 — W3 의 화면이라 아직 "곧 만들어집니다" 한 줄만 선다.
-  await tapTab(page, 'gallery');
-  await expect(page.getByTestId('gallery-soon')).toBeVisible();
-  await page.screenshot({ path: `${W2}/gallery.png` });
 });
 
 test('W2 · 여정이 하나도 없는 홈을 찍는다', async ({ page }) => {
@@ -472,4 +473,72 @@ test('W3 · 여정 완주 화면을 찍는다', async ({ page }) => {
   await expect(page.getByTestId('all-done-screen')).toBeVisible();
   await page.waitForTimeout(400); // 성화가 떠오르는 움직임이 끝난 뒤에 찍는다
   await page.screenshot({ path: `${W3}/all-done.png` });
+});
+
+/**
+ * W3 슬라이스 B — 성화 갤러리 석 장.
+ *
+ * 탭 셋 중 둘(지역 · 모든 성화)과 아무것도 담지 않은 즐겨찾기 탭을 찍는다. 셋째 장이
+ * 필요한 이유는 **시안이 그 상태를 그리지 않았기** 때문이다 — 빈 화면을 그냥 두면 고장으로
+ * 읽히므로 이 저장소가 한 줄을 파생했고, 그 판단은 글이 아니라 사진으로 확인돼야 한다.
+ *
+ * 모두 **아래 탭 바를 눌러 들어간 자리에서** 찍는다. 주소를 직접 열고 찍으면 배선이 없어도
+ * 사진이 나오므로, 사진 자체가 "닿을 수 있다"의 증거가 되게 하려는 것이다.
+ */
+test('W3 · 성화 갤러리를 탭 셋 중 둘과 빈 즐겨찾기로 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+
+  await tapTab(page, 'gallery');
+  await expect(page.getByTestId('gallery-screen')).toBeVisible();
+
+  // 지역 탭 — 한국이 쓰는 일곱 장이 2열 격자에 선다.
+  await expect(page.getByTestId('gallery-tab-region')).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('[data-testid^="gallery-open-"]')).toHaveCount(7);
+  await page.waitForTimeout(400); // 그림이 떠오르는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W3}/gallery-region.png` });
+
+  // 모든 성화 탭 — 표에 오른 열여섯 장 전부.
+  await page.getByTestId('gallery-tab-all').click();
+  await expect(page.locator('[data-testid^="gallery-open-"]')).toHaveCount(16);
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${W3}/gallery-all.png` });
+
+  // 즐겨찾기 탭 — 아직 비어 있다 (시안에 없는 자리).
+  await page.getByTestId('gallery-tab-favorites').click();
+  await expect(page.getByTestId('gallery-empty')).toBeVisible();
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${W3}/gallery-favorites-empty.png` });
+});
+
+/**
+ * W3 슬라이스 B — 전체 화면 감상 두 장.
+ *
+ * 껍데기가 **보일 때**와 **사라졌을 때**를 나란히 남긴다. 두 장이 함께 있어야 "그림을
+ * 누르면 껍데기가 사라진다"(시안의 `toggleViewUi`)가 눈으로 확인되고, 사라진 쪽에서
+ * 그림이 조금도 달라지지 않은 것도 함께 보인다.
+ *
+ * 갤러리에서 그림을 눌러 들어간다 — 탭 바로 갤러리에 닿고 거기서 한 번 더 누르는 길이
+ * 사람이 실제로 지나는 길이기 때문이다.
+ */
+test('W3 · 전체 화면 감상을 껍데기가 보일 때와 사라졌을 때로 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+
+  await tapTab(page, 'gallery');
+  const first = page.locator('[data-testid^="gallery-open-"]').first();
+  const testId = await first.getAttribute('data-testid');
+  const id = testId!.replace('gallery-open-', '');
+  await first.click();
+
+  await expect(page.getByTestId('art-screen')).toBeVisible();
+  await expect(page.getByTestId('art-title')).toBeVisible();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${W3}/art-view.png` });
+
+  // 그림을 누르면 닫기 단추와 아래 띠가 사라진다.
+  await page.getByTestId(`art-image-${id}`).click();
+  await expect(page.getByTestId('art-close')).toHaveCount(0);
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${W3}/art-view-bare.png` });
 });

@@ -785,3 +785,78 @@ export const GRID_COLUMNS = 9;
 export function openEndedGridSize(dayIndex: number): number {
   return Math.max(GRID_COLUMNS, Math.ceil(Math.max(1, dayIndex) / GRID_COLUMNS) * GRID_COLUMNS);
 }
+
+/**
+ * 성화 갤러리(W3 슬라이스 B)의 서체 — 시안의 `data-screen-label="Gallery"` 블록에
+ * 인라인으로 적혀 있던 크기와 자간을 그대로 옮긴 것이다. 앞선 화면들과 같은 이유로
+ * 화면 이름으로 모았다: 시안은 화면마다 크기를 직접 정하고, 그 값이 그 화면의 정본이다.
+ *
+ * **여기 없는 것 하나.** 큰 제목(`성화 갤러리`)의 크기는 시안이 `clamp(30px, 8vw, 38px)` 로
+ * 적었고, 그 식은 신비 해설·설정·여정 화면과 같으므로 이미 있는 `guideTitleSizeFor` 를
+ * 그대로 쓴다 — 같은 식을 두 번 적지 않는다.
+ */
+export const worldGalleryType = scaleTypeScale(
+  {
+    /** 12px · 자간 .14em · 대문자. 큰 제목 위의 지역 이름 (시안의 `regionName`). */
+    label: {
+      fontFamily: fonts.sans,
+      fontSize: 12,
+      lineHeight: 12 * 1.25,
+      letterSpacing: 12 * 0.14,
+    },
+    /** 12.5px. 탭 셋의 글자 (시안이 `.seg-opt` 에 덧쓴 `font-size:12.5px`). */
+    segLabel: { fontFamily: fonts.sans, fontSize: 12.5, lineHeight: 12.5 * 1.3 },
+    /** 13px · 줄 높이 1.3. 그림 아래의 제목 (시안의 `g.alt`). */
+    caption: { fontFamily: fonts.sans, fontSize: 13, lineHeight: 13 * 1.3 },
+    /** 10px · 자간 .1em · 대문자. 그림 왼쪽 위의 `고정됨` 표 (시안의 `t.pinned`). */
+    badge: {
+      fontFamily: fonts.sans,
+      fontSize: 10,
+      lineHeight: 10 * 1.25,
+      letterSpacing: 10 * 0.1,
+    },
+    /**
+     * 14px. **즐겨찾기 탭이 비었을 때의 한 줄** — 시안에 없어 이 저장소가 파생한 자리다.
+     * 여정이 하나도 없을 때의 한 줄(`worldJourneyType.empty`)과 같은 크기로 맞췄다.
+     */
+    empty: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 14 * 1.5 },
+  },
+  TEXT_SCALE,
+);
+
+/**
+ * 전체 화면 감상(W3 슬라이스 B)의 서체 — 시안의 `data-screen-label="Art View"` 블록에서 왔다.
+ *
+ * 제목에 한글 명조를 쓰는 것은 앞선 화면들과 같은 이유다. 시안의 제목 글꼴(Cormorant
+ * Garamond)에는 한글 글리프가 없어 `빛 가운데 서신 성모` 가 네모로 나온다.
+ */
+export const worldArtViewType = scaleTypeScale(
+  {
+    /** 20px 명조 · 줄 높이 1.2. 아래 띠 왼쪽의 그림 이름 (시안의 `viewImg.alt`). */
+    title: { fontFamily: fonts.serif, fontSize: 20, lineHeight: 20 * 1.2 },
+    /** 12px. 그 아래 한 줄 설명 (시안의 `viewMeta`). */
+    meta: { fontFamily: fonts.sans, fontSize: 12, lineHeight: 12 * 1.35 },
+    /** 13px. `고정하기` 단추의 글자 (시안의 `viewPinLabel`). */
+    pinLabel: { fontFamily: fonts.sans, fontSize: 13, lineHeight: 13 * 1.2 },
+  },
+  TEXT_SCALE,
+);
+
+/**
+ * 전체 화면 감상 화면의 색 — 지역에 따라 달라지지 않는 것들이다.
+ * 시안의 `Art View` 블록에서 글자 그대로 왔다.
+ */
+export const artViewColors = {
+  /** 바탕. 지역의 `scrim` 보다 짙은 검정이며 시안이 이 화면에만 쓴다. */
+  backdrop: '#0d0c0b',
+  /** 글자. 기도 화면과 같은 밝은 상아색이다. */
+  ink: '#f4ecdc',
+  /** 켜진 하트와 고정된 단추의 글자 (시안의 `#e9c877`). */
+  on: '#e9c877',
+  /** 닫기 단추의 바탕. */
+  closeFill: 'rgba(0,0,0,.45)',
+  /** 아래 띠 단추들의 바탕. */
+  buttonFill: 'rgba(0,0,0,.35)',
+  /** 아래 띠 단추들의 테. */
+  buttonBorder: 'rgba(255,255,255,.35)',
+} as const;
