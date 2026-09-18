@@ -158,15 +158,23 @@ export const FIXED_TODAY = new Date('2026-09-05T09:00:00');
  * 앱을 연다. 기기를 흉내 내고, 시계를 세우고, 첫 화면을 띄운다.
  *
  * @param demo 본보기 여정을 세울 것인가. 빈 홈에서 시작하는 시험은 false 로 부른다.
+ * @param art 성화 뽑기의 씨앗 (`decisions.md` Q-57). 주면 **그림이 언제나 같아진다.**
+ *   사진을 찍는 시험과, 그림이 바뀌는 것 자체를 재는 시험이 이것을 쓴다 — 뽑기가 난수인
+ *   채로 두면 아무것도 고치지 않아도 사진이 달라지고, "지역이 바뀌어서 그림이 바뀐 것"과
+ *   "그냥 다른 그림이 나온 것"을 가릴 수 없다.
  */
 export async function openApp(
   page: Page,
-  options: { demo?: boolean; at?: Date; fontScale?: number } = {},
+  options: { demo?: boolean; at?: Date; fontScale?: number; art?: number } = {},
 ): Promise<void> {
   await page.clock.install({ time: options.at ?? FIXED_TODAY });
   await installDeviceStubs(page);
   if (options.fontScale && options.fontScale !== 1) await installFontScale(page, options.fontScale);
-  await page.goto(options.demo === false ? '/' : '/?demo=1');
+  const query = new URLSearchParams();
+  if (options.demo !== false) query.set('demo', '1');
+  if (options.art !== undefined) query.set('art', String(options.art));
+  const search = query.toString();
+  await page.goto(search === '' ? '/' : `/?${search}`);
 }
 
 /**

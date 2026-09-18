@@ -33,6 +33,16 @@ import {
   pressMediaButton,
 } from './support/harness';
 
+/**
+ * 성화 뽑기의 씨앗 (`decisions.md` Q-57).
+ *
+ * 이 파일도 **사진을 찍는 시험**이라 씨앗을 물린다. 물리지 않으면 아무것도 고치지 않고
+ * 다시 돌려도 배경 성화가 달라져 사진 커밋에 뜻 없는 변경이 섞인다. 값은
+ * `e2e/screenshots.spec.ts` 의 것과 같아야 사진들끼리도 같은 그림으로 서 있는다.
+ */
+const ART_SEED = 20260918;
+
+
 const OUT = 'docs/plan/bead-phases';
 
 test.use({ reducedMotion: 'reduce' });
@@ -50,7 +60,7 @@ test('교대 낭송에서 읽는 중 · 내 차례 · 멈춤 · 단 전환이 �
   const rosary = page.getByTestId('pray-rosary');
   const step = page.getByTestId('pray-step');
 
-  await openApp(page);
+  await openApp(page, { art: ART_SEED });
   await enterHome(page);
   await enterPrayerFromHome(page);
   await expect(step).toHaveText('시작 기도 · 성호경');
@@ -111,7 +121,7 @@ test('읽지 않기 여정에서는 소리 없이 진행 중으로 보인다', a
   const rosary = page.getByTestId('pray-rosary');
 
   // 빈 홈에서 읽지 않기 여정을 만든다 — 사용자가 하는 그대로.
-  await openApp(page, { demo: false });
+  await openApp(page, { demo: false, art: ART_SEED });
   await enterHome(page);
   await page.getByTestId('home-new').click();
   await page.getByTestId('new-intent').fill('어머니의 평안');

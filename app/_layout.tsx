@@ -34,12 +34,28 @@ void SplashScreen.preventAutoHideAsync();
  * 실제 사용자는 이 주소를 지나가지 않는다. 화면을 v5 시안과 나란히 놓고 대조하는 사진
  * 시험과 눈 검수에만 쓴다. `?demo=reset` 은 저장된 것을 버리고 처음부터 다시 세운다.
  */
-function demoOptions(): { seedDemo?: boolean; reset?: boolean } {
+function demoOptions(): { seedDemo?: boolean; reset?: boolean; artSeed?: number } {
   if (typeof window === 'undefined' || typeof window.location === 'undefined') return {};
-  const value = new URLSearchParams(window.location.search).get('demo');
-  if (value === 'reset') return { seedDemo: true, reset: true };
-  if (value) return { seedDemo: true };
-  return {};
+  const query = new URLSearchParams(window.location.search);
+  const artSeed = artSeedOf(query.get('art'));
+  const value = query.get('demo');
+  if (value === 'reset') return { seedDemo: true, reset: true, artSeed };
+  if (value) return { seedDemo: true, artSeed };
+  return { artSeed };
+}
+
+/**
+ * 성화 뽑기의 씨앗 — 웹 주소의 `?art=<숫자>` (`decisions.md` Q-57).
+ *
+ * 뽑기가 난수라 화면 사진을 다시 찍을 때마다 그림이 달라져, 아무것도 고치지 않아도 사진
+ * 커밋에 뜻 없는 변경이 섞였다. 이 손잡이를 주면 순서가 언제나 같아진다. 쓰는 곳은 사진을
+ * 찍는 e2e 하나뿐이고(`e2e/screenshots.spec.ts`), 실제 사용자는 이 주소를 지나가지 않는다 —
+ * `?demo=1` 과 같은 성격의 진단용 손잡이다. 숫자가 아니면 없는 것으로 본다.
+ */
+function artSeedOf(value: string | null): number | undefined {
+  if (value === null) return undefined;
+  const seed = Number(value);
+  return Number.isFinite(seed) ? seed : undefined;
 }
 
 export default function RootLayout() {

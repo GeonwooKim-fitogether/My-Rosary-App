@@ -25,6 +25,15 @@ export interface ArtSessionOptions {
   forced?: readonly string[];
   /** 뽑기 대상 목록. 기본값은 열여섯 장 전부이며, 테스트에서 좁힐 때 쓴다. */
   plates?: readonly ArtPlate[];
+  /**
+   * **바로 앞에 보여 준 그림의 파일 이름.** 그 그림이 이번 순서의 맨 앞에 서면 맨 뒤로
+   * 보낸다 — 앱을 다시 열었을 때 같은 그림이 두 번 이어 나오지 않게 하는 장치다
+   * (W2 지시서 §2 의 뽑기 규칙 1).
+   *
+   * **`forced` 가 있으면 아무 일도 하지 않는다.** 고정한 그림은 사람이 직접 고른 것이라
+   * "이어서 또 나왔다"가 결함이 아니라 요구이기 때문이다(규칙 2 가 규칙 1 을 이긴다).
+   */
+  avoid?: string;
 }
 
 /** 씨앗 하나로 결정되는 난수열 (mulberry32). 작고 결정적이면 충분하다. */
@@ -82,6 +91,12 @@ export function createArtSession(options: ArtSessionOptions = {}): ArtSession {
     const rest = pool.filter((p) => !head.includes(p));
     pool.length = 0;
     pool.push(...head, ...rest);
+  }
+
+  // 바로 앞에 보여 준 그림이 또 맨 앞에 서면 맨 뒤로 보낸다. 고정한 그림이 있을 때는
+  // 그 그림이 맨 앞이어야 하므로 건드리지 않는다.
+  if (options.avoid && pool.length > 1 && !options.forced?.length && pool[0]!.file === options.avoid) {
+    pool.push(pool.shift()!);
   }
 
   const used = new Set<ArtPlate>();

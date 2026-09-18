@@ -108,9 +108,29 @@ export function primeSpeech(): void {
   }
 }
 
+/*
+ * ── 진동을 끄는 스위치 (W2 슬라이스 C · 설정의 `진동` 줄) ──────────────────────────
+ *
+ * 이 파일은 기기로 나가는 통로이고, 앱이 떨리는 자리는 아래 `vibrate` 하나뿐이다
+ * (기도 진행기와 기도 화면이 모두 이 함수를 부른다). 그래서 설정의 토글 하나를 지키는
+ * 가장 짧은 길은 **여기에 문을 하나 두는 것**이다.
+ *
+ * 설정을 여기서 직접 읽지 않고 밖에서 알려 주게 한 이유가 있다. 이 파일이 앱 상태를
+ * 읽어 오면 기기 통로가 상태 저장소에 매이게 되어, 통로만 시험하던 자리들이 저장소까지
+ * 끌고 들어와야 한다. 값이 바뀌는 자리는 하나뿐이므로(`appStore` 의 `updateSettings`)
+ * 그쪽에서 한 줄 알려 주는 편이 가볍다.
+ */
+let hapticEnabled = true;
+
+/** 진동을 켜고 끈다. 부르는 곳은 `src/state/appStore.ts` 하나다. */
+export function setHapticEnabled(enabled: boolean): void {
+  hapticEnabled = enabled;
+}
+
 /** 진동. 패턴은 `spec/journey-rules.md` §5 의 진동 사전에서 온다. */
 export function vibrate(pattern: readonly number[]): void {
   try {
+    if (!hapticEnabled) return;
     if (pattern.length === 0) return;
     if (pattern.length === 1) {
       Vibration.vibrate(pattern[0]!);

@@ -41,8 +41,29 @@ export interface AppSettings {
   handsFree: boolean;
   /** 묵주 (FR-39 · S5). */
   rosary: RosaryKey;
-  /** 낮과 밤 (06-b §2-2). */
+  /**
+   * 낮과 밤 (06-b §2-2).
+   *
+   * **설정 화면에서 고르는 자리는 W2 슬라이스 C 에서 끊겼다** — 결정 12-2 의 카드 F 가
+   * 밤 벌을 접었기 때문이다. 값과 그 값을 읽는 코드(`src/theme/`)는 지우지 않고 그대로
+   * 두었으므로, 밤 벌을 되살리기로 하면 설정에 줄 하나를 다시 놓는 것으로 돌아온다.
+   */
   theme: ThemePreference;
+  /**
+   * 진동 (시안 설정의 `haptic` 토글).
+   *
+   * 끄면 기도 중의 모든 떨림이 멎는다. 실제로 막는 자리는 기기로 나가는 통로 하나이며
+   * (`src/prayer/channels.ts` 의 `vibrate`), 이 값이 바뀌면 `appStore` 가 그 통로에 알린다.
+   */
+  haptic: boolean;
+  /**
+   * 움직임 줄이기 (시안 설정의 `reduceMotion` 토글).
+   *
+   * 기기 자체의 "동작 줄이기"와 **더해져서** 쓰인다 — 둘 중 하나만 켜져 있어도 움직임이
+   * 멎는다(`src/prayer/useReduceMotion.ts`). 기기 설정을 끌 수 없는 사람에게 앱 안에서
+   * 같은 것을 줄 수 있어야 하기 때문이고, 반대로 앱에서 끈다고 기기 설정을 무를 수는 없다.
+   */
+  reduceMotion: boolean;
   /**
    * 지역 (결정 11 의 새 시안). 색 벌과 성화 묶음이 이 값으로 갈린다.
    * 옛 기기에는 이 값이 없으므로 아래 파서가 한국으로 메운다.
@@ -133,6 +154,9 @@ export const DEFAULT_SETTINGS: AppSettings = {
   handsFree: true,
   rosary: 'rose',
   theme: 'day',
+  // 진동은 켜짐, 움직임 줄이기는 꺼짐 — 시안의 기본값 그대로다(`data.js` 의 `settings`).
+  haptic: true,
+  reduceMotion: false,
   region: 'korea',
   language: 'ko',
   fontScale: PRAYER_FONT_DEFAULT,
@@ -157,6 +181,11 @@ export function parseSettings(raw: string | null): AppSettings {
         value.theme === 'day' || value.theme === 'night' || value.theme === 'system'
           ? value.theme
           : DEFAULT_SETTINGS.theme,
+      haptic: typeof value.haptic === 'boolean' ? value.haptic : DEFAULT_SETTINGS.haptic,
+      reduceMotion:
+        typeof value.reduceMotion === 'boolean'
+          ? value.reduceMotion
+          : DEFAULT_SETTINGS.reduceMotion,
       region: REGION_ORDER.includes(value.region as RegionKey)
         ? (value.region as RegionKey)
         : DEFAULT_SETTINGS.region,

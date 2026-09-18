@@ -32,6 +32,16 @@ import {
   openApp,
 } from './support/harness';
 
+/**
+ * 성화 뽑기의 씨앗 (`decisions.md` Q-57).
+ *
+ * 이 파일도 **사진을 찍는 시험**이라 씨앗을 물린다. 물리지 않으면 아무것도 고치지 않고
+ * 다시 돌려도 배경 성화가 달라져 사진 커밋에 뜻 없는 변경이 섞인다. 값은
+ * `e2e/screenshots.spec.ts` 의 것과 같아야 사진들끼리도 같은 그림으로 서 있는다.
+ */
+const ART_SEED = 20260918;
+
+
 const OUT = 'docs/plan/font-scale';
 /** 앱 안 글자 크기 넷은 W1 이 만든 것이므로 그 사진은 W1 폴더로 간다. */
 const W1 = 'docs/plan/w1-screens';
@@ -62,7 +72,7 @@ async function prayerBoxFits(page: import('@playwright/test').Page) {
 
 test('100% 에서 기도문의 글자 크기와 줄 높이가 시안의 값 그대로다', async ({ page }) => {
   const errors = collectConsoleErrors(page);
-  await openApp(page);
+  await openApp(page, { art: ART_SEED });
   await enterHome(page);
   await enterPrayerFromHome(page);
   await freezeClock(page);
@@ -85,7 +95,7 @@ test('100% 에서 기도문의 글자 크기와 줄 높이가 시안의 값 그�
 
 test('200% 에서 줄 높이와 자간이 글자와 같은 비율로 커지고 기도문이 잘리지 않는다', async ({ page }) => {
   const errors = collectConsoleErrors(page);
-  await openApp(page, { fontScale: 2 });
+  await openApp(page, { fontScale: 2, art: ART_SEED });
   await enterHome(page);
   await enterPrayerFromHome(page);
   await freezeClock(page);
@@ -172,7 +182,7 @@ test('200% 에서 줄 높이와 자간이 글자와 같은 비율로 커지고 �
  */
 test('Aa 단추가 글자 크기 넷을 돌고, 아주 크게에서도 사도신경이 잘리지 않는다', async ({ page }) => {
   const errors = collectConsoleErrors(page);
-  await openApp(page);
+  await openApp(page, { art: ART_SEED });
   await enterHome(page);
   await enterPrayerFromHome(page);
   await freezeClock(page);

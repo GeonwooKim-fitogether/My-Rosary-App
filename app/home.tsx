@@ -29,20 +29,24 @@
  * 3. **줄을 누르는 곳이 둘이다** — 왼쪽(바람)을 누르면 그 여정의 기도로 들어가고(FR-42),
  *    오른쪽(며칠째)을 누르면 여정 상세로 간다(FR-37). 시안의 줄은 누르는 곳이 하나인데,
  *    이 앱은 두 곳으로 가는 길이 모두 필요하다. 길게 누르면 지우는 확인 시트가 뜬다(FR-05).
- * 4. **`새 기도` 와 `초대 코드로 들어가기` 가 남아 있다** — 시안의 홈에는 여정을 새로 만드는
- *    자리가 아예 없다(계정도 여정도 없는 시안이기 때문이다). 이 앱에서 그 둘을 빼면
- *    **여정을 시작할 길이 없어진다.** 그래서 주 단추 아래에 테두리 단추 하나로, 초대 코드는
- *    화면 맨 아래 조용한 글 한 줄로 남겨 두었다.
+ * 4. **`새 기도` 단추가 더 있다** — 시안의 홈에는 여정을 새로 만드는 자리가 아예 없다(계정도
+ *    여정도 없는 시안이기 때문이다). 이 앱에서 그것을 빼면 **여정을 시작할 길이 없어진다.**
+ *    그래서 주 단추 아래에 테두리 단추 하나로 두었다. 화면 맨 아래에 함께 있던
+ *    `초대 코드로 들어가기` 한 줄은 슬라이스 C 에서 **뺐다**(`decisions.md` Q-59) — 조 기도가
+ *    V1.5 로 밀려 그 줄이 여는 화면에 답해 줄 서버가 없기 때문이다. 자세한 사정은 그 줄이
+ *    있던 자리(아래 4층 끝)의 주석에 적어 두었다.
  * 5. **`오늘의 신비 보기` 링크의 글자가 시안과 다르다** — 시안은 이 자리에 `신비 해설 →`
  *    이라 적어 놓고 누르면 **오늘의 신비** 화면으로 보낸다(`goMystery`). 이름과 목적지가
  *    어긋난 자리이고, 시안의 해설 화면은 그 때문에 어느 곳에서도 닿지 않는다. 이 저장소는
  *    둘을 갈랐다 — 이 링크는 가는 곳의 이름대로 `오늘의 신비 보기` 이고(`app/mystery.tsx`),
  *    해설 화면으로 가는 길은 그 화면 안에 둔다(`app/guide.tsx`).
  *    슬라이스 A 에서 비워 두었던 자리가 슬라이스 B 에서 이렇게 채워졌다.
- * 6. **오른쪽 위의 지역 표시가 아직 단추가 아니다** — 지역·언어 화면은 슬라이스 C 에서 선다.
- *    눌리지 않는 것이 단추처럼 보이면 고장으로 읽히므로, 시안의 테두리와 지구본을 빼고
- *    **글자 표시**로만 두었다. 슬라이스 C 에서 단추가 된다. 성화를 전체 화면으로 여는 단추도
- *    같은 이유로 놓지 않았다(그 화면은 W3 이다).
+ * 6. **오른쪽 위의 지역 표시에 테두리와 지구본이 없다** — 시안은 그 자리를 테두리 두른 작은
+ *    단추로 그리는데, 이 화면은 글자만 둔다. 슬라이스 A 때는 갈 곳(지역·언어 화면)이 아직
+ *    없어 "눌리지 않는 것이 단추처럼 보이면 고장으로 읽힌다"는 이유였고, 슬라이스 C 에서
+ *    **목적지가 생겨 실제로 눌리게 됐다.** 모양을 글자로 둔 것은 성화 위의 얇은 글자가 시안의
+ *    인상에 더 가깝고 이 화면의 다른 링크들도 테두리가 없기 때문이다. 성화를 전체 화면으로
+ *    여는 단추는 여전히 놓지 않았다(그 화면은 W3 이다).
  */
 import { useCallback, useState } from 'react';
 import { Image } from 'expo-image';
@@ -193,11 +197,33 @@ export default function HomeScreen() {
             <Rect x="0" y="0" width="100%" height="100%" fill="url(#homeBottom)" />
           </Svg>
 
-          <View style={[styles.artHeader, { paddingTop: insets.top + 14 }]} pointerEvents="none">
-            <Text style={styles.brand}>{strings.appName}</Text>
-            <Text style={styles.region} testID="home-region">
-              {`${settings.language.toUpperCase()} · ${strings[settings.region]}`}
+          {/*
+            머리 두 조각. 왼쪽 앱 이름은 글자일 뿐이고, **오른쪽 지역 표시는 단추다** —
+            누르면 지역·언어 화면으로 간다 (W2 슬라이스 C). 슬라이스 A 때는 그 화면이
+            아직 없어 글자로만 두었고, 그때 테두리와 지구본을 뺀 것도 눌리지 않는 것이
+            단추처럼 보이면 고장으로 읽히기 때문이었다. 이제 목적지가 생겼으므로 누를 수
+            있게 하되, 모양은 시안의 테두리 단추 대신 지금의 글자를 그대로 둔다 —
+            성화 위의 얇은 글자가 시안의 인상에 더 가깝고, 이 화면의 다른 자리들도
+            테두리 없는 글자 링크를 쓰기 때문이다.
+
+            `pointerEvents="none"` 를 칸 전체가 아니라 앱 이름 쪽에만 두는 까닭도 적어
+            둔다. 칸에 두면 그 안의 단추까지 눌리지 않고, 빼 버리면 글자뿐인 왼쪽이
+            성화를 덮어 아래로 미는 손짓을 가로챈다.
+          */}
+          <View style={[styles.artHeader, { paddingTop: insets.top + 14 }]}>
+            <Text style={styles.brand} pointerEvents="none">
+              {strings.appName}
             </Text>
+            <Pressable
+              onPress={() => router.push('/region')}
+              accessibilityRole="button"
+              hitSlop={10}
+              testID="home-region"
+            >
+              <Text style={styles.region}>
+                {`${settings.language.toUpperCase()} · ${strings[settings.region]}`}
+              </Text>
+            </Pressable>
           </View>
         </View>
 
@@ -313,14 +339,15 @@ export default function HomeScreen() {
             </View>
           ) : null}
 
-          <Pressable
-            style={styles.quiet}
-            onPress={() => router.push('/invite')}
-            accessibilityRole="button"
-            testID="home-invite"
-          >
-            <Text style={styles.quietLabel}>초대 코드로 들어가기</Text>
-          </Pressable>
+          {/*
+            **여기 있던 `초대 코드로 들어가기` 줄을 뺐다** (`decisions.md` Q-59 ·
+            결정 12-2 카드 A). 조 기도와 초대 코드가 V1.5 로 밀리면서 그 코드를 확인해 줄
+            서버가 V1 에 없고, 그래서 그 줄은 언제 눌러도 "찾지 못했습니다"만 답한다.
+            카드 A 가 적어 둔 그대로 **화면과 코드는 지우지 않고 진입점만 끊었다** —
+            초대 코드 화면(`app/invite.tsx`)은 그 자리에 그대로 있으므로, 되살릴 때
+            이 자리에 줄 하나를 다시 놓으면 된다. 끊긴 상태를 `e2e/settings.spec.ts` 의
+            시험 하나가 붙들고 있어, 실수로 다시 이어지면 그 시험이 먼저 알려 준다.
+          */}
         </View>
       </ScrollView>
 
@@ -635,11 +662,5 @@ const homeStyles = (palette: WorldPalette) =>
     rowState: { ...worldHomeType.rowState, color: palette.muted, marginTop: 2 },
     rowWhen: { ...worldHomeType.rowState, color: palette.muted, marginTop: 2 },
     rowDayTap: { flexShrink: 0, justifyContent: 'center', minHeight: 44 },
-    quiet: { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
-    quietLabel: {
-      ...worldHomeType.session,
-      color: palette.muted,
-      textDecorationLine: 'underline',
-    },
     rowDay: { ...worldHomeType.rowDay, color: palette.accentText },
   });

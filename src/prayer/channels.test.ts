@@ -23,7 +23,8 @@ jest.mock('react-native', () => ({
   Vibration: { vibrate: jest.fn() },
 }));
 
-import { koreanVoiceStatus, primeSpeech } from './channels';
+import { Vibration } from 'react-native';
+import { koreanVoiceStatus, primeSpeech, setHapticEnabled, vibrate } from './channels';
 
 beforeEach(() => {
   mockSpeak.mockClear();
@@ -75,5 +76,50 @@ describe('소리 엔진 깨우기', () => {
       throw new Error('speechSynthesis 가 없다');
     });
     expect(() => primeSpeech()).not.toThrow();
+  });
+});
+
+/* ── 진동을 끄는 스위치 (W2 슬라이스 C — 설정의 `진동` 줄) ─────────────────────────
+   이 시험이 있어야 하는 이유는 설정의 토글 하나가 **실제로 기기까지 닿는지**를 말로만
+   적으면 확인할 수 없기 때문이다. 앱이 떨리는 자리는 `vibrate` 하나뿐이므로, 그 하나가
+   스위치를 지키면 기도 전체가 조용해진다. ─────────────────────────────────────── */
+
+describe('진동 스위치', () => {
+  /*
+    **기기로 나가는 마지막 한 걸음을 가로채서 센다.** 이 파일 맨 위의 `jest.mock('react-native')`
+    으로는 진동을 가로챌 수 없다 — 시험이 도는 환경에서 `react-native` 는 `react-native-web` 으로
+    이어지고, 그 판의 `Vibration` 은 위 흉내가 덮지 못한다(실측, 2026-09-18). 덮지 못한 채로 두면
+    진짜 구현이 불려 `window` 가 없다는 오류를 내고, 그 오류를 `vibrate` 의 안전망이 삼켜서
+    **시험은 조용히 "떨리지 않았다"로 읽는다.** 그래서 실제로 불리는 그 함수를 직접 감시한다.
+  */
+  const spy = jest.spyOn(Vibration, 'vibrate').mockImplementation(() => {});
+
+  beforeEach(() => {
+    spy.mockClear();
+    setHapticEnabled(true);
+  });
+
+  afterAll(() => spy.mockRestore());
+
+  afterAll(() => setHapticEnabled(true));
+
+  it('켜져 있으면 기기에 떨림을 요청한다', () => {
+    vibrate([40]);
+    expect(spy).toHaveBeenCalledWith(40);
+  });
+
+  it('끄면 기기에 아무것도 요청하지 않는다', () => {
+    setHapticEnabled(false);
+    vibrate([40]);
+    vibrate([10, 20, 10]);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('다시 켜면 그 자리에서 되돌아온다 — 앱을 다시 열 필요가 없다', () => {
+    setHapticEnabled(false);
+    vibrate([40]);
+    setHapticEnabled(true);
+    vibrate([40]);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });

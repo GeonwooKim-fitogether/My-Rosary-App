@@ -637,3 +637,80 @@ export const worldSheetMetrics = {
    */
   scrimOpacity: 0.72,
 } as const;
+
+/**
+ * 설정 화면(W2 슬라이스 C)의 서체 — 시안의 `data-screen-label="Settings"` 블록에
+ * 인라인으로 적혀 있던 크기와 자간을 그대로 옮긴 것이다.
+ *
+ * 큰 제목은 시안이 `clamp(30px, 8vw, 38px)` 로 적었고, 그 식은 신비 해설 화면과 같으므로
+ * 이미 있는 `guideTitleSizeFor` 를 그대로 쓴다 — 같은 식을 두 번 적지 않는다.
+ */
+export const worldSettingsType = scaleTypeScale(
+  {
+    /** 12px · 자간 .14em · 대문자. 큰 제목 위의 앱 이름 (시안의 `t.appName`). */
+    brand: {
+      fontFamily: fonts.sans,
+      fontSize: 12,
+      lineHeight: 12 * 1.25,
+      letterSpacing: 12 * 0.14,
+    },
+    /** 15px. 줄의 이름 (시안의 모든 설정 줄이 쓰는 크기). */
+    rowLabel: { fontFamily: fonts.sans, fontSize: 15, lineHeight: 15 * 1.35 },
+    /** 12.5px. 줄 이름 아래의 작은 글 (시안의 `regionName · langName` 과 `historyLine`). */
+    rowNote: { fontFamily: fonts.sans, fontSize: 12.5, lineHeight: 12.5 * 1.4 },
+    /**
+     * 13px. 줄 오른쪽에 적는 고른 값.
+     *
+     * 시안의 설정 줄에는 이 글이 없다 — 시안의 항목은 전부 켬/끔 토글이라 값을 적을 일이
+     * 없었다. 이 앱의 낭송 방식·받는 사이·묵주는 셋 또는 넷 중 하나를 고르는 것이라 토글로
+     * 담을 수 없고(결정 12-2 카드 E), 그래서 값 글자가 필요해졌다. 크기는 시안이 같은
+     * 성격의 자리(홈의 링크)에 쓰는 13px 을 가져왔다.
+     */
+    rowValue: { fontFamily: fonts.sans, fontSize: 13, lineHeight: 13 * 1.35 },
+    /** 28px 명조. 완주 기록의 수 (시안의 `historyCount`). */
+    count: { fontFamily: fonts.serif, fontSize: 28, lineHeight: 28 },
+  },
+  TEXT_SCALE,
+);
+
+/**
+ * 설정 화면의 글자 크기 고르개 넉 칸이 쓰는 글자 크기 — 시안의 `fontOpts` 가 칸마다
+ * 다른 크기를 준다(`px: [12, 14, 16, 19]`). 고르개 자체가 "작게·보통·크게·아주 크게"를
+ * 글자의 크기로 보여 주는 장치이므로, 이 넷은 앱 안 글자 크기 배율을 **곱하지 않는다** —
+ * 곱하면 넷의 간격이 배율만큼 벌어져 한 줄에 서지 못한다.
+ */
+export const FONT_SEG_PX: readonly number[] = [12, 14, 16, 19];
+
+/**
+ * 지역·언어 화면(W2 슬라이스 C)의 서체 — 시안의 `data-screen-label="Region & Language"`
+ * 블록에 인라인으로 적혀 있던 크기와 자간을 그대로 옮긴 것이다.
+ *
+ * 큰 제목(`지역`)은 설정 화면과 같은 `clamp(30px, 8vw, 38px)` 이라 `guideTitleSizeFor` 를 쓴다.
+ */
+export const worldRegionType = scaleTypeScale(
+  {
+    /** 12px · 자간 .14em. 머리의 작은 라벨 (시안의 `t.regionLang`). */
+    label: {
+      fontFamily: fonts.sans,
+      fontSize: 12,
+      lineHeight: 12 * 1.25,
+      letterSpacing: 12 * 0.14,
+    },
+    /** 26px 명조. 가운데 제목 `언어` (시안의 `t.language`). */
+    section: { fontFamily: fonts.serif, fontSize: 26, lineHeight: 26 * 1.12 },
+    /** 22px 명조 · 줄 높이 1.15. 지역의 이름 (시안의 `r.name`). */
+    regionName: { fontFamily: fonts.serif, fontSize: 22, lineHeight: 22 * 1.15 },
+    /** 12.5px · 줄 높이 1.4. 지역의 한 줄 설명 (시안의 `r.desc`). */
+    regionDesc: { fontFamily: fonts.sans, fontSize: 12.5, lineHeight: 12.5 * 1.4 },
+    /** 16px. 언어의 이름 (시안의 `l.name`). */
+    langName: { fontFamily: fonts.sans, fontSize: 16, lineHeight: 16 * 1.35 },
+    /** 11px · 자간 .1em · 대문자. 언어 줄 오른쪽의 짧은 표시 (시안의 `l.tag`). */
+    langTag: {
+      fontFamily: fonts.sans,
+      fontSize: 11,
+      lineHeight: 11 * 1.25,
+      letterSpacing: 11 * 0.1,
+    },
+  },
+  TEXT_SCALE,
+);
