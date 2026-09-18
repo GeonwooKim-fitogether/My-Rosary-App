@@ -22,7 +22,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
+import { syncDocumentLanguage } from '../src/i18n/documentLanguage';
 import { openApp } from '../src/state/appStore';
+import { useAppState } from '../src/state/useAppState';
 import { ThemeProvider, useTheme } from '../src/theme';
 
 // 글꼴이 준비되기 전에 화면이 먼저 뜨면 글자가 한 번 튀므로, 그때까지 가림막을 붙든다.
@@ -92,9 +94,23 @@ export default function RootLayout() {
   );
 }
 
-/** 화면 껍데기. 벌에 따라 바탕색과 상태 표시줄의 밝기가 함께 바뀐다. */
+/**
+ * 화면 껍데기. 벌에 따라 바탕색과 상태 표시줄의 밝기가 함께 바뀐다.
+ *
+ * W4 에서 둘이 더해졌다. 첫째, **문서의 언어를 앱의 언어와 묶는다**(슬라이스 B) — 웹에서
+ * `<html lang>` 을 고쳐 쓰는 일이며, 까닭은 `src/i18n/documentLanguage.ts` 가 적는다.
+ * 화면 하나가 아니라 여기서 부르는 이유는, 언어가 어느 화면에서 바뀌든(지역·언어 화면 ·
+ * 기록 들여오기) 이 한 곳이 그것을 받기 때문이다.
+ */
 function Shell() {
   const { colors, mode } = useTheme();
+  const { settings } = useAppState();
+
+  // 앱이 켜질 때 한 번, 그리고 언어가 바뀔 때마다.
+  useEffect(() => {
+    syncDocumentLanguage(settings.language);
+  }, [settings.language]);
+
   return (
     <>
       <StatusBar style={mode === 'night' ? 'light' : 'dark'} />

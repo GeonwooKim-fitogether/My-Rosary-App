@@ -669,3 +669,55 @@ test('W4 슬라이스 A · 홈 화면에 추가 줄과 안내 시트를 찍는�
   await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
   await page.screenshot({ path: `${W4}/install-sheet.png` });
 });
+
+/**
+ * W4 슬라이스 B · 영어로 바꾼 화면 넷을 찍는다 — **이 저장소가 영어 화면을 찍는 첫 사진이다.**
+ *
+ * 지금까지 스물몇 장을 모두 한국어로만 찍어 왔다. 그래서 "영어로 바꿔도 화면이 무너지지
+ * 않는다"는 말에는 근거가 없었다. 영어는 같은 뜻을 한국어보다 긴 글자로 적는 자리가 많아
+ * (`받는 사이` 다섯 글자 · `Response pace` 열세 글자), 잘리거나 겹치는 자리가 생기면
+ * 거기서 드러난다. 그것을 사람이 눈으로 보라고 찍는 사진이다 (W4 통과 조건 3).
+ *
+ * **아래 탭 바를 눌러 들어간 자리에서 찍는다.** 주소를 직접 열고 찍으면 배선이 없어도 사진이
+ * 나오므로, 사진 자체가 "닿을 수 있다"의 증거가 되게 하려는 것이다.
+ *
+ * 기도 화면의 기도문이 한국어로 남는 것은 결함이 아니라 결정이다 — 확인되지 않은 기도문을
+ * 사람이 바치지 않게 하려고 화면 문구만 옮기고 바치는 말은 한국어 정본을 쓴다
+ * (`src/i18n/index.ts` 의 `prayerLanguage` · 결정 12-2 카드 C).
+ */
+test('W4 슬라이스 B · 영어로 바꾼 화면 넷을 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+
+  // 사람이 하는 그대로 — 설정 탭 → 지역·언어 → English.
+  await openSettings(page);
+  await page.getByTestId('settings-region').click();
+  await expect(page.getByTestId('region-screen')).toBeVisible();
+  await page.getByTestId('language-en').click();
+  await expect(page.getByTestId('language-en-tag')).toHaveText('지금');
+  await page.getByTestId('region-back').click();
+
+  // 1. 설정 — 줄 이름이 가장 긴 화면이라 잘림이 여기서 먼저 드러난다.
+  await expect(page.getByTestId('settings-screen')).toBeVisible();
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${W4}/en-settings.png` });
+
+  // 2. 홈.
+  await tapTab(page, 'home');
+  await expect(page.getByTestId('home-screen')).toBeVisible();
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${W4}/en-home.png` });
+
+  // 3. 여정.
+  await openJourneys(page);
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${W4}/en-journeys.png` });
+
+  // 4. 기도 — 홈의 첫 카드를 눌러 들어간다.
+  await tapTab(page, 'home');
+  await expect(page.getByTestId('home-screen')).toBeVisible();
+  await enterPrayerFromHome(page);
+  await freezeClock(page);
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${W4}/en-pray.png` });
+});

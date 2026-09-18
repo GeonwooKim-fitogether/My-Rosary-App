@@ -708,9 +708,15 @@ function PraySession({
         />
       </View>
 
+      {/*
+        두 줄까지 허용한다. 한 줄로 못박아 두면 **한국어보다 긴 언어에서 말이 잘린다** —
+        영어로 바꾼 화면을 처음 찍어 보고 `Turn the loop to mov…` 로 끊기는 것을 확인했다
+        (W4 슬라이스 B, `docs/plan/w4-screens/en-pray.png` 의 앞 판). 한국어는 여전히 한 줄에
+        들어가므로 한국어 화면의 모양은 그대로다.
+      */}
       <Text
         style={[styles.hint, { paddingBottom: insets.bottom + HINT_BOTTOM_GAP }]}
-        numberOfLines={1}
+        numberOfLines={2}
       >
         {`${strings.tapHint} · ${strings.dragHint}`}
       </Text>

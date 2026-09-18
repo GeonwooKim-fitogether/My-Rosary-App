@@ -201,6 +201,30 @@ export async function installFontScale(page: Page, fontScale: number): Promise<v
   }, `${16 * fontScale}px`);
 }
 
+/**
+ * 기기에 이미 저장돼 있던 설정을 심어 둔다 (W4 슬라이스 B).
+ *
+ * **`openApp` 보다 먼저 부른다.** 화면이 뜬 뒤에 심으면 앱이 이미 옛 값을 읽은 뒤라서
+ * 아무 일도 일어나지 않는다.
+ *
+ * 왜 이런 손잡이가 필요한가. 재려는 것이 **지금 화면으로는 만들 수 없는 상태**이기 때문이다 —
+ * 언어 다섯이 꺼진 뒤로는 지역·언어 화면에서 그 다섯을 고를 수 없는데, 일곱이 모두 열려 있던
+ * 판(W0~W3)으로 앱을 쓰던 기기에는 그 값이 저장돼 있을 수 있다. 그 기기가 어떻게 열리는지를
+ * 재려면 저장된 값을 손으로 놓아 보는 수밖에 없다.
+ *
+ * 웹에서 앱의 저장소는 브라우저의 `localStorage` 다 — `@react-native-async-storage/async-storage`
+ * 가 웹에서 그것을 그대로 쓴다(`lib/module/createAsyncStorage.js` 의 `LegacyAsyncStorageWebImpl`).
+ * 그래서 앱의 저장 열쇠(`src/storage/settings.ts` 의 `SETTINGS_KEY`)에 값을 적어 두면 된다.
+ */
+export async function seedStoredSettings(
+  page: Page,
+  settings: Record<string, unknown>,
+): Promise<void> {
+  await page.addInitScript((raw: string) => {
+    window.localStorage.setItem('myrosary.settings.v1', raw);
+  }, JSON.stringify(settings));
+}
+
 /** 첫 화면의 단추를 눌러 홈으로 들어간다 (`decisions.md` Q-17 이 닫힌 배선). */
 export async function enterHome(page: Page): Promise<void> {
   await page.getByTestId('login-google').click();

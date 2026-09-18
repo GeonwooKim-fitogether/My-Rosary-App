@@ -11,10 +11,12 @@
  */
 import {
   ENABLED_LANGUAGES,
+  enabledLanguageFor,
   fill,
   LANGUAGE_ORDER,
   LANGUAGES,
   prayerLanguage,
+  PRAYER_VERIFIED,
   REGION_DEFAULT_LANGUAGE,
   REGION_LANGUAGES,
   stringsFor,
@@ -71,6 +73,43 @@ describe('켜진 언어만 고를 수 있다 (로드맵 카드 C)', () => {
 
   it('켜진 언어는 모두 데이터가 들어와 있는 언어다', () => {
     for (const language of ENABLED_LANGUAGES) expect(LANGUAGE_ORDER).toContain(language);
+  });
+});
+
+describe('확인되지 않은 기도문이 무엇인지 코드에 적혀 있다 (로드맵 §7)', () => {
+  it('일곱 벌 모두 확인 여부가 적혀 있다 — 빠진 언어가 없다', () => {
+    expect(Object.keys(PRAYER_VERIFIED).sort()).toEqual([...LANGUAGE_ORDER].sort());
+  });
+
+  /*
+    이 시험이 빨개지는 날은 누군가 어느 언어의 기도문을 공식 판본과 대조해 `true` 로 고친
+    날이다. 그때 해야 할 일은 이 줄을 고치는 것이 아니라, **그 대조가 실제로 있었는지**
+    확인하고 `decisions.md` 에 남긴 뒤 이 시험을 그 사실에 맞춰 다시 쓰는 것이다.
+  */
+  it('지금은 한 벌도 대조가 끝나지 않았다 — 켜진 한국어·영어까지 포함해서', () => {
+    expect(Object.values(PRAYER_VERIFIED)).toEqual([false, false, false, false, false, false, false]);
+  });
+
+  it('켜졌다는 것이 확인됐다는 뜻은 아니다 — 둘은 다른 표다', () => {
+    for (const language of ENABLED_LANGUAGES) expect(PRAYER_VERIFIED[language]).toBe(false);
+  });
+});
+
+describe('꺼진 언어로 앱이 서지 않는다', () => {
+  it.each(REGION_ORDER)('%s 가 떨어지는 자리는 켜진 언어다', (region) => {
+    expect(ENABLED_LANGUAGES).toContain(enabledLanguageFor(region));
+  });
+
+  it('기본 언어가 켜져 있는 지역은 그 언어를 그대로 쓴다', () => {
+    expect(enabledLanguageFor('korea')).toBe('ko');
+    expect(enabledLanguageFor('europe')).toBe('en');
+  });
+
+  it('기본 언어가 꺼져 있는 남미는 켜진 목록의 첫 언어로 간다', () => {
+    // 남미의 기본 언어는 스페인어인데 스페인어는 꺼져 있다 — 이 한 칸이 이 함수가 있는 까닭이다.
+    expect(REGION_DEFAULT_LANGUAGE.southamerica).toBe('es');
+    expect(ENABLED_LANGUAGES).not.toContain('es');
+    expect(enabledLanguageFor('southamerica')).toBe(ENABLED_LANGUAGES[0]);
   });
 });
 

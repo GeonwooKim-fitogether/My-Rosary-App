@@ -301,7 +301,16 @@ export default function SettingsScreen() {
                   <Text
                     style={[
                       styles.segLabel,
-                      { fontSize: FONT_SEG_PX[index], lineHeight: FONT_SEG_PX[index]! },
+                      /*
+                        줄 높이를 글자 크기의 1.25 배로 둔다. 1배(글자 크기와 같은 값)로 두면
+                        **두 줄이 되는 순간 글자가 칸 밖으로 잘려 나간다** — 칸은 `overflow:
+                        hidden` 이라 위 줄의 윗머리가 테두리에 잘리고 아래 줄은 아래 테두리를
+                        넘는다. 영어로 바꾼 화면을 처음 찍어 보고 `Extra large` 에서 실제로
+                        그렇게 잘리는 것을 확인했다 (W4 슬라이스 B, `docs/plan/w4-screens/`).
+                        한국어에서도 좁은 기기(320)에서 `아주 크게` 가 두 줄이 되므로 같은 일이
+                        일어나던 자리다.
+                      */
+                      { fontSize: FONT_SEG_PX[index], lineHeight: Math.round(FONT_SEG_PX[index]! * 1.25) },
                       here ? styles.segLabelOn : null,
                     ]}
                   >
@@ -777,7 +786,17 @@ const settingsStyles = (palette: WorldPalette, isKorean: boolean) =>
       borderRadius: worldRadius.md,
       overflow: 'hidden',
     },
-    segOption: { flex: 1, minHeight: 44, alignItems: 'center', justifyContent: 'center', paddingVertical: 6 },
+    /*
+      좌우 여백 4 는 두 줄이 된 이름이 칸 사이 선에 닿지 않게 하는 자리다 (W4 슬라이스 B).
+    */
+    segOption: {
+      flex: 1,
+      minHeight: 44,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 6,
+      paddingHorizontal: 4,
+    },
     segDivider: { borderLeftWidth: 1, borderLeftColor: RULE },
     /* 고른 칸은 강조색 테 하나로만 표시한다 (「Classical」 의 `inset 0 0 0 1px`). */
     segOn: { borderWidth: 1, borderColor: palette.accent },
@@ -786,7 +805,13 @@ const settingsStyles = (palette: WorldPalette, isKorean: boolean) =>
       담지 못하는데, 그냥 두면 브라우저가 한국어를 글자 단위로 끊어 `아주 크 / 게` 가 된다.
       이 값이 있으면 띄어쓰기에서만 끊겨 `아주 / 크게` 가 된다 — 줄이 하나 늘 뿐 낱말은 산다.
     */
-    segLabel: { fontFamily: worldFontStack('body', isKorean), color: palette.ink, ...koWordBreak },
+    segLabel: {
+      fontFamily: worldFontStack('body', isKorean),
+      color: palette.ink,
+      // 두 줄이 되면 줄끼리 가운데로 맞춘다. 한 줄일 때는 아무 차이가 없다.
+      textAlign: 'center',
+      ...koWordBreak,
+    },
     segLabelOn: { color: palette.accentText },
 
     /* 토글 — 시안의 44×26. 켠 바탕은 글자가 아니므로 `accent` 를 그대로 쓴다. */

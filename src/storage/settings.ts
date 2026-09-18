@@ -10,7 +10,7 @@ import type { PaceKey, RecitationMode } from '../domain/types';
 import type { KeyValueStore } from './position';
 
 /** 저장 열쇠. */
-import { ENABLED_LANGUAGES, REGION_DEFAULT_LANGUAGE, type LanguageKey } from '../i18n';
+import { ENABLED_LANGUAGES, enabledLanguageFor, type LanguageKey } from '../i18n';
 import { PRAYER_FONT_DEFAULT, asFontScaleIndex, type FontScaleIndex } from '../theme/prayerFont';
 import { REGION_ORDER, type RegionKey } from '../theme/worldTokens';
 
@@ -189,15 +189,29 @@ export function parseSettings(raw: string | null): AppSettings {
       region: REGION_ORDER.includes(value.region as RegionKey)
         ? (value.region as RegionKey)
         : DEFAULT_SETTINGS.region,
-      // 켜지지 않은 언어가 저장돼 있으면 그 지역의 기본 언어로 떨어뜨린다. 언어를 끄는
-      // 결정이 나중에 나도 그 언어로 앱이 열리지 않게 하려는 것이다.
+      /*
+        켜지지 않은 언어가 저장돼 있으면 **켜진 언어 하나로 조용히 되돌린다.**
+
+        이 자리가 왜 필요한가. 지금은 지역·언어 화면이 꺼진 다섯을 잠가 두지만, 언어 일곱이
+        모두 열려 있던 판(W0~W3)으로 앱을 쓰던 기기에는 이탈리아어나 스페인어가 저장돼
+        있을 수 있다. 그 값을 그대로 믿으면 꺼진 언어로 앱이 서고, 앞으로 언어를 끄는 결정이
+        한 번 더 나면 같은 일이 되풀이된다.
+
+        **조용히 되돌리는 쪽을 택한 이유**는, 이것이 사용자가 잘못한 일이 아니기 때문이다.
+        사람은 그때 열려 있던 목록에서 골랐을 뿐이므로 "당신의 언어를 더 쓸 수 없습니다"
+        같은 알림으로 기도를 막을 까닭이 없다. 대신 지역·언어 화면이 그 언어를 `준비 중`
+        으로 보여 주므로, 찾아보면 무슨 일이 일어났는지 알 수 있다.
+
+        어느 언어로 떨어지는지는 `enabledLanguageFor` 가 정한다 — 지역의 기본 언어가 켜져
+        있으면 그것, 아니면 켜진 목록의 첫 언어다.
+      */
       language: ENABLED_LANGUAGES.includes(value.language as LanguageKey)
         ? (value.language as LanguageKey)
-        : REGION_DEFAULT_LANGUAGE[
+        : enabledLanguageFor(
             REGION_ORDER.includes(value.region as RegionKey)
               ? (value.region as RegionKey)
-              : DEFAULT_SETTINGS.region
-          ],
+              : DEFAULT_SETTINGS.region,
+          ),
       fontScale: asFontScaleIndex(value.fontScale),
     };
   } catch {
