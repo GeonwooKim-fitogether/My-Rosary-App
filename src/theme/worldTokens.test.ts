@@ -10,7 +10,14 @@
  * 바뀌므로 그것은 사람이 정할 일이고, 시험이 할 수 있는 일은 "지금 이 값이다"를 못 박아
  * 누군가 모르고 바꾸면 곧바로 알려 주는 것이다.
  */
-import { onScrim, REGION_ORDER, REGION_PALETTES, worldFonts, type WorldPalette } from './worldTokens';
+import {
+  OFF_TURN_OPACITY,
+  onScrim,
+  REGION_ORDER,
+  REGION_PALETTES,
+  worldFonts,
+  type WorldPalette,
+} from './worldTokens';
 
 /** sRGB 한 통로의 선형 값 (WCAG 정의). */
 function channel(value: number): number {
@@ -106,5 +113,40 @@ describe('글꼴 이름이 번들의 파일과 짝이다', () => {
       ['body', 'bodyBold', 'heading', 'headingBold', 'korean'].sort(),
     );
     for (const name of Object.values(worldFonts)) expect(name.length).toBeGreaterThan(0);
+  });
+});
+
+/**
+ * 물러난 절이 읽히는가 (W1 의 카드 E · `docs/plan/w1-work-order.md` §3-3).
+ *
+ * 기도 화면은 교대 낭송의 두 절을 위아래로 두고 지금 차례가 아닌 쪽을 흐리게 한다. 흐리게
+ * 하는 것과 읽을 수 없게 하는 것은 한 끗 차이라, 그 경계를 눈이 아니라 값으로 못 박는다 —
+ * 흐려진 글자가 지역 다섯의 덮개 위에서 본문 기준(4.5:1)을 지키는지 계산한다.
+ *
+ * 반투명한 글자가 화면에 실제로 나타나는 색은 바탕과 섞인 색이므로, 여기서도 섞은 뒤에 잰다.
+ */
+describe('물러난 절도 읽힌다 (카드 E)', () => {
+  /** 짙기 o 로 그린 색이 바탕 위에서 실제로 나타나는 색. */
+  const over = (color: string, background: string, o: number): string => {
+    const parse = (hex: string) =>
+      [0, 2, 4].map((at) => parseInt(hex.replace('#', '').slice(at, at + 2), 16));
+    const [front, back] = [parse(color), parse(background)];
+    const mixed = front.map((value, i) => Math.round(o * value + (1 - o) * back[i]!));
+    return `#${mixed.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+  };
+
+  it('다섯 지역 모두에서 흐려진 앞 절과 뒷 절이 본문 기준 4.5:1 을 넘는다', () => {
+    for (const region of REGION_ORDER) {
+      const scrim = REGION_PALETTES[region].scrim;
+      // 앞 절은 본문색, 뒷 절은 강조색으로 그린다 (`app/pray.tsx`).
+      expect(contrast(over(onScrim.ink, scrim, OFF_TURN_OPACITY), scrim)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(over(onScrim.accent, scrim, OFF_TURN_OPACITY), scrim)).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it('물러난 글의 짙기는 시안이 쓰는 값 그대로다', () => {
+    // 시안은 기도문 아래의 묵상 노트를 `opacity:.72` 로 물러나게 한다. 같은 뜻의 자리에
+    // 같은 값을 쓴다 — 여기를 더 낮추면 위 시험이 먼저 걸린다.
+    expect(OFF_TURN_OPACITY).toBe(0.72);
   });
 });

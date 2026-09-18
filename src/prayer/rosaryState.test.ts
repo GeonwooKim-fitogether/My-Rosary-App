@@ -4,6 +4,12 @@
  * 2026-09-09 에 그림이 열 알에서 **쉰아홉 알**로 바뀌면서(`decisions.md` 결정 6) 이
  * 시험도 함께 바뀌었다. 옛 시험은 "고리의 열 알 중 몇째인가"를 물었고, 지금 시험은
  * "실제 묵주 쉰아홉 알 중 몇째인가"를 묻는다.
+ *
+ * 2026-09-17 에 한 번 더 바뀌었다(`decisions.md` 결정 12-2 의 카드 D). 고리가 물방울에서
+ * **정원**으로 바뀌면서 좌표를 재는 시험들이 옛 모양을 재고 있었기 때문이다. 바뀐 것은
+ * **좌표를 재는 시험뿐이고**, 어느 단계가 어느 알에 대응하는가를 재는 아래쪽 묶음
+ * (`어느 알이 켜지는가`)과 알의 수를 세는 시험은 한 줄도 손대지 않았다 — 기하가 바뀌어도
+ * 그 대응은 바뀌지 않아야 하고, 그것이 이 판의 통과 조건이었다.
  */
 import { mysteryForFiftyfourDay } from '../domain/mysteries';
 import {
@@ -12,8 +18,14 @@ import {
   BEAD_RADIUS,
   LOOP,
   LOOP_PATH,
+  LOOP_RING_BEADS,
+  LOOP_SLOTS,
   MEDAL,
+  TAIL_BEADS,
   VIEWBOX,
+  loopBeadAtAngle,
+  loopBeadIndex,
+  ringAngleDeg,
   rosaryStateFor,
 } from './rosaryState';
 import { buildDayQueue } from './steps';
@@ -21,59 +33,68 @@ import { buildDayQueue } from './steps';
 const QUEUE = buildDayQueue(mysteryForFiftyfourDay(23));
 
 describe('알 쉰아홉의 자리', () => {
-  it('실제 묵주와 같은 쉰아홉 알이다 — 늘어진 줄 넷과 고리 쉰다섯', () => {
+  it('실제 묵주와 같은 쉰아홉 알이다 — 꼬리 다섯과 고리 쉰넷', () => {
     expect(BEADS).toHaveLength(BEAD_COUNT);
     expect(BEAD_COUNT).toBe(59);
     expect(BEADS.filter((bead) => bead.big)).toHaveLength(6); // 늘어진 줄 하나 + 단마다 하나
   });
 
-  it('성모송 알 사이는 고르고, 단 경계의 줄만 한 칸 더 길다 (결정 8)', () => {
-    const loop = BEADS.slice(4);
-    const gap = (i: number) => Math.hypot(loop[i + 1]!.x - loop[i]!.x, loop[i + 1]!.y - loop[i]!.y);
+  it('꼬리에 다섯 알이 한 줄로 서고, 제1단의 주님의 기도가 메달 바로 아래다 (카드 D)', () => {
+    // 시안의 `tailPos` 그대로다. 위에서 아래로 236 · 250 · 261 · 272 · 286 이고,
+    // 바치는 순서는 아래에서 위로 올라가므로 자리 번호 0 이 맨 아래(286)다.
+    expect(BEADS.slice(0, TAIL_BEADS).map((bead) => bead.y)).toEqual([286, 272, 261, 250, 236]);
+    for (const bead of BEADS.slice(0, TAIL_BEADS)) expect(bead.x).toBe(MEDAL.x);
 
-    // 큰 알에 닿지 않는 도막 — 성모송 알과 성모송 알 사이다.
-    const plain: number[] = [];
-    // 큰 알에 닿는 도막 — 사진에서 큰 알이 홀로 놓이게 하는 긴 줄이다.
-    const long: number[] = [];
-    for (let i = 0; i < loop.length - 1; i++) {
-      (loop[i]!.big || loop[i + 1]!.big ? long : plain).push(gap(i));
-    }
-
-    // 보통 도막끼리는 눈에 고르게 보인다 (차이 2% 안).
-    expect(Math.max(...plain) / Math.min(...plain)).toBeLessThan(1.02);
-    // 긴 도막은 어느 것이든 가장 긴 보통 도막보다 확실히 길다.
-    expect(Math.min(...long) / Math.max(...plain)).toBeGreaterThan(1.4);
-
-    // 메달 양옆의 첫 알과 마지막 알은 같은 거리에 앉는다 (좌우가 어긋나면 눈에 띈다).
-    const toMedal = (bead: { x: number; y: number }) =>
-      Math.hypot(bead.x - MEDAL.x, bead.y - MEDAL.y);
-    expect(Math.abs(toMedal(loop[0]!) - toMedal(loop[54]!))).toBeLessThan(0.1);
+    // 꼬리의 큰 알은 양 끝 둘이다 — 맨 아래가 시작 기도의 주님의 기도, 맨 위가 제1단의 것.
+    expect(BEADS.slice(0, TAIL_BEADS).map((bead) => bead.big)).toEqual([
+      true,
+      false,
+      false,
+      false,
+      true,
+    ]);
+    // 그 맨 위 알이 실제로 제1단의 주님의 기도 자리다 (대응은 아래 묶음이 다시 잰다).
+    const decadeOne = rosaryStateFor(QUEUE.find((s) => s.decade === 1 && s.prayer === 'our')!);
+    expect(decadeOne.current).toBe(TAIL_BEADS - 1);
   });
 
-  it('알끼리 겹치지 않는다 — 사이마다 줄이 보인다 (결정 8)', () => {
-    const loop = BEADS.slice(4);
-    for (let i = 0; i < loop.length - 1; i++) {
-      const distance = Math.hypot(loop[i + 1]!.x - loop[i]!.x, loop[i + 1]!.y - loop[i]!.y);
+  it('고리는 물방울이 아니라 정원이다 — 알 쉰넷이 원둘레에 고르게 앉는다 (카드 D)', () => {
+    const ring = BEADS.slice(TAIL_BEADS);
+    expect(ring).toHaveLength(LOOP_RING_BEADS);
+
+    // 1. 모든 알이 중심에서 같은 거리(반지름 96)에 있다. 좁힘이 남아 있으면 여기서 갈린다.
+    for (const bead of ring) {
+      expect(Math.hypot(bead.x - LOOP.cx, bead.y - LOOP.cy)).toBeCloseTo(LOOP.r, 1);
+    }
+
+    // 2. 이웃한 알 사이의 거리가 모두 같다 — 쉰여섯 칸을 고르게 나눈 결과다.
+    const gaps: number[] = [];
+    for (let i = 0; i < ring.length - 1; i++) {
+      gaps.push(Math.hypot(ring[i + 1]!.x - ring[i]!.x, ring[i + 1]!.y - ring[i]!.y));
+    }
+    const slotChord = 2 * LOOP.r * Math.sin(Math.PI / LOOP_SLOTS);
+    for (const gap of gaps) expect(gap).toBeCloseTo(slotChord, 1);
+
+    // 3. 알이 없는 두 칸은 맨 아래에 있다 — 그 틈에 꼬리와 메달이 붙는다.
+    expect(ring[0]!.y).toBeGreaterThan(LOOP.cy);
+    expect(ring[LOOP_RING_BEADS - 1]!.y).toBeGreaterThan(LOOP.cy);
+  });
+
+  it('알끼리 겹치지 않는다 — 사이마다 줄이 보인다', () => {
+    const ring = BEADS.slice(TAIL_BEADS);
+    for (let i = 0; i < ring.length - 1; i++) {
+      const distance = Math.hypot(ring[i + 1]!.x - ring[i]!.x, ring[i + 1]!.y - ring[i]!.y);
       const touching =
-        (loop[i]!.big ? BEAD_RADIUS.big : BEAD_RADIUS.small) +
-        (loop[i + 1]!.big ? BEAD_RADIUS.big : BEAD_RADIUS.small);
-      // 알 둘의 반지름을 더한 것보다 사이가 넉넉히 멀어야 그 틈으로 줄이 보인다.
-      expect(distance - touching).toBeGreaterThan(1.5);
+        (ring[i]!.big ? BEAD_RADIUS.big : BEAD_RADIUS.small) +
+        (ring[i + 1]!.big ? BEAD_RADIUS.big : BEAD_RADIUS.small);
+      /*
+       * 알 둘의 반지름을 더한 것보다 사이가 멀어야 그 틈으로 줄이 보인다. 가장 빠듯한 짝은
+       * 큰 알과 그 이웃 작은 알이고, 그 틈이 1.26 이다 — 칸 하나의 현(10.76)에서 두 반지름
+       * (5.8 + 3.7)을 뺀 값이다. 옛 물방울 판은 단 경계의 줄을 1.6 배로 늘려 이 틈이 더
+       * 넓었는데, 정원에서는 칸이 고르므로 시안이 정한 반지름이 그대로 이 값을 정한다.
+       */
+      expect(distance - touching).toBeGreaterThan(1.2);
     }
-  });
-
-  it('고리는 타원이 아니라 아래로 모이는 물방울이다 (결정 8)', () => {
-    const loop = BEADS.slice(4);
-    const halfWidth = (bead: { x: number }) => Math.abs(bead.x - MEDAL.x);
-
-    // 메달 옆의 첫 알과 마지막 알은 메달 가까이 모여 있다 — 타원이라면 여기가 가장 넓다.
-    expect(halfWidth(loop[0]!)).toBeLessThan(30);
-    expect(halfWidth(loop[54]!)).toBeLessThan(30);
-
-    // 가장 넓은 자리는 고리의 위쪽 절반에 있다 (사진의 두 어깨).
-    const widest = loop.reduce((a, b) => (halfWidth(a) >= halfWidth(b) ? a : b));
-    expect(halfWidth(widest)).toBeGreaterThan(140);
-    expect(widest.y).toBeLessThan(LOOP.cy);
   });
 
   it('고리는 메달에서 출발해 오른쪽으로 돈다 — 실제 묵주가 도는 방향이다', () => {
@@ -86,8 +107,9 @@ describe('알 쉰아홉의 자리', () => {
     );
     expect(BEADS[last.current]!.x).toBeLessThan(LOOP.cx);
 
-    // 고리로 들어서는 첫 알도 메달의 오른쪽에 앉는다.
-    expect(BEADS[4]!.x).toBeGreaterThan(MEDAL.x);
+    // 고리로 들어서는 첫 알도 메달의 오른쪽에 앉는다. 옛 판에서는 그 알이 자리 번호 4
+    // (제1단의 주님의 기도)였는데, 시안이 그 알을 꼬리로 옮겨 이제 5 번이 고리의 첫 알이다.
+    expect(BEADS[TAIL_BEADS]!.x).toBeGreaterThan(MEDAL.x);
   });
 
   it('어떤 알도 그림 밖으로 나가지 않는다', () => {
@@ -97,27 +119,51 @@ describe('알 쉰아홉의 자리', () => {
       expect(bead.y).toBeGreaterThanOrEqual(0);
       expect(bead.y).toBeLessThanOrEqual(VIEWBOX.height);
     }
-    // 부푼 지금 알(반지름 17)과 그 빛무리의 **보이는 부분**까지 담을 자리가 위쪽에 있다.
-    // 빛무리는 반지름 28.9 까지 번지지만 바깥 20% 는 완전히 투명해지는 구간이라, 실제로
-    // 잘리면 안 되는 것은 알 반지름의 1.3 배 안쪽이다.
-    expect(LOOP.cy - LOOP.ry).toBeGreaterThanOrEqual(BEAD_RADIUS.current * 1.3);
+    // 지금 알의 빛무리(알 반지름 + 6)까지 담을 자리가 고리의 맨 위에 있다. 고리의 꼭대기는
+    // y = 118 − 96 = 22 이고, 가장 큰 빛무리는 큰 알의 5.8 + 6 = 11.8 이다.
+    expect(LOOP.cy - LOOP.r).toBeGreaterThanOrEqual(BEAD_RADIUS.big + 6);
+    // 십자가의 아래 끝(320)도 그림 안이다.
+    expect(VIEWBOX.height).toBeGreaterThanOrEqual(320);
   });
 
   it('줄을 그리는 경로가 알을 놓는 곡선과 같다 — 알이 줄에서 뜨지 않는다', () => {
     // 경로의 마디마다 가장 가까운 알까지의 거리를 재는 대신, 알마다 경로 위에 그 알을
     // 지나는 마디가 있는지를 본다. 둘이 다른 곡선에서 나왔다면 여기서 벌어진다.
-    const points = LOOP_PATH.slice(0, -2)
-      .split(/[ML]/)
+    const points = LOOP_PATH.split(/[ML]/)
       .filter(Boolean)
       .map((pair) => {
         const [x, y] = pair.trim().split(' ').map(Number);
         return { x: x!, y: y! };
       });
-    for (const bead of BEADS.slice(4)) {
+    for (const bead of BEADS.slice(TAIL_BEADS)) {
       const nearest = Math.min(...points.map((p) => Math.hypot(p.x - bead.x, p.y - bead.y)));
-      // 마디 사이가 이 크기에서 3.8 이므로, 알은 언제나 그 절반 안쪽에 있다.
-      expect(nearest).toBeLessThan(2);
+      // 마디 사이가 이 크기에서 2.65 이므로, 알은 언제나 그 절반 안쪽에 있다.
+      expect(nearest).toBeLessThan(1.4);
     }
+    // 줄은 닫힌 고리가 아니라 **열린 호**다 — 맨 아래 두 칸을 비워 꼬리가 들어설 틈을 낸다.
+    expect(LOOP_PATH.endsWith('Z')).toBe(false);
+  });
+});
+
+describe('손가락이 고리의 어느 알 위에 있는가 (§3-4)', () => {
+  it('알의 자리에서 잰 각도가 그 알의 번호로 되돌아온다', () => {
+    // 각도를 재는 식과 알을 놓는 식이 어긋나면 한 칸씩 밀려 엉뚱한 기도로 뛴다.
+    for (let k = 0; k < LOOP_RING_BEADS; k++) {
+      const bead = BEADS[loopBeadIndex(k)]!;
+      const degrees = ringAngleDeg(bead.x - LOOP.cx, bead.y - LOOP.cy);
+      expect(loopBeadAtAngle(degrees)).toBe(k);
+    }
+  });
+
+  it('알이 없는 맨 아래 두 칸을 가리키면 양 끝 알로 잘린다', () => {
+    // 맨 아래(0도)는 빈 칸이다. 첫 알에 붙어 있게 해야 손가락이 틈을 지날 때 알이 사라지지 않는다.
+    expect(loopBeadAtAngle(0)).toBe(0);
+    expect(loopBeadAtAngle(359)).toBe(LOOP_RING_BEADS - 1);
+  });
+
+  it('고리의 첫 알은 오른쪽 아래, 마지막 알은 왼쪽 아래다 (결정 7 과 같은 방향)', () => {
+    expect(BEADS[loopBeadIndex(0)]!.x).toBeGreaterThan(LOOP.cx);
+    expect(BEADS[loopBeadIndex(LOOP_RING_BEADS - 1)]!.x).toBeLessThan(LOOP.cx);
   });
 });
 

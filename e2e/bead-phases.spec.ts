@@ -67,8 +67,9 @@ test('교대 낭송에서 읽는 중 · 내 차례 · 멈춤 · 단 전환이 �
   await page.screenshot({ path: `${OUT}/2-response.png` });
 
   // 한 알 더 — 옮긴 직후는 새 절을 읽는 중이다. 알 바깥에 테두리가 선다.
+  // 몇째 알인지는 기도문 제목 옆의 세는 줄이 말한다 (W1 에서 알 안의 숫자가 이리로 옮겼다).
   await nextBead(page);
-  await expect(page.locator('svg text').first()).toHaveText('2');
+  await expect(page.getByTestId('pray-counter')).toHaveText('2 / 10');
   await expect(rosary).toHaveAttribute('aria-label', '지금 알: 앱이 읽는 중');
   await page.waitForTimeout(200);
   await page.screenshot({ path: `${OUT}/1-reading.png` });
@@ -81,7 +82,7 @@ test('교대 낭송에서 읽는 중 · 내 차례 · 멈춤 · 단 전환이 �
 
   // 멈춘 채로 알을 옮겨도 멈춤이다 — 멈춤은 알림이 아니라 "돌고 있지 않다"는 사실이다.
   await nextBead(page);
-  await expect(page.locator('svg text').first()).toHaveText('3');
+  await expect(page.getByTestId('pray-counter')).toHaveText('3 / 10');
   await expect(rosary).toHaveAttribute('aria-label', '지금 알: 멈춤');
 
   // 다시 이어서. 옮긴 자리의 절부터 읽는다.
