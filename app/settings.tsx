@@ -36,6 +36,23 @@
  * | 낮과 밤 | 결정 12-2 **카드 F** — 밤 벌(쪽빛)을 접었다. 새 시안에는 지역 다섯의 색 벌만 있다 | **벌을 그리는 코드는 한 줄도 지우지 않았다** (`src/theme/tokens.ts` 의 `nightColors` 와 `ThemeProvider`). 고르는 자리만 끊었으므로, 되살리기로 하면 줄 하나를 다시 놓는 일이다 |
  * | 기도문 판본 | 같은 카드 F — 판본은 언어마다 한 벌이다 | 위와 같다 |
  *
+ * ── 시안에 없는 줄 둘 — 기록 내보내기·들여오기 (W3 슬라이스 C) ────────────────
+ *
+ * 시안의 설정에는 이 둘이 없다. 시안에는 계정이 있어 기록이 서버에 남는다고 보았기 때문이다.
+ * 이 앱은 결정 12-2 의 카드 A 로 **계정을 V1.5 로 미뤘고**, 그래서 기기를 바꾸거나 앱을 지우면
+ * 기록이 통째로 사라진다. 로드맵 §7 의 위험 표가 그 위험의 절반을 파일 하나로 보완하라고
+ * 적은 자리가 이 두 줄이며, 카드 A 는 이 받침을 전제로 계정을 미뤘다.
+ *
+ * **두 줄은 웹에서만 선다.** iOS·안드로이드에서 파일을 사람에게 건네고 사람에게서 받으려면
+ * 지금 이 저장소에 없는 부품 둘(공유 시트 · 문서 고르기)이 필요하다. 눌러도 아무 일이 없는
+ * 줄을 놓는 것은 기능이 있는 척하는 일이므로, 되는 곳에만 놓고 되지 않는 곳에는 놓지 않았다.
+ * 잰 내용은 `src/storage/backupFile.ts` 의 머리글에 표로 있다.
+ *
+ * **들여오기는 확인 시트를 거친다.** 들여오면 지금 기기의 여정과 설정이 사라지므로, 이
+ * 저장소가 자리를 지우는 조작마다 두어 온 관문을 여기에도 둔다 (FR-18 · 시트 S3·S6). 시트는
+ * "정말 하시겠습니까" 로 묻지 않고 **무엇을 몇 개 잃는지 수로** 말한다 — 사람이 판단할 수
+ * 있어야 관문이지, 한 번 더 누르게 하는 것만으로는 관문이 아니기 때문이다.
+ *
  * ── 시안에 있으나 아직 놓지 않은 줄 둘 ──────────────────────────────────────────
  *
  * `홈 화면에 추가`(설치형 웹앱)와 `진행 중인 기도 지우기`는 놓지 않았다. 앞의 것은 설치형
@@ -51,8 +68,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LANGUAGES, stringsFor } from '../src/i18n';
 import { countDays } from '../src/journey/rules';
 import type { PaceKey, RecitationMode } from '../src/domain/types';
-import { updateSettings } from '../src/state/appStore';
+import { importBackup, updateSettings } from '../src/state/appStore';
 import { useAppState } from '../src/state/useAppState';
+import {
+  backupFileName,
+  backupText,
+  parseBackup,
+  type ParsedBackup,
+} from '../src/storage/backup';
+import { backupFileSupported, downloadTextFile, pickTextFile } from '../src/storage/backupFile';
 import {
   PACE_CHOICES,
   PACE_NAMES,
@@ -73,7 +97,7 @@ import {
   type WorldPalette,
 } from '../src/theme/worldTokens';
 import { RosarySheet } from '../src/prayer/RosarySheet';
-import { BottomSheet, ChoiceSheet } from '../src/ui/Sheet';
+import { BottomSheet, ChoiceSheet, ConfirmSheet } from '../src/ui/Sheet';
 import { TAB_BAR_HEIGHT, WorldTabBar } from '../src/ui/WorldTabBar';
 
 type Sheet = 'none' | 'recitation' | 'pace' | 'rosary' | 'about';
@@ -82,7 +106,7 @@ type Sheet = 'none' | 'recitation' | 'pace' | 'rosary' | 'about';
 const RULE = 'rgba(0,0,0,.14)';
 
 export default function SettingsScreen() {
-  const { journeys, settings } = useAppState();
+  const { journeys, settings, pinnedArt, favoriteArt } = useAppState();
   const window = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const palette = paletteFor(settings.region);
@@ -90,6 +114,19 @@ export default function SettingsScreen() {
   const styles = settingsStyles(palette, settings.language === 'ko');
   const [sheet, setSheet] = useState<Sheet>('none');
   const close = () => setSheet('none');
+  /*
+    기록 내보내기·들여오기가 쓰는 자리 둘 (W3 슬라이스 C).
+
+    `pending` 은 **읽기는 끝났지만 아직 앉히지 않은** 파일이다. 파일을 먼저 읽고 그다음에
+    확인 시트를 여는 순서인데, 그래야 시트가 "파일에 담긴 여정 5개" 처럼 들어올 것의 수까지
+    말할 수 있다. 먼저 묻고 나중에 읽으면 시트는 잃을 것만 알고 얻을 것은 모른다.
+
+    `notice` 는 두 줄 아래에 한 줄로 뜨는 알림이다. 내려받았다는 말과 읽을 수 없다는 말이
+    같은 자리에 서는데, 둘 다 "방금 누른 것이 어떻게 됐나"라는 한 가지 물음의 답이라 자리를
+    나누면 화면에 빈 줄만 는다.
+  */
+  const [pending, setPending] = useState<ParsedBackup | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   const titleFontSize = guideTitleSizeFor(window.width) * TEXT_SCALE.font;
 
@@ -101,6 +138,47 @@ export default function SettingsScreen() {
    * 바친 날의 합**이므로 그 수를 센다. 새 수를 지어내지 않고 이미 있는 셈(`countDays`)을 쓴다.
    */
   const prayedDays = journeys.reduce((sum, journey) => sum + countDays(journey.days).prayed, 0);
+
+  /** 지금 기기의 기록을 글로 만들어 파일로 내려받는다. */
+  const exportRecords = () => {
+    const ok = downloadTextFile(
+      backupText({ journeys, settings, pinnedArt, favoriteArt }),
+      backupFileName(),
+    );
+    setNotice(
+      ok
+        ? `기록 파일을 내려받았습니다. 여정 ${journeys.length}개와 설정이 담겼습니다.`
+        : '이 기기에서는 파일을 내려받을 수 없습니다.',
+    );
+  };
+
+  /**
+   * 파일을 하나 고르게 하고, 읽을 수 있으면 확인 시트를 연다.
+   *
+   * **읽지 못했을 때 아무것도 바꾸지 않는 것**이 이 손잡이의 핵심이다. 들어오는 파일은 사람의
+   * 손을 거쳐 돌아오므로 깨져 있을 수 있는데, 그때 기기의 기록까지 잃으면 되찾으려던 사람이
+   * 가진 것마저 잃는다. 판정은 `parseBackup` 하나가 맡고 여기서는 그 답만 가른다.
+   */
+  const importRecords = async () => {
+    setNotice(null);
+    const text = await pickTextFile();
+    if (text === null) return; // 고르지 않고 닫았다 — 알릴 것이 없다
+    const read = parseBackup(text);
+    if (!read) {
+      setNotice('읽을 수 없는 파일입니다. 이 기기의 기록은 그대로 있습니다.');
+      return;
+    }
+    setPending(read);
+  };
+
+  /** 확인 시트에서 눌렀다 — 여기서부터는 되돌릴 수 없다. */
+  const applyImport = () => {
+    if (!pending) return;
+    const count = pending.journeys.length;
+    importBackup(pending);
+    setPending(null);
+    setNotice(`여정 ${count}개와 설정을 들여왔습니다.`);
+  };
 
   return (
     <View style={styles.screen} testID="settings-screen">
@@ -268,6 +346,51 @@ export default function SettingsScreen() {
           </Text>
         </View>
 
+        {/*
+          ── 기록 내보내기·들여오기 (W3 슬라이스 C) ──────────────────────────
+          완주 기록 바로 아래에 둔다. 셋 다 "내 기록" 을 다루는 줄이라 한자리에 모이는 것이
+          읽기 쉽고, 소개는 앱에 대한 줄이므로 맨 아래에 그대로 남는다.
+
+          웹이 아니면 아예 그리지 않는다 — 까닭은 이 파일의 머리글에 있다.
+        */}
+        {backupFileSupported ? (
+          <>
+            <Pressable
+              style={styles.countRow}
+              onPress={exportRecords}
+              accessibilityRole="button"
+              testID="settings-export"
+            >
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>기록 내보내기</Text>
+                <Text style={styles.rowNote}>
+                  {`여정 ${journeys.length}개와 설정을 파일 하나로 내려받습니다`}
+                </Text>
+              </View>
+            </Pressable>
+            <Pressable
+              style={styles.countRow}
+              onPress={() => {
+                void importRecords();
+              }}
+              accessibilityRole="button"
+              testID="settings-import"
+            >
+              <View style={styles.rowText}>
+                <Text style={styles.rowLabel}>기록 들여오기</Text>
+                <Text style={styles.rowNote}>
+                  내려받아 둔 파일을 읽어 지금 기록을 갈아 끼웁니다
+                </Text>
+              </View>
+            </Pressable>
+            {notice ? (
+              <Text style={styles.note} testID="settings-backup-notice">
+                {notice}
+              </Text>
+            ) : null}
+          </>
+        ) : null}
+
         {/* ── 소개 ────────────────────────────────────────────────────────── */}
         <Pressable
           style={styles.linkRow}
@@ -355,6 +478,27 @@ export default function SettingsScreen() {
           검증 기간용입니다. 결제는 없습니다.
         </Text>
       </BottomSheet>
+
+      {/*
+        기록 들여오기 확인 (W3 슬라이스 C · FR-18 의 정신).
+
+        문구가 **수 둘**을 함께 말한다 — 잃는 여정의 수와 들어올 여정의 수다. 시안에는 이
+        시트가 없고 이 저장소가 세운 관문이므로, "정말 하시겠습니까" 로 묻는 대신 사람이
+        판단할 재료를 준다. `그대로 두기` 가 취소인 것도 같은 까닭이다: `취소` 는 무엇이
+        취소되는지 말하지 않지만 `그대로 두기` 는 누르면 무엇이 남는지 말한다.
+      */}
+      <ConfirmSheet
+        visible={pending !== null}
+        label="기록 들여오기"
+        message={`지금 이 기기의 여정 ${journeys.length}개와 설정이 사라지고, 파일에 담긴 여정 ${
+          pending?.journeys.length ?? 0
+        }개와 설정으로 바뀝니다. 되돌릴 수 없습니다.`}
+        confirmLabel="들여오기"
+        cancelLabel="그대로 두기"
+        onConfirm={applyImport}
+        onClose={() => setPending(null)}
+        testID="sheet-import"
+      />
 
       <WorldTabBar current="settings" />
     </View>

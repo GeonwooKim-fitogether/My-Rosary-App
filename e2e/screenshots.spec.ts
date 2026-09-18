@@ -391,10 +391,18 @@ test('W2 슬라이스 C · 설정과 지역·언어 화면을 찍는다', async 
   await openApp(page, { art: ART_SEED });
   await enterHome(page);
 
-  // 설정 — 아래 탭 바로 들어간다.
+  /*
+    설정 — 아래 탭 바로 들어간다.
+
+    **여기서 사진은 더 찍지 않는다 (2026-09-18, W3 슬라이스 C 에서 얼렸다).** `w2-screens/settings.png`
+    은 W2 가 세운 설정 화면의 기록인데, 슬라이스 C 가 그 화면 아래쪽에 줄 둘(기록 내보내기 ·
+    들여오기)을 더하면서 계속 찍으면 그 기록이 덮인다 — 실제로 한 번 덮여 화면 맨 아래에 새 줄이
+    걸쳐 나왔다. 재던 판정문은 그대로 두고 **사진을 남기는 줄만 뺐다.** 이 폴더가 `gallery.png` 과
+    `pray-leave.png` 에 이미 쓴 처방과 같으며, 새 두 줄이 선 설정의 사진은 `w3-screens/settings-backup.png`
+    에 있다.
+  */
   await openSettings(page);
   await expect(page.getByTestId('settings-region-value')).toHaveText('한국 · 한국어');
-  await page.screenshot({ path: `${W2}/settings.png` });
 
   // 지역·언어 — 설정의 맨 위 줄을 눌러 들어간다.
   await page.getByTestId('settings-region').click();
@@ -541,4 +549,81 @@ test('W3 · 전체 화면 감상을 껍데기가 보일 때와 사라졌을 때�
   await expect(page.getByTestId('art-close')).toHaveCount(0);
   await page.waitForTimeout(200);
   await page.screenshot({ path: `${W3}/art-view-bare.png` });
+});
+
+/**
+ * W3 슬라이스 C — 설정에 선 기록 내보내기·들여오기 두 줄과, 들여오기 확인 시트.
+ *
+ * 두 장을 찍는다. 설정 화면의 두 줄이 보이는 자리와, 파일을 고른 뒤에 뜨는 확인 시트다.
+ *
+ * **둘째 장이 이 슬라이스의 핵심 증거다.** 들여오기는 되돌릴 수 없는 조작인데, 그 앞에 관문을
+ * 세웠다는 것은 글로만 적으면 확인할 수 없다. 사진에는 시트가 잃을 것과 얻을 것을 **수로**
+ * 말하는 것이 그대로 찍히므로, 이 앱이 "정말 하시겠습니까" 로 묻지 않는다는 것이 보인다.
+ *
+ * **아래 탭 바의 `설정` 을 눌러 들어간 자리에서 찍는다.** 주소를 직접 열고 찍으면 배선이
+ * 없어도 사진이 나오므로, 사진 자체가 "닿을 수 있다"의 증거가 되게 하려는 것이다.
+ */
+test('W3 슬라이스 C · 기록 내보내기·들여오기 두 줄과 확인 시트를 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+  await openSettings(page);
+
+  /*
+    두 줄은 설정의 아래쪽에 있어 첫 화면에 들어오지 않는다. 사람이 하는 그대로 굴려 내린 뒤에
+    찍는다 — 사진이 담아야 하는 것은 화면의 맨 위가 아니라 이번에 세운 두 줄이다.
+
+    굴려 내리는 목표를 두 줄이 아니라 **맨 아래 줄(`소개`)** 로 잡은 까닭이 있다. 첫 줄만
+    보이게 굴리면 그 줄이 화면의 맨 아래에 걸쳐 서고 둘째 줄은 잘려 나간다 — 실제로 처음
+    찍은 사진이 그랬다. 마지막 줄까지 굴리면 두 줄이 함께 화면 안에 들어오므로, 찍기 전에
+    둘 다 화면 안에 있는지를 `toBeInViewport` 로 못 박는다.
+  */
+  await page.getByTestId('settings-about').scrollIntoViewIfNeeded();
+  await expect(page.getByTestId('settings-export')).toBeInViewport();
+  await expect(page.getByTestId('settings-import')).toBeInViewport();
+  await expect(page.getByTestId('settings-export')).toContainText('여정 1개와 설정을 파일 하나로');
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${W3}/settings-backup.png` });
+
+  // 확인 시트 — 파일을 하나 골라 준 뒤에 뜬다.
+  const chooser = page.waitForEvent('filechooser');
+  await page.getByTestId('settings-import').click();
+  const file = {
+    kind: 'myrosary.backup',
+    version: 1,
+    exportedAt: '2026-09-05T00:00:00.000Z',
+    journeys: [
+      {
+        id: 'j1',
+        title: '어머니 병환 회복',
+        format: 'fiftyfour',
+        startDate: '2026-08-14',
+        days: ['prayed'],
+        kind: 'petition',
+        recitation: 'alternate',
+      },
+      {
+        id: 'j2',
+        title: '아버지를 위하여',
+        format: 'novena9',
+        startDate: '2026-09-01',
+        days: ['prayed'],
+        kind: 'petition',
+        recitation: 'alternate',
+      },
+    ],
+    settings: {},
+    pinnedArt: null,
+    favoriteArt: [],
+  };
+  await (
+    await chooser
+  ).setFiles({
+    name: 'myrosary-backup-2026-09-05.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(file), 'utf-8'),
+  });
+
+  await expect(page.getByTestId('sheet-import')).toBeVisible();
+  await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W3}/settings-import-sheet.png` });
 });

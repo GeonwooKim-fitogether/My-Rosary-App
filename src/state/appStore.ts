@@ -24,6 +24,8 @@ import { demoJourney } from '../journey/demo';
 import type { Journey } from '../journey/session';
 import { rolledDays, withTodayPrayed } from '../journey/rules';
 import { setHapticEnabled } from '../prayer/channels';
+import { positionStore } from '../storage/asyncStore';
+import type { ParsedBackup } from '../storage/backup';
 import { createJourneyStore } from '../storage/journeys';
 import { createFavoriteArtStore, toggleFavorite } from '../storage/favoriteArt';
 import { createPinnedArtStore, LAST_ART_KEY } from '../storage/pinnedArt';
@@ -285,6 +287,46 @@ export function updateSettings(patch: Partial<AppSettings>): void {
   if (patch.haptic !== undefined) setHapticEnabled(patch.haptic);
   publish({ ...state, settings });
   void settingsStore.save(settings);
+}
+
+/**
+ * 파일에서 읽어 온 기록으로 **이 기기의 기록을 통째로 갈아 끼운다** (W3 슬라이스 C).
+ *
+ * 이 함수는 되돌릴 수 없다. 그래서 부르는 자리(설정의 `기록 들여오기`)가 먼저 확인 시트를
+ * 띄워 무엇을 잃는지 수로 말하고, 사람이 그 시트에서 누른 뒤에만 여기 닿는다 — 이 저장소가
+ * 자리를 지우는 조작마다 두어 온 관문과 같다 (FR-18 · 시트 S3·S6).
+ *
+ * 하는 일은 넷이다.
+ *
+ * 1. **들어온 여정을 오늘에 맞춰 다시 칠한다**(`rolledDays`). 파일을 만든 날과 넣는 날이
+ *    다를 수 있고, 그 사이의 날들은 못 바친 날이 돼야 한다. 앱을 열 때와 같은 셈이다.
+ * 2. **오늘 바치던 자리를 지운다**(`positionStore.clear`). 그 쪽지는 이 기기에 남아 있던
+ *    것이라 방금 들어온 남의 여정 번호를 가리키지 않는다. 지우지 않으면 이어가기가 없는
+ *    여정을 열려 하고, 홈이 "이어서 바치기" 를 없는 여정에 걸어 둔다.
+ * 3. **성화 뽑기를 다시 연다.** 지역과 고정한 그림이 함께 바뀌었으므로, 다시 열지 않으면
+ *    홈의 큰 그림만 옛 기록의 것으로 남는다.
+ * 4. **진동 통로에 알린다.** `updateSettings` 가 설정 한둘을 고칠 때 하는 것과 같은 일이며,
+ *    여기서는 설정이 통째로 바뀌므로 반드시 다시 알려야 한다.
+ */
+export function importBackup(backup: ParsedBackup, today: Date = new Date()): void {
+  const journeys = backup.journeys.map((journey) => ({
+    ...journey,
+    days: rolledDays(journey, today),
+  }));
+  publish({
+    ready: true,
+    journeys,
+    settings: backup.settings,
+    pinnedArt: backup.pinnedArt,
+    favoriteArt: backup.favoriteArt,
+  });
+  persistJourneys(journeys);
+  void settingsStore.save(backup.settings);
+  void pinnedArtStore.save(backup.pinnedArt);
+  void favoriteArtStore.save(backup.favoriteArt);
+  void positionStore.clear();
+  void reopenArt(backup.settings.region, backup.pinnedArt);
+  setHapticEnabled(backup.settings.haptic);
 }
 
 /* ── 고정한 성화 (W1 §3-6 · W2 슬라이스 C 에서 배선됐다) ─────────────────────────
