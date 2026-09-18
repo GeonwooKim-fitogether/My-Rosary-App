@@ -9,9 +9,15 @@
  * 출처: `docs/design/world/data.js` 의 `IMAGES` 와 `REGIONS` (`tools/w0/extract-world-data.mjs`
  * 가 기계로 뽑아 `spec/plates.world.json` 에 적었고, 이 파일이 그것을 코드로 옮긴다).
  *
- * **권리는 미확정이다 (PRD D-1).** 그중 넷에는 작가 서명이나 스톡 워터마크가 눈에 보여
- * 아래 표에 `mark` 로 적어 두었다. 검증 단계까지는 그대로 쓰되 정식 출시 자산에서는
+ * **권리는 미확정이다 (PRD D-1).** 그중 **여섯 장**에는 작가 서명이나 스튜디오 로고가 눈에
+ * 보여 아래 표에 `mark` 로 적어 두었다. 검증 단계까지는 그대로 쓰되 정식 출시 자산에서는
  * 교체 대상이다 — 시안을 만든 지시문 자신이 워터마크 이미지를 쓰지 말라고 적었다.
+ *
+ * 이 여섯이라는 수는 2026-09-18 에 **열일곱 장의 네 귀퉁이와 그림 전체를 모두** 다시 훑어
+ * 얻은 것이다. 그 전에는 넷이었다가 다섯이 됐는데, 두 번 다 훑기가 오른쪽 아래만 보았기
+ * 때문이다(Q-50 · Q-71). 자국이 어느 귀퉁이에 있는지는 그림마다 다르므로 — 여기서도 넷은
+ * 오른쪽 아래, 둘은 왼쪽 아래였다 — 한 귀퉁이만 보는 훑기는 반드시 무엇인가를 놓친다.
+ * 무엇을 어떻게 훑었고 장마다 무엇이 나왔는지는 `docs/plan/art-watermark-audit.md` 에 있다.
  */
 import type { ImageSourcePropType } from 'react-native';
 import type { RegionKey } from '../theme/worldTokens';
@@ -43,6 +49,7 @@ export const WORLD_PLATES: Readonly<Record<string, WorldPlate>> = {
     focal: { x: '50%', y: '22%' },
     title: { ko: '빛 가운데 서신 성모', en: "Our Lady in Light" },
     tone: 'light',
+    mark: 'ANGELS TEXTURE & LIGHT STUDIO 로고(AG 모노그램)가 왼쪽 아래에 있다 — 약 120×120px',
   },
   '02': {
     id: '02',
@@ -51,7 +58,7 @@ export const WORLD_PLATES: Readonly<Record<string, WorldPlate>> = {
     focal: { x: '55%', y: '30%' },
     title: { ko: '성모와 아기 예수', en: "Mother and Child" },
     tone: 'light',
-    mark: 'ANGELA GIL · VELVET WHISPERS STUDIO 워터마크가 오른쪽 아래에 있다',
+    mark: 'ANGELA V GIL · VELVET WHISPERS STUDIO 워터마크가 오른쪽 아래에 있다 — 약 110×105px',
   },
   '03': {
     id: '03',
@@ -68,7 +75,7 @@ export const WORLD_PLATES: Readonly<Record<string, WorldPlate>> = {
     focal: { x: '50%', y: '45%' },
     title: { ko: '빈 무덤의 십자가', en: "The Cross at the Tomb" },
     tone: 'light',
-    mark: '같은 스튜디오의 워터마크가 오른쪽 아래에 있다',
+    mark: 'ANGELA V GIL · VELVET WHISPERS STUDIO 워터마크가 오른쪽 아래에 있다 — 약 115×118px',
   },
   '05': {
     id: '05',
@@ -117,7 +124,7 @@ export const WORLD_PLATES: Readonly<Record<string, WorldPlate>> = {
     focal: { x: '45%', y: '30%' },
     title: { ko: '묵주를 든 기도', en: "Prayer with Rosary" },
     tone: 'light',
-    mark: '같은 스튜디오의 워터마크가 오른쪽 아래에 있다',
+    mark: 'ANGELA V GIL · VELVET WHISPERS STUDIO 워터마크가 오른쪽 아래에 있다 — 약 115×118px',
   },
   '12': {
     id: '12',
@@ -126,6 +133,7 @@ export const WORLD_PLATES: Readonly<Record<string, WorldPlate>> = {
     focal: { x: '50%', y: '30%' },
     title: { ko: '성모와 아기', en: "Mother and Child" },
     tone: 'light',
+    mark: 'ANGELS TEXTURE & LIGHT STUDIO 로고(AG 모노그램)가 왼쪽 아래에 있다 — 약 120×140px',
   },
   '13': {
     id: '13',
@@ -134,7 +142,7 @@ export const WORLD_PLATES: Readonly<Record<string, WorldPlate>> = {
     focal: { x: '50%', y: '30%' },
     title: { ko: '물 위를 걸으시는 예수', en: "Christ Walking on Water" },
     tone: 'mid',
-    mark: '그림 안에 붓으로 그려진 작가 서명이 오른쪽 아래에 있다',
+    mark: '그림 안에 붓으로 그려진 작가 서명(흘림체라 읽히지 않는다)이 오른쪽 아래에 있다',
   },
   '14': {
     id: '14',
@@ -184,7 +192,7 @@ export const REGION_PLATES: Readonly<Record<RegionKey, readonly string[]>> = {
   korea: ['01', '12', '10', '02', '11', '08', '07'],
 };
 
-/** 서명·워터마크가 눈으로 확인된 그림들. 정식 자산 교체(D-1)에서 먼저 볼 목록이다. */
+/** 서명·워터마크가 눈으로 확인된 그림 여섯. 정식 자산 교체(D-1)에서 먼저 볼 목록이다. */
 export const MARKED_PLATES: readonly string[] = Object.values(WORLD_PLATES)
   .filter((plate) => plate.mark)
   .map((plate) => plate.id);
