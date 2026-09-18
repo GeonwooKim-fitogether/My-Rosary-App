@@ -29,6 +29,7 @@
  * 방향인가**를 값으로 못 박아야 한다. 아래 마지막 묶음이 그 일을 한다.
  */
 import { dayColors, nightColors } from '../theme/tokens';
+import { REGION_PALETTES, onScrim } from '../theme/worldTokens';
 import { ROSARY_CHOICES, ROSARY_NAMES, DEFAULT_SETTINGS, parseSettings } from '../storage/settings';
 import {
   BEAD_GLOW,
@@ -209,5 +210,65 @@ describe('이미 바친 알은 채우기가 아니라 빛으로 갈린다 (결�
     // 지금 알은 치자색과 큰 크기와 숨쉬기로 이미 따로 서 있다. 여기에 손을 대면
     // 금 묵주에서 겨우 맞춰 놓은 균형(결정 9 의 9-4)이 흔들린다.
     expect(BEAD_SHADING.current).toEqual({ light: 0.26, shade: 0.24, rim: 0.45, contact: 0.1 });
+  });
+});
+
+/**
+ * 어두운 덮개 위에서도 재질 넷이 읽히는가 (W1 통과 조건 3 · `docs/plan/w1-work-order.md` §5).
+ *
+ * W1 에서 기도 화면이 한지 바탕을 떠나 **성화와 지역 덮개** 위로 옮겨 갔다. 위의 묶음은
+ * 낮 벌(한지)과 밤 벌(쪽빛) 두 바탕만 재고 있었는데, 이제 묵주가 실제로 서는 바탕은 지역
+ * 다섯의 덮개 색 다섯이다. 그래서 그 다섯을 각각 잰다.
+ *
+ * 여기서 밤 벌만 재는 것은 **기도 화면이 밤 벌의 재질만 쓰기 때문**이다(`Rosary.tsx` 의
+ * `SURFACE`). 낮 벌의 금·나무·장미는 밝은 종이 위에서 읽히도록 어둡게 가라앉힌 값이라
+ * 어두운 덮개 위에서는 묻힌다 — 아래 마지막 시험이 그 사실을 값으로 못 박아, 나중에
+ * 누군가 "낮이면 낮 벌을 쓰자"고 되돌리면 여기서 걸리게 한다.
+ *
+ * 글자 기준(4.5:1)을 받는 것은 이제 알 위의 숫자가 아니다. 그 숫자는 알이 본래 크기로
+ * 돌아가면서 기도문 제목 옆의 세는 줄로 옮겼고(`app/pray.tsx` 의 `pray-counter`), 그 글자
+ * 색과 덮개의 대비는 `src/theme/worldTokens.test.ts` 가 이미 다섯 벌 전부에 대해 잰다.
+ */
+describe('지역 다섯의 어두운 덮개 위에서 재질 넷이 읽힌다 (W1 통과 조건 3)', () => {
+  const scrims = Object.entries(REGION_PALETTES).map(
+    ([region, palette]) => [region, palette.scrim] as const,
+  );
+
+  it('다섯 지역 모두에서, 재질 넷의 알·줄·금속이 덮개와 3:1 을 넘는다', () => {
+    for (const [region, scrim] of scrims) {
+      for (const key of Object.keys(ROSARY_NAMES) as (keyof typeof ROSARY_NAMES)[]) {
+        const material = materialFor('night', key);
+        for (const color of [material.bead, material.bigBead, material.thread, material.metal]) {
+          // 어느 지역에서 걸렸는지 보이도록 지역 이름을 함께 남긴다.
+          expect({ region, key, color, ratio: contrast(color, scrim) >= 3 }).toEqual({
+            region,
+            key,
+            color,
+            ratio: true,
+          });
+        }
+      }
+    }
+  });
+
+  it('낮 벌의 재질은 이 덮개 위에서 묻힌다 — 그래서 기도 화면은 밤 벌만 쓴다', () => {
+    // 하나라도 3:1 에 못 미치면 "낮 벌을 어두운 덮개에 쓰면 안 된다"가 참이다.
+    const failing = scrims.some(([, scrim]) =>
+      (Object.keys(ROSARY_NAMES) as (keyof typeof ROSARY_NAMES)[]).some((key) => {
+        const material = materialFor('day', key);
+        return [material.bead, material.bigBead, material.thread, material.metal].some(
+          (color) => contrast(color, scrim) < 3,
+        );
+      }),
+    );
+    expect(failing).toBe(true);
+  });
+
+  it('지금 알의 흰빛과 그 빛무리는 어느 덮개 위에서도 또렷하다', () => {
+    for (const [, scrim] of scrims) {
+      expect(contrast(onScrim.bead, scrim)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(onScrim.glow, scrim)).toBeGreaterThanOrEqual(3);
+      expect(contrast(onScrim.beadRing, scrim)).toBeGreaterThanOrEqual(3);
+    }
   });
 });

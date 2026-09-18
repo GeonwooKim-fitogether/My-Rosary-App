@@ -65,7 +65,21 @@ createServer(async (request, response) => {
     'content-type': MIME[extname(file)] ?? 'application/octet-stream',
     'cache-control': 'no-store',
   });
-  createReadStream(file).pipe(response);
+  /*
+   * 스트림을 응답과 함께 반드시 닫는다.
+   *
+   * `pipe` 만 걸어 두면 **받는 쪽이 중간에 끊었을 때 읽던 파일이 열린 채로 남는다.**
+   * 브라우저는 화면을 옮길 때 받던 중인 그림 요청을 그냥 끊으므로, 이 일이 수백 번
+   * 쌓이면 서버가 새 요청을 받지 못하게 된다. 기도 화면이 성화를 화면 전체 배경으로
+   * 쓰게 된 뒤(W1) 큰 그림 요청이 크게 늘어 이 새는 자리가 실제로 드러났다.
+   *
+   * 그래서 셋을 함께 건다 — 응답이 닫히면 읽기를 멈추고, 읽다가 실패하면 응답을 끊고,
+   * 스트림이 끝나면 아무 일도 하지 않는다(그때는 `pipe` 가 스스로 닫는다).
+   */
+  const stream = createReadStream(file);
+  stream.on('error', () => response.destroy());
+  response.on('close', () => stream.destroy());
+  stream.pipe(response);
 }).listen(port, '127.0.0.1', () => {
   process.stdout.write(`dist 를 http://127.0.0.1:${port} 로 내보냅니다\n`);
 });

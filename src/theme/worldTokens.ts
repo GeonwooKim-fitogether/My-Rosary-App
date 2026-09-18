@@ -11,6 +11,8 @@
  * `tools/w0/extract-world-data.mjs` 가 기계로 뽑아 `spec/regions.world.json` 에 적어 둔
  * 것과 같은 값이며, **옮기는 사람이 고른 값은 하나도 없다.**
  */
+import { TEXT_SCALE, scaleTypeScale } from './fontScale';
+import { fonts } from './tokens';
 
 /** 지역 다섯. 색 벌과 성화 묶음과 기본 언어가 이 이름으로 갈린다. */
 export type RegionKey = 'europe' | 'northamerica' | 'southamerica' | 'asia' | 'korea';
@@ -96,8 +98,8 @@ export const paletteFor = (region: RegionKey): WorldPalette => REGION_PALETTES[r
  * 기도 화면처럼 어두운 층 위에 글자를 얹는 자리의 색.
  *
  * 시안은 성화 위에 그 지역의 `scrim` 을 덮고 그 위에 밝은 글자를 얹는다. 이 값들은
- * 지역에 따라 달라지지 않는 것들이라 한 곳에 모았다 — 시안의 기도 화면 마크업에서
- * 글자 그대로 왔다.
+ * 지역에 따라 달라지지 않는 것들이라 한 곳에 모았다 — 시안의 기도 화면과 하루 완주
+ * 화면 마크업에서 글자 그대로 왔다.
  */
 export const onScrim = {
   /** 기도문과 제목. */
@@ -108,11 +110,36 @@ export const onScrim = {
   glow: '#f2c96a',
   /** 지금 알 자신. */
   bead: '#fff6dc',
+  /** 지금 알을 두르는 테 — 숨을 쉬는 것이 이 테다 (시안의 `stroke="#fff1c9"`). */
+  beadRing: '#fff1c9',
+  /** 지금 알의 가장자리 (시안의 `stroke="#fff"`). */
+  beadEdge: '#ffffff',
   /** 바친 알. */
   beadDone: '#d6b25e',
   /** 아직 바치지 않은 알의 테. */
   beadPending: 'rgba(255,255,255,.72)',
+  /** 강조 테를 두른 단추의 글자 — 하루 완주의 `홈으로` (시안의 `color:#fff3d3`). */
+  buttonInk: '#fff3d3',
+  /** 강조가 아닌 단추의 테 (시안의 `border:1px solid rgba(255,255,255,.35)`). */
+  quietBorder: 'rgba(255,255,255,.35)',
+  /** 괘선 — 숫자 줄 위의 가는 선 (시안의 `border-top:1px solid rgba(255,255,255,.2)`). */
+  rule: 'rgba(255,255,255,.2)',
 } as const;
+
+/**
+ * 지금 차례가 아닌 절이 물러나는 정도 (`docs/plan/roadmap-world.md` §3 의 카드 E).
+ *
+ * 시안은 기도문을 한 덩어리로 보여 주지만 이 앱은 앞 절(앱이 읽는다)과 뒷 절(사용자가
+ * 받는다)로 나뉜다. 두 절을 위아래로 두고 **지금 차례가 아닌 쪽을 흐리게** 하면, 한 덩어리
+ * 라는 인상을 지키면서 교대가 보인다.
+ *
+ * 값을 0.72 로 잡은 이유가 둘이다. 첫째, 시안이 **물러난 글**에 쓰는 값이 그것이다
+ * (기도문 아래의 묵상 노트가 `opacity:.72`). 둘째, 더 흐리게 하면 글자가 읽을 수 없어진다 —
+ * 0.45 로 두었더니 지역 다섯의 덮개 위에서 본문 대비가 3.77:1 까지 떨어져 디자인 시스템 §7
+ * 의 본문 기준(4.5:1)을 밑돌았다. 0.72 에서는 앞 절이 7.30:1, 뒷 절이 5.51:1 이다.
+ * 이 계산은 `worldTokens.test.ts` 가 다섯 벌 전부에 대해 매번 다시 한다.
+ */
+export const OFF_TURN_OPACITY = 0.72;
 
 /**
  * 간격. 「Classical」 은 1.15 배 계단을 쓰며, 그래서 값이 정수가 아니다.
@@ -194,3 +221,95 @@ export const worldType = {
   h6: { fontSize: 13, lineHeight: 13 * 1.12, letterSpacing: 13 * 0.08 },
   body: { fontSize: 15, lineHeight: 15 * 1.55, letterSpacing: 0 },
 } as const;
+
+/**
+ * 기도 화면(W1)의 서체 — 「MyRosary World」 시안의 `data-screen-label="Prayer"` 블록에
+ * 인라인으로 적혀 있던 크기와 자간을 그대로 옮긴 것이다.
+ *
+ * **위의 `worldType` 과 갈라 둔 이유.** `worldType` 은 디자인 체계가 정한 기본 계단이고,
+ * 이것은 **그 화면이 직접 정한 값**이다. 시안은 화면마다 크기를 인라인으로 정해 두었고 그
+ * 값이 그 화면의 정본이므로(위 `worldType` 의 주석), 화면의 값은 화면 이름으로 모은다.
+ *
+ * **여기 없는 것 둘도 적어 둔다.** 첫째, 구간 이름(`pray-step`)은 이 저장소의 서체 계단
+ * (`type.stepLabel`)을 그대로 쓴다 — 시안의 같은 자리와 크기가 가깝고, 전례색을 입히는
+ * 유일한 글자라 계단 쪽이 정본이다. 둘째, **기도문의 크기는 고정값이 아니라서** 여기 없다.
+ * 사람이 화면에서 넷 중 고르는 값이고(`docs/plan/w1-work-order.md` §3-5), 그 넷과 기기
+ * 배율의 관계는 `src/theme/prayerFont.ts` 가 정한다.
+ *
+ * 라틴 글꼴 대신 한글 글꼴을 쓰는 자리가 있다. 시안의 제목 글꼴(Cormorant Garamond)에는
+ * 한글 글리프가 없어 `성모송` 같은 제목이 네모로 나온다. 그래서 제목은 이 저장소의
+ * 한글 명조를 쓴다 — `worldFontStack('heading', true)` 가 고르는 것과 같은 글꼴이다.
+ */
+export const worldPrayType = scaleTypeScale(
+  {
+    /** 12px · 자간 .12em. 머리 가운데의 첫 줄 (시안의 `prayHeader`). */
+    header: {
+      fontFamily: fonts.sans,
+      fontSize: 12,
+      lineHeight: 12 * 1.25,
+      letterSpacing: 12 * 0.12,
+    },
+    /** 11px. 머리의 `n / 81` (시안의 `stepLabel`). */
+    count: { fontFamily: fonts.sans, fontSize: 11, lineHeight: 11 * 1.25 },
+    /** 22px 명조. 기도문의 제목 (시안의 `prayerTitle`). */
+    title: { fontFamily: fonts.serif, fontSize: 22, lineHeight: 22 * 1.25 },
+    /** 13px · 자간 .06em. 제목 옆의 세는 줄 (시안의 `prayerCounter`). */
+    counter: {
+      fontFamily: fonts.sans,
+      fontSize: 13,
+      lineHeight: 13 * 1.25,
+      letterSpacing: 13 * 0.06,
+    },
+    /** 13px · 줄 높이 1.5. 지금 단의 신비 한 줄 (시안의 `mysteryLine`). */
+    mystery: { fontFamily: fonts.sans, fontSize: 13, lineHeight: 13 * 1.5 },
+    /** 13.5px. 앞·뒤 단추의 글자 (시안의 `prevName` · `nextName`). */
+    button: { fontFamily: fonts.sans, fontSize: 13.5, lineHeight: 13.5 * 1.25 },
+    /** 20px 명조. 머리 오른쪽의 `Aa` 단추 (시안의 `cycleFont` 단추). */
+    fontButton: { fontFamily: fonts.serif, fontSize: 20, lineHeight: 20 * 1.25 },
+    /** 11px · 자간 .06em · 줄 높이 1.3. 맨 아래 안내 한 줄 (시안의 `hintText`). */
+    hint: {
+      fontFamily: fonts.sans,
+      fontSize: 11,
+      lineHeight: 11 * 1.3,
+      letterSpacing: 11 * 0.06,
+    },
+  },
+  TEXT_SCALE,
+);
+
+/**
+ * 하루 완주 화면(W1 §3-6)의 서체 — 시안의 `data-screen-label="Complete"` 블록에 인라인으로
+ * 적혀 있던 크기와 자간을 그대로 옮긴 것이다. 기도 화면의 `worldPrayType` 과 같은 이유로
+ * 화면 이름으로 모았다 — 시안은 화면마다 크기를 직접 정하고, 그 값이 그 화면의 정본이다.
+ *
+ * **큰 제목만 여기 없다.** 시안이 `clamp(32px, 9vw, 42px)` 로 적어 화면 너비에 따라 달라지기
+ * 때문이며, 화면이 너비를 재서 계산한다(`app/day-done.tsx` 의 `titleSizeFor`).
+ *
+ * 제목 글꼴 자리에 한글 명조를 쓰는 것도 기도 화면과 같다 — 시안의 라틴 제목 글꼴
+ * (Cormorant Garamond)에는 한글 글리프가 없어 `오늘의 묵주기도를 마쳤습니다` 가 네모로 나온다.
+ */
+export const worldDoneType = scaleTypeScale(
+  {
+    /** 12px · 자간 .14em. 맨 위의 작은 라벨 (시안의 `doneSetName`). */
+    label: {
+      fontFamily: fonts.sans,
+      fontSize: 12,
+      lineHeight: 12 * 1.25,
+      letterSpacing: 12 * 0.14,
+    },
+    /** 15px. 괘선 위의 숫자 줄 (시안의 `doneHail` · `doneMinutes`). */
+    stat: { fontFamily: fonts.sans, fontSize: 15, lineHeight: 15 * 1.25 },
+    /** 14px. 여정 줄 (시안의 `journeyLine` · `journeyDay`). */
+    journey: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 14 * 1.4 },
+    /** 19px 명조. 강조 단추의 글자 (시안의 `t.toHome`). */
+    button: { fontFamily: fonts.serif, fontSize: 19, lineHeight: 19 * 1.25 },
+    /** 14px. 조용한 단추의 글자 (시안의 `pinDoneLabel`). */
+    quietButton: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 14 * 1.25 },
+  },
+  TEXT_SCALE,
+);
+
+/** 하루 완주의 큰 제목 크기 — 시안의 `clamp(32px, 9vw, 42px)`. */
+export function doneTitleSizeFor(width: number): number {
+  return Math.min(42, Math.max(32, width * 0.09));
+}

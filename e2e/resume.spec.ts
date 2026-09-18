@@ -11,6 +11,7 @@ import {
   enterHome,
   enterPrayerFromHome,
   freezeClock,
+  leavePrayer,
   openApp,
 } from './support/harness';
 
@@ -34,8 +35,8 @@ test('잠시 멈추고 나갔다 들어오면 멈춘 자리에서 이어진다',
   const stoppedText = await page.getByTestId('pray-a').textContent();
   expect(stoppedAt).not.toBe('시작 기도 · 성호경');
 
-  // 잠시 멈춤 — 자리가 남는다. 나가는 곳은 홈이다.
-  await page.getByTestId('pray-pause').click();
+  // 잠시 멈춤 — 자리가 남는다. 나가는 곳은 홈이다. (뒤로 화살표가 나가는 방법을 먼저 묻는다.)
+  await leavePrayer(page, 'pause');
   await expect(page.getByTestId('home-screen')).toBeVisible();
   // 홈 카드가 멈춘 자리를 말한다 (FR-02 · 06-screen-spec 화면 A).
   await expect(page.getByTestId('home-card-status-0')).toContainText('이어서');
@@ -60,7 +61,7 @@ test('여기서 끝내기를 누르면 다음에 오늘 처음부터 시작한�
   await freezeClock(page);
   await expect(page.getByTestId('pray-step')).not.toHaveText('시작 기도 · 성호경');
 
-  await page.getByTestId('pray-stop').click();
+  await leavePrayer(page, 'stop');
   await expect(page.getByTestId('home-screen')).toBeVisible();
 
   await enterPrayerFromHome(page);
