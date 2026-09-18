@@ -48,7 +48,12 @@ test('설정에서 기록을 파일로 내보내고 그 파일을 다시 들여�
   const file = await download;
   // 이름은 한글 없이 날짜로 짓는다. 시험의 오늘이 2026년 9월 5일이므로 값이 고정된다.
   expect(file.suggestedFilename()).toBe('myrosary-backup-2026-09-05.json');
-  await expect(page.getByTestId('settings-backup-notice')).toContainText('내려받았습니다');
+  /*
+    알림 문구가 W4 슬라이스 D 에서 「내려받았습니다」에서 「내보냈습니다」로 바뀌었다. 같은
+    손잡이가 이제 기기에서는 내려받기가 아니라 **공유 시트**를 여므로, 두 표면 어디서도
+    참인 말이어야 하기 때문이다. 재는 것은 그대로다 — 누른 뒤에 앱이 됐다고 말하는가.
+  */
+  await expect(page.getByTestId('settings-backup-notice')).toContainText('내보냈습니다');
 
   // 내려온 글을 열어 본다 — 파일이 만들어졌다는 것만으로는 무엇이 담겼는지 알 수 없다.
   const saved = JSON.parse(readFileSync((await file.path())!, 'utf-8'));

@@ -43,10 +43,15 @@
  * 기록이 통째로 사라진다. 로드맵 §7 의 위험 표가 그 위험의 절반을 파일 하나로 보완하라고
  * 적은 자리가 이 두 줄이며, 카드 A 는 이 받침을 전제로 계정을 미뤘다.
  *
- * **두 줄은 웹에서만 선다.** iOS·안드로이드에서 파일을 사람에게 건네고 사람에게서 받으려면
- * 지금 이 저장소에 없는 부품 둘(공유 시트 · 문서 고르기)이 필요하다. 눌러도 아무 일이 없는
- * 줄을 놓는 것은 기능이 있는 척하는 일이므로, 되는 곳에만 놓고 되지 않는 곳에는 놓지 않았다.
- * 잰 내용은 `src/storage/backupFile.ts` 의 머리글에 표로 있다.
+ * **두 줄은 2026-09-18 부터 기기(iOS·안드로이드)에서도 선다** (W4 슬라이스 D · Q-73).
+ * W3 때는 웹에서만 섰다 — 기기에서 파일을 사람에게 건네고 사람에게서 받는 부품 둘이 이
+ * 저장소에 없었기 때문이다. W4 가 그 둘(`expo-sharing` · `expo-document-picker`)을 들여
+ * 통로 한 파일(`src/storage/backupFile.ts`)만 갈아 끼웠고, 이 화면은 그 줄의 손잡이만
+ * 기다리는 모양으로 바뀌었다(내보내기가 공유 시트를 여느라 시간이 걸린다).
+ *
+ * **다만 기기 쪽은 아직 한 번도 돌려 보지 못했다 — 웹에서만 확인했다.** 기기에서 돌려
+ * 보려면 기기 빌드가 필요하고 그것은 스토어 계정이 있어야 한다. 무엇을 확인했고 무엇을
+ * "될 것으로 보는지" 는 `src/storage/backupFile.ts` 의 머리글에 표로 갈라 적혀 있다.
  *
  * **들여오기는 확인 시트를 거친다.** 들여오면 지금 기기의 여정과 설정이 사라지므로, 이
  * 저장소가 자리를 지우는 조작마다 두어 온 관문을 여기에도 둔다 (FR-18 · 시트 S3·S6). 시트는
@@ -157,16 +162,23 @@ export default function SettingsScreen() {
    */
   const prayedDays = journeys.reduce((sum, journey) => sum + countDays(journey.days).prayed, 0);
 
-  /** 지금 기기의 기록을 글로 만들어 파일로 내려받는다. */
-  const exportRecords = () => {
-    const ok = downloadTextFile(
+  /**
+   * 지금 기기의 기록을 글로 만들어 파일로 내보낸다.
+   *
+   * **웹과 기기가 서로 다른 일을 한다** (W4 슬라이스 D). 웹에서는 파일이 곧바로 내려받기
+   * 폴더로 떨어지고, iOS·안드로이드에서는 공유 시트가 올라와 사람이 어디에 둘지 고른다.
+   * 알림 문구가 「내려받았습니다」 대신 「파일로 내보냈습니다」인 까닭이다 — 어느 쪽에서도
+   * 참인 말이어야 한다.
+   */
+  const exportRecords = async () => {
+    const ok = await downloadTextFile(
       backupText({ journeys, settings, pinnedArt, favoriteArt }),
       backupFileName(),
     );
     setNotice(
       ok
-        ? `기록 파일을 내려받았습니다. 여정 ${journeys.length}개와 설정이 담겼습니다.`
-        : '이 기기에서는 파일을 내려받을 수 없습니다.',
+        ? `기록 파일로 내보냈습니다. 여정 ${journeys.length}개와 설정이 담겼습니다.`
+        : '이 기기에서는 파일을 내보낼 수 없습니다.',
     );
   };
 
@@ -377,17 +389,22 @@ export default function SettingsScreen() {
         </View>
 
         {/*
-          ── 기록 내보내기·들여오기 (W3 슬라이스 C) ──────────────────────────
+          ── 기록 내보내기·들여오기 (W3 슬라이스 C · W4 슬라이스 D) ──────────
           완주 기록 바로 아래에 둔다. 셋 다 "내 기록" 을 다루는 줄이라 한자리에 모이는 것이
           읽기 쉽고, 소개는 앱에 대한 줄이므로 맨 아래에 그대로 남는다.
 
-          웹이 아니면 아예 그리지 않는다 — 까닭은 이 파일의 머리글에 있다.
+          `backupFileSupported` 는 이제 표면 셋에서 모두 참이다(W4 슬라이스 D). 그래도 이
+          가름을 **지우지 않고 남겨 둔다** — 넷째 표면이 생겼을 때 아무도 재 보지 않은 채
+          줄이 서는 일을 막는 자리이기 때문이다. 까닭은 이 파일과
+          `src/storage/backupFile.ts` 의 머리글에 있다.
         */}
         {backupFileSupported ? (
           <>
             <Pressable
               style={styles.countRow}
-              onPress={exportRecords}
+              onPress={() => {
+                void exportRecords();
+              }}
               accessibilityRole="button"
               testID="settings-export"
             >
