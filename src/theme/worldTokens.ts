@@ -10,6 +10,11 @@
  * `docs/design/world/_ds/` 아래 `classical-…` 폴더의 `styles.css` 의 `:root` 선언에서 왔다. 둘 다
  * `tools/w0/extract-world-data.mjs` 가 기계로 뽑아 `spec/regions.world.json` 에 적어 둔
  * 것과 같은 값이며, **옮기는 사람이 고른 값은 하나도 없다.**
+ *
+ * **예외가 2026-09-18 에 하나 생겼다 — 일곱 번째 색 `accentText`.** 시안의 색표에 없고
+ * 이 저장소가 시안의 `accent` 에서 파생한 값이며, 왜 파생해야 했는지는 아래
+ * `WorldPalette.accentText` 의 설명에 전부 적어 두었다(`decisions.md` Q-51). 파생한 값은
+ * 이 하나뿐이고, 나머지 여섯은 여전히 시안에서 글자 그대로 왔다.
  */
 import { TEXT_SCALE, scaleTypeScale } from './fontScale';
 import { fonts } from './tokens';
@@ -17,7 +22,10 @@ import { fonts } from './tokens';
 /** 지역 다섯. 색 벌과 성화 묶음과 기본 언어가 이 이름으로 갈린다. */
 export type RegionKey = 'europe' | 'northamerica' | 'southamerica' | 'asia' | 'korea';
 
-/** 지역 하나의 색 여섯. 시안은 이 여섯으로 화면 전체를 칠한다. */
+/**
+ * 지역 하나의 색 일곱 — 시안에서 온 여섯과, 이 저장소가 파생한 `accentText` 하나.
+ * 시안은 여섯으로 화면 전체를 칠하고, 일곱째는 그중 강조색이 글자로 쓰일 때를 위한 짙은 짝이다.
+ */
 export interface WorldPalette {
   /** 바탕. 종이색이다. */
   paper: string;
@@ -25,6 +33,30 @@ export interface WorldPalette {
   ink: string;
   /** 강조. 단추의 테와 작은 표시에 쓴다 — 면을 채우는 색이 아니다. */
   accent: string;
+  /**
+   * **밝은 종이 위의 글자에 쓰는 강조색** (`decisions.md` Q-51 · `docs/plan/w2-work-order.md` §1).
+   *
+   * 이 하나만 시안의 색표에서 그대로 오지 않고 **파생됐다.** 왜 파생해야 했는지를 적어 둔다.
+   * 시안은 위의 `accent` 를 12px 라벨과 13px 링크 같은 작은 글자에 쓰는데, 그 색은 다섯 지역
+   * 전부에서 종이색과의 대비가 2.26~2.94 에 그쳐 본문 기준 4.5:1 은 물론 그림 요소 기준
+   * 3:1 에도 닿지 않는다. 그런데 「Classical」 디자인 체계의 설명문 자신이 "강조와 바탕의
+   * 짝은 3:1 로 맞췄으니 **본문 크기 글자에는 더 짙은 단계를 쓰라**"고 적어 두었다. 즉 이것은
+   * 우리가 시안을 뒤집는 것이 아니라, **시안이 자기 체계의 규칙을 화면에서 지키지 않은 자리**를
+   * 그 체계의 규칙대로 되돌리는 일이다.
+   *
+   * 파생 규칙은 이 저장소가 전례색에서 이미 쓴 것과 같다(Q-18) — **색상과 채도는 그대로 두고
+   * 명도만 4.5:1 을 넘길 때까지 낮춘다.** 그래서 지역의 얼굴(따뜻한 금빛·모래빛)은 그대로이고
+   * 글자만 읽히게 된다. 계산된 값 다섯은 아래 표에 있고, 그 값이 실제로 4.5:1 을 넘는지는
+   * `worldTokens.test.ts` 가 매번 다시 계산한다.
+   *
+   * **어디에 무엇을 쓰나.** 둘을 가르는 기준은 글자인가 아닌가이다.
+   *
+   * | 이 색(`accentText`)을 쓰는 자리 | `accent` 를 그대로 쓰는 자리 |
+   * |---|---|
+   * | 밝은 종이 위의 모든 글자 — 작은 라벨, 링크, 여정 줄의 날짜 수, 설정의 고른 값 | 글자가 아닌 것 — 진행선의 채워진 부분, 테두리, 켜진 토글의 바탕 |
+   * | | 어두운 덮개 위의 글자 (그 자리는 `onScrim.accent` 가 따로 있다) |
+   */
+  accentText: string;
   /** 둘째 강조. 지우기처럼 되돌리기 어려운 조작에 쓴다. */
   accent2: string;
   /** 성화 위에 덮는 어두운 층. 기도 화면의 바탕이기도 하다. */
@@ -36,7 +68,7 @@ export interface WorldPalette {
 /**
  * 지역 다섯의 색 벌.
  *
- * 다섯이 같은 구조를 갖고 값만 다르므로, 화면은 지역을 모르고 이 여섯 이름만 안다.
+ * 다섯이 같은 구조를 갖고 값만 다르므로, 화면은 지역을 모르고 이 일곱 이름만 안다.
  * 대비는 눈이 아니라 `worldTokens.test.ts` 가 다섯 벌 전부에 대해 계산해 지킨다.
  */
 export const REGION_PALETTES: Readonly<Record<RegionKey, WorldPalette>> = {
@@ -44,6 +76,7 @@ export const REGION_PALETTES: Readonly<Record<RegionKey, WorldPalette>> = {
     paper: '#f4efe4',
     ink: '#1c2333',
     accent: '#b68235',
+    accentText: '#8e6529', // europe 위에서 4.53:1
     accent2: '#6e2a35',
     scrim: '#141a2a',
     muted: '#6b6a66',
@@ -52,6 +85,7 @@ export const REGION_PALETTES: Readonly<Record<RegionKey, WorldPalette>> = {
     paper: '#f2f3f4',
     ink: '#14233a',
     accent: '#c19a4f',
+    accentText: '#886a30', // northamerica 위에서 4.55:1
     accent2: '#5a6b7d',
     scrim: '#0f1a2b',
     muted: '#66707c',
@@ -60,6 +94,7 @@ export const REGION_PALETTES: Readonly<Record<RegionKey, WorldPalette>> = {
     paper: '#f7efe2',
     ink: '#1f3a2e',
     accent: '#c98f2b',
+    accentText: '#8f661f', // southamerica 위에서 4.50:1
     accent2: '#b4553a',
     scrim: '#1c2a24',
     muted: '#6d6558',
@@ -68,6 +103,7 @@ export const REGION_PALETTES: Readonly<Record<RegionKey, WorldPalette>> = {
     paper: '#f5f2ec',
     ink: '#23272a',
     accent: '#b9a06a',
+    accentText: '#826c3d', // asia 위에서 4.52:1
     accent2: '#4f7f6f',
     scrim: '#1b1f22',
     muted: '#6a6c6a',
@@ -76,6 +112,7 @@ export const REGION_PALETTES: Readonly<Record<RegionKey, WorldPalette>> = {
     paper: '#f3ede2',
     ink: '#2a2622',
     accent: '#b68235',
+    accentText: '#8c6429', // korea 위에서 4.54:1
     accent2: '#2f4a7a',
     scrim: '#1e1b18',
     muted: '#6b645a',
