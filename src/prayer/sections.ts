@@ -25,6 +25,7 @@
  * 규칙과 그 시험은 그때 그대로 쓸 수 있다. 지금 이 파일에서 화면이 실제로 쓰는 것은
  * `sectionOf` 와 `sectionLabel`(구간 이름을 짓는 `steps.ts`)뿐이다.
  */
+import { fill, type Strings } from '../i18n';
 
 /** 구간 하나. 0 은 시작 기도, 1~5 는 그 번호의 단, 6 은 마침 기도다. */
 export type SectionNumber = number;
@@ -40,10 +41,10 @@ export function sectionOf(step: { section: string; decade?: number | null }): Se
 }
 
 /** 화면에 적는 구간 이름. 형식은 v5 의 구간 라벨과 같다. */
-export function sectionLabel(section: SectionNumber): string {
-  if (section === 0) return '시작 기도';
-  if (section === CLOSING_SECTION) return '마침 기도';
-  return `제${section}단`;
+export function sectionLabel(section: SectionNumber, strings: Strings): string {
+  if (section === 0) return strings.opening;
+  if (section === CLOSING_SECTION) return strings.closing;
+  return fill(strings.decadeN, { n: section });
 }
 
 /**
@@ -97,6 +98,7 @@ export interface SectionMove {
 export function sectionMoves(
   queue: readonly { section: string; decade?: number | null }[],
   index: number,
+  strings: Strings,
 ): { previous: SectionMove | null; next: SectionMove | null } {
   const step = queue[index];
   if (!step) return { previous: null, next: null };
@@ -108,7 +110,7 @@ export function sectionMoves(
     if (section === undefined) return null;
     const start = sectionStart(queue, section);
     if (start < 0) return null;
-    return { section, index: start, label: sectionLabel(section) };
+    return { section, index: start, label: sectionLabel(section, strings) };
   };
 
   return { previous: moveTo(at - 1), next: moveTo(at + 1) };

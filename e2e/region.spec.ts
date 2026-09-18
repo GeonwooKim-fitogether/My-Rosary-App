@@ -97,9 +97,9 @@ test('언어를 바꾸면 화면 문구가 바뀌고, 기도문은 한국어 그
   await page.getByTestId('language-it').click({ force: true });
   await expect(page.getByTestId('language-ko-tag')).toHaveText('지금');
 
-  // 켜진 둘 중 영어를 고른다.
+  // 켜진 둘 중 영어를 고른다. 고르는 순간 이 표시 자체가 영어가 된다 (W4 슬라이스 E).
   await page.getByTestId('language-en').click();
-  await expect(page.getByTestId('language-en-tag')).toHaveText('지금');
+  await expect(page.getByTestId('language-en-tag')).toHaveText('Now');
 
   // 1. 화면 문구가 영어로 바뀐다 — 머리 라벨과 큰 제목이 함께 옮겨 간다.
   await expect(page.getByTestId('region-label')).toHaveText('Region & Language');

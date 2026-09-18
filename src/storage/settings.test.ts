@@ -5,8 +5,8 @@ import {
   createSettingsStore,
   DEFAULT_SETTINGS,
   parseSettings,
-  RECITATION_CHOICES,
-  PACE_CHOICES,
+  RECITATION_KEYS,
+  PACE_KEYS,
 } from './settings';
 import type { KeyValueStore } from './position';
 import { ENABLED_LANGUAGES } from '../i18n';
@@ -40,8 +40,8 @@ describe('기본값', () => {
   });
 
   it('고를 수 있는 것은 낭송 셋과 받는 사이 셋이다', () => {
-    expect(RECITATION_CHOICES.map((c) => c.key)).toEqual(['full', 'alternate', 'silent']);
-    expect(PACE_CHOICES.map((c) => c.key)).toEqual(['slow', 'normal', 'fast']);
+    expect(RECITATION_KEYS).toEqual(['full', 'alternate', 'silent']);
+    expect(PACE_KEYS).toEqual(['slow', 'normal', 'fast']);
   });
 });
 

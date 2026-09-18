@@ -35,6 +35,7 @@
  * 작은 글), 그 지역의 색 벌에서 색을 고른다.
  */
 import { Pressable, StyleSheet, Text } from 'react-native';
+import { stringsFor } from '../i18n';
 import { useAppState } from '../state/useAppState';
 import {
   paletteFor,
@@ -64,25 +65,16 @@ export function AboutSheet({
   testID?: string;
 }) {
   const { settings } = useAppState();
+  const strings = stringsFor(settings.language);
   const styles = aboutStyles(paletteFor(settings.region));
   return (
-    <BottomSheet visible={visible} label="소개" onClose={onClose} testID={testID}>
-      <Text style={styles.title}>이 앱이 하는 일</Text>
-      <Text style={styles.body}>
-        바람 하나를 정하고 54일 동안 날마다 묵주기도를 바쳐 완주하게 합니다. 묵주와 기도문
-        책이 없어도, 화면을 보지 않고도, 중간에 끊겨도 이어서 끝까지 갈 수 있게 만들었습니다.
-      </Text>
-      <Text style={styles.title}>이 앱이 지금 묻는 것</Text>
-      <Text style={styles.body}>
-        화면을 보지 않고 손을 쓰지 않고도 다섯 단을 끝까지 바칠 수 있는가 — 이 하나를
-        알아보려고 만든 검증 빌드입니다. 흔들기와 이어폰 단추로 알을 넘기고, 앱이 앞 절을
-        읽으면 뒷 절을 소리 내어 받습니다.
-      </Text>
-      <Text style={styles.title}>아직 아닌 것</Text>
-      <Text style={styles.body}>
-        함께 바치기와 계정 연결은 아직 붙지 않았습니다. 기도문은 임시 판본이고, 성화도
-        검증 기간용입니다. 결제는 없습니다.
-      </Text>
+    <BottomSheet visible={visible} label={strings.about} onClose={onClose} testID={testID}>
+      <Text style={styles.title}>{strings.aboutWhatTitle}</Text>
+      <Text style={styles.body}>{strings.aboutWhatBody}</Text>
+      <Text style={styles.title}>{strings.aboutAskTitle}</Text>
+      <Text style={styles.body}>{strings.aboutAskBody}</Text>
+      <Text style={styles.title}>{strings.aboutNotYetTitle}</Text>
+      <Text style={styles.body}>{strings.aboutNotYetBody}</Text>
       {firstRun ? (
         <Pressable
           style={styles.start}
@@ -90,7 +82,7 @@ export function AboutSheet({
           accessibilityRole="button"
           testID="intro-start"
         >
-          <Text style={styles.startLabel}>시작하기</Text>
+          <Text style={styles.startLabel}>{strings.begin}</Text>
         </Pressable>
       ) : null}
     </BottomSheet>

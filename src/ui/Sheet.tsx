@@ -43,6 +43,7 @@
  */
 import type { ReactNode } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { stringsFor, type Strings } from '../i18n';
 import { useAppState } from '../state/useAppState';
 import {
   paletteFor,
@@ -55,6 +56,18 @@ import {
 function useSheetPalette(): WorldPalette {
   const { settings } = useAppState();
   return paletteFor(settings.region);
+}
+
+/**
+ * 지금 언어의 문구 한 벌.
+ *
+ * 시트를 감싸는 파일들은 저마다 자기 문구를 넘기지만, 이 뼈대 자신도 말을 하나 한다 —
+ * 머리 오른쪽의 `닫기` 다. 그 한 마디를 위해 감싸는 일곱 곳이 모두 문구를 넘기게 하는
+ * 대신, 색 벌과 같은 방식으로 여기서 직접 읽는다.
+ */
+function useSheetStrings(): Strings {
+  const { settings } = useAppState();
+  return stringsFor(settings.language);
 }
 
 export function BottomSheet({
@@ -72,17 +85,18 @@ export function BottomSheet({
   testID?: string;
 }) {
   const palette = useSheetPalette();
+  const strings = useSheetStrings();
   const styles = sheetStyles(palette);
   if (!visible) return null;
   return (
     <Modal visible transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.root}>
-        <Pressable style={styles.scrim} onPress={onClose} accessibilityLabel="닫기" />
+        <Pressable style={styles.scrim} onPress={onClose} accessibilityLabel={strings.close} />
         <View style={styles.panel} testID={testID}>
           <View style={styles.header}>
             <Text style={styles.headerLabel}>{label}</Text>
             <Pressable onPress={onClose} accessibilityRole="button" testID="sheet-close" hitSlop={16}>
-              <Text style={styles.headerAction}>닫기</Text>
+              <Text style={styles.headerAction}>{strings.close}</Text>
             </Pressable>
           </View>
           <ScrollView style={styles.content} contentContainerStyle={styles.contentInner}>

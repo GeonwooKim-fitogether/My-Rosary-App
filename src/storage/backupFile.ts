@@ -56,11 +56,17 @@ function browserDocument(): Document | null {
 /**
  * 글 하나를 파일로 내보낸다. 웹에서는 내려받고, 기기에서는 공유 시트로 건넨다.
  *
+ * @param dialogTitle 기기의 공유 시트 머리에 적히는 말. 웹에서는 쓰이지 않는다 — 브라우저의
+ *   내려받기에는 사람이 보는 머리가 없기 때문이다. 화면이 지금 언어의 말을 넘긴다.
  * @returns 내보내기를 시작했으면 true. 이 기기에서 할 수 없으면 false.
  */
-export async function downloadTextFile(text: string, fileName: string): Promise<boolean> {
+export async function downloadTextFile(
+  text: string,
+  fileName: string,
+  dialogTitle: string,
+): Promise<boolean> {
   if (Platform.OS === 'web') return downloadInBrowser(text, fileName);
-  return shareOnDevice(text, fileName);
+  return shareOnDevice(text, fileName, dialogTitle);
 }
 
 /**
@@ -99,7 +105,11 @@ function downloadInBrowser(text: string, fileName: string): boolean {
  * **공유 시트가 없는 기기에서는 아무것도 하지 않고 false 를 돌려준다.** 파일만 써 놓고
  * "내보냈습니다" 라고 말하면 사람은 있지도 않은 파일을 찾으러 다니게 된다.
  */
-async function shareOnDevice(text: string, fileName: string): Promise<boolean> {
+async function shareOnDevice(
+  text: string,
+  fileName: string,
+  dialogTitle: string,
+): Promise<boolean> {
   try {
     if (!(await Sharing.isAvailableAsync())) return false;
     const file = new File(Paths.cache, fileName);
@@ -111,7 +121,7 @@ async function shareOnDevice(text: string, fileName: string): Promise<boolean> {
       mimeType: 'application/json',
       // iOS 는 MIME 형식이 아니라 자기 식 형식 이름(UTI)으로 무엇인지 가린다.
       UTI: 'public.json',
-      dialogTitle: '기록 파일 저장하기',
+      dialogTitle,
     });
     return true;
   } catch {

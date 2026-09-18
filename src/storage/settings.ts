@@ -82,58 +82,22 @@ export interface AppSettings {
   fontScale: FontScaleIndex;
 }
 
-/** 묵주의 우리말 이름. */
-export const ROSARY_NAMES: Record<RosaryKey, string> = {
-  rose: '붉은 장미',
-  wood: '나무',
-  silver: '은',
-  gold: '금',
-};
-
 /**
- * 묵주 고르기 시트(S5)의 줄 넷. 설명은 사진에서 실제로 보이는 것을 한 줄로 적었다.
+ * 고를 수 있는 것들의 **차례**만 여기 둔다 — 이름과 설명은 문구 표에 있다.
  *
- * 설명을 붙인 이유는 이름만으로는 무엇이 다른지 알 수 없기 때문이다. 미리보기가 위에
- * 함께 서 있지만, 화면 낭독기를 쓰는 사람에게는 그림이 닿지 않으므로 말로도 남긴다.
+ * 2026-09-18 에 갈라 두었다 (W4 슬라이스 E). 그전에는 이름과 설명이 이 파일에 한국어로 박혀
+ * 있어서, 영어로 바꾼 설정 화면이 절반쯤 한국어로 떴다. 여기 남는 것은 **무엇이 있고 어느
+ * 차례로 서는가**이고, 그것을 무엇이라 부르는가는 `src/i18n/appStrings.ts` 의
+ * `rosaryName` · `rosaryNote` · `recitationName` 같은 열쇠가 갖는다. 저장된 값이 올바른지
+ * 가리는 일(아래 `parseSettings`)에는 차례만 있으면 되므로 이 갈라짐이 그 일을 막지 않는다.
  */
-export const ROSARY_CHOICES: ReadonlyArray<{ key: RosaryKey; name: string; note: string }> = [
-  { key: 'rose', name: '붉은 장미', note: '장미꽃으로 조각한 알과 검은 끈' },
-  { key: 'wood', name: '나무', note: '짙은 나무 알, 주님의 기도만 밝은 살구빛' },
-  { key: 'silver', name: '은', note: '은빛 구슬과 은 사슬' },
-  { key: 'gold', name: '금', note: '금빛 구슬과 금 사슬' },
-];
+export const ROSARY_KEYS: readonly RosaryKey[] = ['rose', 'wood', 'silver', 'gold'];
 
-/** 낭송 방식의 이름과 설명 — 06-screen-spec 화면 E 의 문구 표 그대로다. */
-export const RECITATION_CHOICES: ReadonlyArray<{
-  key: RecitationMode;
-  name: string;
-  note: string;
-}> = [
-  { key: 'full', name: '전부 읽기', note: '앱이 처음부터 끝까지 읽습니다' },
-  { key: 'alternate', name: '교대', note: '앞 절은 앱이, 뒷 절은 직접 바칩니다' },
-  { key: 'silent', name: '읽지 않기', note: '소리 없이 진동으로만 넘어갑니다' },
-];
+/** 낭송 방식 셋의 차례 — 06-screen-spec 화면 E 의 문구 표와 같은 순서다. */
+export const RECITATION_KEYS: readonly RecitationMode[] = ['full', 'alternate', 'silent'];
 
-/** 받는 사이의 이름과 설명 — 06-screen-spec 시트 S2 의 문구 그대로다. */
-export const PACE_CHOICES: ReadonlyArray<{ key: PaceKey; name: string; note: string }> = [
-  { key: 'slow', name: '느리게', note: '천천히 바침' },
-  { key: 'normal', name: '보통', note: '기본' },
-  { key: 'fast', name: '빠르게', note: '익숙한 분' },
-];
-
-/** 받는 사이의 짧은 이름 — 설정 줄의 오른쪽에 적힌다. */
-export const PACE_NAMES: Record<PaceKey, string> = {
-  slow: '느리게',
-  normal: '보통',
-  fast: '빠르게',
-};
-
-/** 낭송 방식의 짧은 이름 — v5 는 `교대로` 로 적는다. */
-export const RECITATION_NAMES: Record<RecitationMode, string> = {
-  full: '전부 소리로',
-  alternate: '교대로',
-  silent: '소리 없이',
-};
+/** 받는 사이 셋의 차례 — 06-screen-spec 시트 S2 와 같은 순서다. */
+export const PACE_KEYS: readonly PaceKey[] = ['slow', 'normal', 'fast'];
 
 /**
  * 기본값.
@@ -169,14 +133,16 @@ export function parseSettings(raw: string | null): AppSettings {
     const value = JSON.parse(raw) as Partial<AppSettings>;
     if (!value || typeof value !== 'object') return { ...DEFAULT_SETTINGS };
     return {
-      recitation: RECITATION_CHOICES.some((c) => c.key === value.recitation)
+      recitation: RECITATION_KEYS.includes(value.recitation as RecitationMode)
         ? (value.recitation as RecitationMode)
         : DEFAULT_SETTINGS.recitation,
-      pace: PACE_CHOICES.some((c) => c.key === value.pace)
+      pace: PACE_KEYS.includes(value.pace as PaceKey)
         ? (value.pace as PaceKey)
         : DEFAULT_SETTINGS.pace,
       handsFree: typeof value.handsFree === 'boolean' ? value.handsFree : DEFAULT_SETTINGS.handsFree,
-      rosary: value.rosary && value.rosary in ROSARY_NAMES ? value.rosary : DEFAULT_SETTINGS.rosary,
+      rosary: ROSARY_KEYS.includes(value.rosary as RosaryKey)
+        ? (value.rosary as RosaryKey)
+        : DEFAULT_SETTINGS.rosary,
       theme:
         value.theme === 'day' || value.theme === 'night' || value.theme === 'system'
           ? value.theme

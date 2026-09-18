@@ -81,7 +81,7 @@ import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LANGUAGES, stringsFor } from '../src/i18n';
+import { fill, LANGUAGES, stringsFor, type Strings } from '../src/i18n';
 import {
   installRowSupported,
   promptHomeScreenInstall,
@@ -99,11 +99,8 @@ import {
 } from '../src/storage/backup';
 import { backupFileSupported, downloadTextFile, pickTextFile } from '../src/storage/backupFile';
 import {
-  PACE_CHOICES,
-  PACE_NAMES,
-  RECITATION_CHOICES,
-  RECITATION_NAMES,
-  ROSARY_NAMES,
+  PACE_KEYS,
+  RECITATION_KEYS,
 } from '../src/storage/settings';
 import { FONT_SCALE_LABEL_KEYS, asFontScaleIndex, type FontScaleIndex } from '../src/theme/prayerFont';
 import { TEXT_SCALE } from '../src/theme/fontScale';
@@ -163,6 +160,22 @@ export default function SettingsScreen() {
    */
   const prayedDays = journeys.reduce((sum, journey) => sum + countDays(journey.days).prayed, 0);
 
+  /*
+    고르개 시트에 세울 줄들. **차례는 `src/storage/settings.ts` 가, 말은 문구 표가 갖는다**
+    (W4 슬라이스 E). 그전에는 이름과 설명까지 저장소 파일에 한국어로 박혀 있어서, 영어로
+    바꾼 화면의 이 시트들이 한국어로 떴다.
+  */
+  const recitationChoices = RECITATION_KEYS.map((key) => ({
+    key,
+    name: strings.recitationName[key],
+    note: strings.recitationNote[key],
+  }));
+  const paceChoices = PACE_KEYS.map((key) => ({
+    key,
+    name: strings.paceName[key],
+    note: strings.paceNote[key],
+  }));
+
   /**
    * 지금 기기의 기록을 글로 만들어 파일로 내보낸다.
    *
@@ -175,12 +188,9 @@ export default function SettingsScreen() {
     const ok = await downloadTextFile(
       backupText({ journeys, settings, pinnedArt, favoriteArt }),
       backupFileName(),
+      strings.backupDialogTitle,
     );
-    setNotice(
-      ok
-        ? `기록 파일로 내보냈습니다. 여정 ${journeys.length}개와 설정이 담겼습니다.`
-        : '이 기기에서는 파일을 내보낼 수 없습니다.',
-    );
+    setNotice(ok ? fill(strings.exportDone, { n: journeys.length }) : strings.exportFailed);
   };
 
   /**
@@ -196,7 +206,7 @@ export default function SettingsScreen() {
     if (text === null) return; // 고르지 않고 닫았다 — 알릴 것이 없다
     const read = parseBackup(text);
     if (!read) {
-      setNotice('읽을 수 없는 파일입니다. 이 기기의 기록은 그대로 있습니다.');
+      setNotice(strings.importUnreadable);
       return;
     }
     setPending(read);
@@ -220,7 +230,7 @@ export default function SettingsScreen() {
     const count = pending.journeys.length;
     importBackup(pending);
     setPending(null);
-    setNotice(`여정 ${count}개와 설정을 들여왔습니다.`);
+    setNotice(fill(strings.importDone, { n: count }));
   };
 
   return (
@@ -327,24 +337,24 @@ export default function SettingsScreen() {
         <ValueRow
           palette={palette}
           isKorean={settings.language === 'ko'}
-          label="낭송 방식"
-          value={RECITATION_NAMES[settings.recitation]}
+          label={strings.recitationLabel}
+          value={strings.recitationShort[settings.recitation]}
           onPress={() => setSheet('recitation')}
           testID="settings-recitation"
         />
         <ValueRow
           palette={palette}
           isKorean={settings.language === 'ko'}
-          label="받는 사이"
-          value={PACE_NAMES[settings.pace]}
+          label={strings.paceLabel}
+          value={strings.paceShort[settings.pace]}
           onPress={() => setSheet('pace')}
           testID="settings-pace"
         />
         <ValueRow
           palette={palette}
           isKorean={settings.language === 'ko'}
-          label="묵주"
-          value={ROSARY_NAMES[settings.rosary]}
+          label={strings.rosaryLabel}
+          value={strings.rosaryName[settings.rosary]}
           onPress={() => setSheet('rosary')}
           testID="settings-rosary"
         />
@@ -353,14 +363,15 @@ export default function SettingsScreen() {
         <ToggleRow
           palette={palette}
           isKorean={settings.language === 'ko'}
-          label="손 없이 조작"
+          strings={strings}
+          label={strings.handsFree}
           on={settings.handsFree}
           onPress={() => updateSettings({ handsFree: !settings.handsFree })}
           testID="settings-handsfree"
         />
         {settings.handsFree ? (
           <Text style={styles.note} testID="settings-handsfree-note">
-            폰을 흔들면 다음 알로, 이어폰 버튼으로 앞뒤로 갑니다.
+            {strings.handsFreeNote}
           </Text>
         ) : null}
         {/*
@@ -371,7 +382,8 @@ export default function SettingsScreen() {
         <ToggleRow
           palette={palette}
           isKorean={settings.language === 'ko'}
-          label="진동"
+          strings={strings}
+          label={strings.vibration}
           on={settings.haptic}
           onPress={() => updateSettings({ haptic: !settings.haptic })}
           testID="settings-haptic"
@@ -379,6 +391,7 @@ export default function SettingsScreen() {
         <ToggleRow
           palette={palette}
           isKorean={settings.language === 'ko'}
+          strings={strings}
           label={strings.reduceMotion}
           on={settings.reduceMotion}
           onPress={() => updateSettings({ reduceMotion: !settings.reduceMotion })}
@@ -390,7 +403,9 @@ export default function SettingsScreen() {
           <View style={styles.rowText}>
             <Text style={styles.rowLabel}>{strings.history}</Text>
             <Text style={styles.rowNote}>
-              {prayedDays > 0 ? `지금까지 ${prayedDays}일을 바쳤습니다` : '아직 바친 날이 없습니다'}
+              {prayedDays > 0
+                ? fill(strings.historySome, { n: prayedDays })
+                : strings.historyNone}
             </Text>
           </View>
           <Text style={styles.count} testID="settings-history-count">
@@ -419,9 +434,9 @@ export default function SettingsScreen() {
               testID="settings-export"
             >
               <View style={styles.rowText}>
-                <Text style={styles.rowLabel}>기록 내보내기</Text>
+                <Text style={styles.rowLabel}>{strings.exportRecords}</Text>
                 <Text style={styles.rowNote}>
-                  {`여정 ${journeys.length}개와 설정을 파일 하나로 내려받습니다`}
+                  {fill(strings.exportNote, { n: journeys.length })}
                 </Text>
               </View>
             </Pressable>
@@ -434,10 +449,8 @@ export default function SettingsScreen() {
               testID="settings-import"
             >
               <View style={styles.rowText}>
-                <Text style={styles.rowLabel}>기록 들여오기</Text>
-                <Text style={styles.rowNote}>
-                  내려받아 둔 파일을 읽어 지금 기록을 갈아 끼웁니다
-                </Text>
+                <Text style={styles.rowLabel}>{strings.importRecords}</Text>
+                <Text style={styles.rowNote}>{strings.importNote}</Text>
               </View>
             </Pressable>
             {notice ? (
@@ -473,10 +486,10 @@ export default function SettingsScreen() {
               <Text style={styles.rowLabel}>{strings.install}</Text>
               <Text style={styles.rowNote} testID="settings-install-note">
                 {install.installed
-                  ? '이미 홈 화면에서 열고 있습니다'
+                  ? strings.installedAlready
                   : install.canPrompt
-                    ? `${strings.offline} · 눌러서 놓습니다`
-                    : `${strings.offline} · 놓는 방법을 알려 드립니다`}
+                    ? `${strings.offline} · ${strings.installTapToAdd}`
+                    : `${strings.offline} · ${strings.installShowHow}`}
               </Text>
             </View>
             <Svg width={20} height={20} viewBox="0 0 24 24">
@@ -499,7 +512,7 @@ export default function SettingsScreen() {
           accessibilityRole="button"
           testID="settings-about"
         >
-          <Text style={styles.rowLabel}>소개</Text>
+          <Text style={styles.rowLabel}>{strings.about}</Text>
           <Svg width={20} height={20} viewBox="0 0 24 24">
             <Path
               d="m9 18 6-6-6-6"
@@ -516,10 +529,10 @@ export default function SettingsScreen() {
       {/* 낭송 방식 — 이름과 설명은 06-screen-spec 화면 E 의 문구 표 그대로다. */}
       <ChoiceSheet
         visible={sheet === 'recitation'}
-        label="낭송 방식"
-        choices={RECITATION_CHOICES}
+        label={strings.recitationLabel}
+        choices={recitationChoices}
         selected={settings.recitation}
-        note="새로 만드는 기도에 적용됩니다"
+        note={strings.applyToNew}
         onSelect={(key: RecitationMode) => {
           updateSettings({ recitation: key });
           close();
@@ -531,8 +544,8 @@ export default function SettingsScreen() {
       {/* S2 받는 사이 */}
       <ChoiceSheet
         visible={sheet === 'pace'}
-        label="받는 사이"
-        choices={PACE_CHOICES}
+        label={strings.paceLabel}
+        choices={paceChoices}
         selected={settings.pace}
         onSelect={(key: PaceKey) => {
           updateSettings({ pace: key });
@@ -549,7 +562,7 @@ export default function SettingsScreen() {
       <RosarySheet
         visible={sheet === 'rosary'}
         selected={settings.rosary}
-        note="모든 여정의 기도 화면에 적용됩니다"
+        note={strings.applyToAll}
         onSelect={(key) => {
           updateSettings({ rosary: key });
           close();
@@ -591,18 +604,13 @@ export default function SettingsScreen() {
         testID="sheet-install"
       >
         <Text style={styles.aboutTitle}>
-          {install.guide === 'ios' ? '아이폰·아이패드에서' : '이 브라우저에서'}
+          {install.guide === 'ios' ? strings.installIosTitle : strings.installBrowserTitle}
         </Text>
         <Text style={styles.aboutBody}>
-          {install.guide === 'ios'
-            ? '화면 아래쪽 가운데의 공유 단추(위로 향한 화살표)를 누르고, 목록을 내려 «홈 화면에 추가»를 고르면 됩니다. 사파리가 아닌 브라우저에서는 이 항목이 보이지 않을 수 있습니다.'
-            : '브라우저의 차림표(⋮ 또는 ···)를 열고 «앱 설치» 또는 «홈 화면에 추가»를 고르면 됩니다. 항목이 보이지 않는 브라우저에서는 이 앱을 그대로 인터넷 주소로 쓰셔도 됩니다.'}
+          {install.guide === 'ios' ? strings.installIosBody : strings.installBrowserBody}
         </Text>
-        <Text style={styles.aboutTitle}>놓고 나면</Text>
-        <Text style={styles.aboutBody}>
-          주소창 없이 앱처럼 열리고, 인터넷이 없어도 기도와 여정은 그대로 됩니다. 다만 성화는 한
-          번이라도 본 그림만 보이고, 소리 내어 읽기는 기기에 담긴 목소리일 때만 됩니다.
-        </Text>
+        <Text style={styles.aboutTitle}>{strings.installAfterTitle}</Text>
+        <Text style={styles.aboutBody}>{strings.installAfterBody}</Text>
       </BottomSheet>
 
       {/*
@@ -615,12 +623,13 @@ export default function SettingsScreen() {
       */}
       <ConfirmSheet
         visible={pending !== null}
-        label="기록 들여오기"
-        message={`지금 이 기기의 여정 ${journeys.length}개와 설정이 사라지고, 파일에 담긴 여정 ${
-          pending?.journeys.length ?? 0
-        }개와 설정으로 바뀝니다. 되돌릴 수 없습니다.`}
-        confirmLabel="들여오기"
-        cancelLabel="그대로 두기"
+        label={strings.importRecords}
+        message={fill(strings.importConfirm, {
+          a: journeys.length,
+          b: pending?.journeys.length ?? 0,
+        })}
+        confirmLabel={strings.importConfirmYes}
+        cancelLabel={strings.importConfirmNo}
         onConfirm={applyImport}
         onClose={() => setPending(null)}
         testID="sheet-import"
@@ -674,6 +683,7 @@ function ValueRow({
 function ToggleRow({
   palette,
   isKorean,
+  strings,
   label,
   on,
   onPress,
@@ -681,6 +691,7 @@ function ToggleRow({
 }: {
   palette: WorldPalette;
   isKorean: boolean;
+  strings: Strings;
   label: string;
   on: boolean;
   onPress: () => void;
@@ -700,7 +711,7 @@ function ToggleRow({
       <View
         style={[styles.track, on ? styles.trackOn : null]}
         testID={`${testID}-value`}
-        accessibilityLabel={on ? '켜짐' : '꺼짐'}
+        accessibilityLabel={on ? strings.switchOn : strings.switchOff}
       >
         <View style={[styles.knob, on ? styles.knobOn : null]} />
       </View>

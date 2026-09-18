@@ -106,7 +106,8 @@ test('문서의 언어가 앱의 언어를 따라온다', async ({ page }) => {
   await openSettings(page);
   await page.getByTestId('settings-region').click();
   await page.getByTestId('language-en').click();
-  await expect(page.getByTestId('language-en-tag')).toHaveText('지금');
+  // 표시도 함께 영어가 된다 — 이 줄이 W4 슬라이스 E 뒤로 `지금` 이 아니라 `Now` 인 까닭이다.
+  await expect(page.getByTestId('language-en-tag')).toHaveText('Now');
 
   // 언어를 바꾸면 문서도 따라 바뀐다.
   await expect.poll(() => documentLanguage(page)).toBe('en');

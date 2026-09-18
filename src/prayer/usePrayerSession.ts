@@ -18,6 +18,7 @@ import { createDeviceChannels, koreanVoiceStatus } from './channels';
 import { useRemoteCommands, useShakeToAdvance } from './handsfree';
 import { DECADE_PULSE_MS, type PrayerPhase, type RunnerPhase } from './phase';
 import { createRunner, type Runner } from './runner';
+import { stringsFor, type Strings } from '../i18n';
 import { sectionMoves, type SectionMove } from './sections';
 import { buildDayQueue, hailCountAmong, type RunStep } from './steps';
 
@@ -39,6 +40,13 @@ export interface PrayerSessionOptions {
   pace?: PaceKey;
   /** 손 없이 조작 (흔들기·이어폰 단추). */
   handsFree?: boolean;
+  /**
+   * 화면 문구 한 벌. 구간 이름(`시작 기도` · `제3단`)을 짓는 데만 쓴다.
+   *
+   * 기본값이 한국어인 것은 이 갈고리를 부르는 시험들이 문구를 넘기지 않기 때문이다.
+   * 화면은 언제나 사용자가 고른 언어의 한 벌을 넘긴다.
+   */
+  strings?: Strings;
   onFinish?: (result: DayResult) => void;
 }
 
@@ -89,6 +97,7 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
   const requestedMode: RecitationMode = options.mode ?? 'alternate';
   const pace: PaceKey = options.pace ?? 'normal';
   const handsFree = options.handsFree ?? true;
+  const strings = options.strings ?? stringsFor('ko');
 
   /*
    * 화면이 열려 있는 동안 화면이 꺼지지 않게 한다 (FR-24). 기도 중에 화면이 꺼지면
@@ -323,7 +332,7 @@ export function usePrayerSession(options: PrayerSessionOptions = {}): PrayerSess
   });
 
   const step = queue[index] ?? null;
-  const moves = sectionMoves(queue, index);
+  const moves = sectionMoves(queue, index, strings);
   // 멈춤은 진행기의 알림이 아니라 "돌고 있지 않다"는 사실이다. 멈춘 채로 알을 옮겨도 멈춤이다.
   const phase: PrayerPhase = running ? runnerPhase : 'paused';
   return {

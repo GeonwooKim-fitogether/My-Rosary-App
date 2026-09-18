@@ -9,7 +9,7 @@
  */
 import { MYSTERY_SETS } from '../domain/mysteries';
 import world from '../../spec/mysteries.world.json';
-import { MYSTERY_SET_ORDER, mysteryRows, shortSetName, todayLabelKo } from './text';
+import { MYSTERY_SET_ORDER, mysteryRows, shortSetName, todayLabel } from './text';
 
 describe('신비 다섯 줄', () => {
   it('네 벌이 시안과 같은 차례로 선다', () => {
@@ -59,6 +59,6 @@ describe('신비 다섯 줄', () => {
 
 describe('오늘 날짜 한 줄', () => {
   it('달·날·요일을 긴 이름으로 적는다', () => {
-    expect(todayLabelKo(new Date('2026-09-05T09:00:00'))).toBe('9월 5일 토요일');
+    expect(todayLabel(new Date('2026-09-05T09:00:00'), 'ko')).toBe('9월 5일 토요일');
   });
 });

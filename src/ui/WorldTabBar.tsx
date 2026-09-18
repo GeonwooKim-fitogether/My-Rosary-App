@@ -132,7 +132,7 @@ export function WorldTabBar({ current }: { current: TabKey }) {
     <View
       style={[styles.bar, { paddingBottom: insets.bottom + 6 }]}
       accessibilityRole="menubar"
-      accessibilityLabel="주요 화면"
+      accessibilityLabel={strings.mainScreens}
       testID="tab-bar"
     >
       {TAB_ORDER.map((tab) => {

@@ -17,6 +17,8 @@
  * 이름표 `pray-pause` 와 `pray-stop` 은 머리의 두 단추에서 이 두 줄로 옮겨 왔다. 두 줄이
  * 하던 일은 한 줄도 바뀌지 않았고, 누르기 전에 시트를 한 번 여는 것만 달라졌다.
  */
+import { stringsFor } from '../i18n';
+import { useAppState } from '../state/useAppState';
 import { BottomSheet, ChoiceRow } from './Sheet';
 
 export function LeavePrayerSheet({
@@ -32,19 +34,26 @@ export function LeavePrayerSheet({
   onStop: () => void;
   onClose: () => void;
 }) {
+  const { settings } = useAppState();
+  const strings = stringsFor(settings.language);
   return (
-    <BottomSheet visible={visible} label="기도 나가기" onClose={onClose} testID="sheet-leave">
+    <BottomSheet
+      visible={visible}
+      label={strings.leavePrayer}
+      onClose={onClose}
+      testID="sheet-leave"
+    >
       <ChoiceRow
-        name="잠시 멈춤"
-        note="자리가 남습니다"
+        name={strings.pauseName}
+        note={strings.pauseNote}
         selected={false}
         first
         onPress={onPause}
         testID="pray-pause"
       />
       <ChoiceRow
-        name="여기서 끝내기"
-        note="오늘 처음부터"
+        name={strings.endHereName}
+        note={strings.endHereNote}
         selected={false}
         first={false}
         onPress={onStop}

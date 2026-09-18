@@ -65,7 +65,7 @@ import { PRAYERS } from '../src/domain/sequence';
 import { HAPTIC_PATTERNS } from '../src/domain/pacing';
 import { Rosary } from '../src/prayer/Rosary';
 import { estimateSpeechMs, vibrate } from '../src/prayer/channels';
-import { PHASE_LABEL } from '../src/prayer/phase';
+import { phaseLabel } from '../src/prayer/phase';
 import {
   BEAD_COUNT,
   DRAG_THRESHOLD_DEG,
@@ -232,6 +232,7 @@ function PraySession({
     mode: journey.recitation,
     pace,
     handsFree,
+    strings,
     onFinish,
   });
   const step = session.step;
@@ -333,7 +334,7 @@ function PraySession({
       // `beadAdvance`(18ms)가 바로 "알이 넘어갔다"를 뜻하는 값이다.
       vibrate(HAPTIC_PATTERNS.beadAdvance);
       const section = sectionOf(target);
-      session.goToSection({ section, index: at, label: sectionLabel(section) });
+      session.goToSection({ section, index: at, label: sectionLabel(section, strings) });
     },
     [firstStepForBead, queue, session],
   );
@@ -541,7 +542,7 @@ function PraySession({
           style={styles.iconButton}
           onPress={() => setLeaveOpen(true)}
           accessibilityRole="button"
-          accessibilityLabel={`${strings.back}, 기도 나가기`}
+          accessibilityLabel={`${strings.back}, ${strings.leavePrayer}`}
           testID="pray-back"
         >
           <Icon path="M15 18 L9 12 L15 6" />
@@ -551,7 +552,7 @@ function PraySession({
           <Text style={styles.headerTitle} numberOfLines={1} testID="pray-title">
             {journey.title}{' '}
             <Text style={styles.headerTitleDim}>
-              · {dayLabelOn(journey, dayIndexOn(journey.startDate, new Date()))}
+              · {dayLabelOn(journey, dayIndexOn(journey.startDate, new Date()), strings)}
             </Text>
           </Text>
           <View style={styles.headerLine}>
@@ -598,7 +599,7 @@ function PraySession({
         <View
           accessible
           accessibilityRole="image"
-          accessibilityLabel={PHASE_LABEL[session.phase]}
+          accessibilityLabel={phaseLabel(session.phase, strings)}
           testID="pray-rosary"
         >
           <Rosary
@@ -692,8 +693,8 @@ function PraySession({
           styles={styles}
           onPress={session.back}
           to={previousName}
-          action="앞 알"
-          empty="여기가 처음"
+          action={strings.prevBead}
+          empty={strings.atStart}
           direction="back"
           testID="pray-previous-step"
         />
@@ -701,8 +702,8 @@ function PraySession({
           styles={styles}
           onPress={session.advance}
           to={nextName}
-          action="다음 알"
-          empty="여기가 끝"
+          action={strings.nextBead}
+          empty={strings.atEnd}
           direction="forward"
           testID="pray-next-step"
         />

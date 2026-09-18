@@ -68,8 +68,8 @@ import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { artSession } from '../src/art';
 import { FIFTYFOUR_PETITION_DAYS } from '../src/domain/mysteries';
-import { stringsFor } from '../src/i18n';
-import { monthDayKo, nativeCountKo, ordinalKo } from '../src/journey/format';
+import { fill, stringsFor } from '../src/i18n';
+import { formatNumber, monthDay, nativeCountKo, ordinalKo } from '../src/journey/format';
 import { countDays, finishDateOf, journeyLength } from '../src/journey/rules';
 import { leaveToHome } from '../src/navigation/leaveToHome';
 import { HAILS_PER_DAY } from '../src/prayer/steps';
@@ -118,10 +118,13 @@ export default function AllDoneScreen() {
     journey.format !== 'fiftyfour'
       ? null
       : journey.kind === 'thanksgiving'
-        ? `${nativeCountKo(length)} 날 내내 감사`
-        : `청원 ${nativeCountKo(FIFTYFOUR_PETITION_DAYS)} 날, 감사 ${nativeCountKo(
-            length - FIFTYFOUR_PETITION_DAYS,
-          )} 날`;
+        ? fill(strings.allDonePhaseThanks, { count: nativeCountKo(length), n: length })
+        : fill(strings.allDonePhaseBoth, {
+            pc: nativeCountKo(FIFTYFOUR_PETITION_DAYS),
+            tc: nativeCountKo(length - FIFTYFOUR_PETITION_DAYS),
+            p: FIFTYFOUR_PETITION_DAYS,
+            t: length - FIFTYFOUR_PETITION_DAYS,
+          });
 
   return (
     <View style={styles.screen} testID="all-done-screen">
@@ -161,7 +164,7 @@ export default function AllDoneScreen() {
         </Text>
 
         <Text style={[styles.title, titleSize]} testID="all-done-title">
-          {nativeCountKo(length)} 날의 여정을 마쳤습니다
+          {fill(strings.allDoneTitle, { count: nativeCountKo(length), n: length })}
         </Text>
 
         {/*
@@ -177,16 +180,22 @@ export default function AllDoneScreen() {
             받는 것과 다른 까닭은 그것뿐이며, 모양과 크기는 같은 토큰에서 온다.
           */}
           <Text style={styles.stat} testID="all-done-note">
-            성모송 {(counts.prayed * HAILS_PER_DAY).toLocaleString('ko-KR')}번
+            {fill(strings.hailCount, {
+              n: formatNumber(counts.prayed * HAILS_PER_DAY, settings.language),
+            })}
           </Text>
         </View>
 
         <View style={styles.journeyLines}>
           <Text style={styles.journeyLine} testID="all-done-head">
-            {ordinalKo(length)} 날{finish ? ` · ${monthDayKo(finish)}` : ''}
+            {fill(finish ? strings.allDoneHeadWithDate : strings.allDoneHead, {
+              ord: ordinalKo(length),
+              n: length,
+              date: finish ? monthDay(finish, settings.language) : '',
+            })}
           </Text>
           <Text style={styles.journeyLine} testID="all-done-summary">
-            {`${length}일 중 ${counts.prayed}일을 바쳤습니다`}
+            {fill(strings.daysPrayedOf, { t: length, p: counts.prayed })}
           </Text>
         </View>
 
@@ -220,7 +229,7 @@ export default function AllDoneScreen() {
             accessibilityRole="button"
             testID="all-done-again"
           >
-            <Text style={styles.quietLabel}>이 지향으로 다시 시작하기</Text>
+            <Text style={styles.quietLabel}>{strings.againWithIntention}</Text>
           </Pressable>
         </View>
       </View>

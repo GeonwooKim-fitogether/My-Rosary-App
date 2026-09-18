@@ -12,6 +12,7 @@
  * 확인이 끝난 언어를 켜는 일은 아래 목록에 한 줄을 더하는 일이다.
  */
 import type { RegionKey } from '../theme/worldTokens';
+import { appStringsFor, type AppStrings } from './appStrings';
 import en from './strings/en.json';
 import es from './strings/es.json';
 import fr from './strings/fr.json';
@@ -23,10 +24,16 @@ import tl from './strings/tl.json';
 /** 데이터가 들어와 있는 언어 일곱. */
 export type LanguageKey = 'ko' | 'en' | 'it' | 'fr' | 'es' | 'pt' | 'tl';
 
-/** 화면 문구 한 벌의 모양. 한국어 벌이 그 기준이다. */
-export type Strings = typeof ko;
+/**
+ * 화면 문구 한 벌의 모양 — **두 표가 겹쳐 하나가 된다.**
+ *
+ * 앞의 것은 시안의 `UI` 표에서 기계로 뽑아 온 `strings/*.json` 이고, 뒤의 것은 이 저장소가
+ * 손으로 쓰는 `appStrings.ts` 다. 둘을 나눠 둔 까닭은 그 파일의 머리글에 있다 — 짧게는,
+ * 앞의 것이 도구가 덮어쓰는 파일이라 손으로 열쇠를 더하면 다음 실행에서 사라지기 때문이다.
+ */
+export type Strings = typeof ko & AppStrings;
 
-const STRINGS: Readonly<Record<LanguageKey, Strings>> = { ko, en, it, fr, es, pt, tl };
+const WORLD: Readonly<Record<LanguageKey, typeof ko>> = { ko, en, it, fr, es, pt, tl };
 
 /** 언어의 이름과, 읽어 줄 때 쓰는 음성 코드. */
 export const LANGUAGES: Readonly<Record<LanguageKey, { name: string; voice: string }>> = {
@@ -137,8 +144,28 @@ export function enabledLanguageFor(region: RegionKey): LanguageKey {
   return ENABLED_LANGUAGES.includes(byRegion) ? byRegion : ENABLED_LANGUAGES[0]!;
 }
 
-/** 그 언어의 문구 한 벌. 모르는 언어가 오면 한국어로 떨어진다. */
-export const stringsFor = (language: LanguageKey): Strings => STRINGS[language] ?? ko;
+/**
+ * 그 언어의 문구 한 벌. 모르는 언어가 오면 한국어로 떨어진다.
+ *
+ * 벌을 미리 겹쳐 두고 그것을 돌려준다. 부를 때마다 새 객체를 만들면 화면이 다시 그려질
+ * 때마다 문구 객체가 새것이 되어, 그 객체를 의존성으로 보는 자리들이 불필요하게 다시 돈다.
+ */
+const STRINGS = Object.fromEntries(
+  LANGUAGE_ORDER.map((language) => [
+    language,
+    { ...WORLD[language], ...appStringsFor(language) },
+  ]),
+) as Readonly<Record<LanguageKey, Strings>>;
+
+export const stringsFor = (language: LanguageKey): Strings => STRINGS[language] ?? STRINGS.ko;
+
+/**
+ * 날짜·수를 그 언어의 관습으로 적을 때 쓰는 지역 표시 (BCP 47).
+ *
+ * 읽어 줄 때 쓰는 음성 코드(`LANGUAGES[…].voice`)와 같은 값이다. 둘은 뜻이 달라 언젠가
+ * 갈릴 수 있으므로 이름을 따로 두되, 지금은 같은 값을 가리킨다.
+ */
+export const localeOf = (language: LanguageKey): string => LANGUAGES[language].voice;
 
 /**
  * 문구에 값을 끼워 넣는다. `{n}` 같은 자리를 채우는 일이며, 시안의 `fmt` 와 같은 규칙이다.

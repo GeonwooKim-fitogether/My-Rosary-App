@@ -42,7 +42,7 @@ import { journeyLength } from '../src/journey/rules';
 import { addJourney } from '../src/state/appStore';
 import { useAppState, } from '../src/state/useAppState';
 import { updateSettings } from '../src/state/appStore';
-import { ROSARY_NAMES } from '../src/storage/settings';
+import { stringsFor } from '../src/i18n';
 import { addDays } from '../src/journey/format';
 import {
   metrics,
@@ -94,6 +94,7 @@ export default function NewJourneyScreen() {
   const styles = useThemedStyles(newStyles);
   const { mode } = useTheme();
   const { settings } = useAppState();
+  const strings = stringsFor(settings.language);
   // 이 줄의 작은 묵주 표시가 고른 재질을 그대로 따르게 한다 (FR-39).
   const rosaryIcon = materialFor(mode, settings.rosary);
 
@@ -255,7 +256,7 @@ export default function NewJourneyScreen() {
           </View>
           <View style={styles.rosaryLeft}>
             <Text style={styles.rosaryTitle}>묵주</Text>
-            <Text style={styles.rosaryNote}>{ROSARY_NAMES[settings.rosary]}</Text>
+            <Text style={styles.rosaryNote}>{strings.rosaryName[settings.rosary]}</Text>
           </View>
           <Text style={styles.rosaryAction}>고르기 →</Text>
         </Pressable>

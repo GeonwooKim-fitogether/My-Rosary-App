@@ -694,7 +694,7 @@ test('W4 슬라이스 B · 영어로 바꾼 화면 넷을 찍는다', async ({ p
   await page.getByTestId('settings-region').click();
   await expect(page.getByTestId('region-screen')).toBeVisible();
   await page.getByTestId('language-en').click();
-  await expect(page.getByTestId('language-en-tag')).toHaveText('지금');
+  await expect(page.getByTestId('language-en-tag')).toHaveText('Now');
   await page.getByTestId('region-back').click();
 
   // 1. 설정 — 줄 이름이 가장 긴 화면이라 잘림이 여기서 먼저 드러난다.

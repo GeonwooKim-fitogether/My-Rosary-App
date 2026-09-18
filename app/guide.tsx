@@ -34,7 +34,7 @@ import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MYSTERY_SETS, mysteryForWeekday } from '../src/domain/mysteries';
 import type { MysteryKey } from '../src/domain/types';
-import { stringsFor } from '../src/i18n';
+import { fill, stringsFor } from '../src/i18n';
 import { cardStatus } from '../src/journey/card';
 import { mysteryOf } from '../src/journey/session';
 import { MYSTERY_SET_ORDER, mysteryRows, shortSetName } from '../src/mystery/text';
@@ -115,7 +115,7 @@ export default function GuideScreen() {
             style={[styles.title, { fontSize: titleFontSize, lineHeight: titleFontSize * 1.05 }]}
             testID="guide-set"
           >
-            {MYSTERY_SETS[set].name}
+            {strings[set]}
           </Text>
 
           {/* ── 네 벌을 고르는 칸 — 「Classical」 의 `.seg` ────────────────── */}
@@ -136,7 +136,7 @@ export default function GuideScreen() {
                   testID={`guide-tab-${key}`}
                 >
                   <Text style={[styles.segLabel, on ? styles.segLabelOn : null]}>
-                    {shortSetName(MYSTERY_SETS[key].name)}
+                    {shortSetName(strings[key])}
                   </Text>
                 </Pressable>
               );
@@ -171,7 +171,9 @@ export default function GuideScreen() {
             accessibilityRole="button"
             testID="guide-pray"
           >
-            <Text style={styles.primaryLabel}>{openable ? strings.prayThis : '새 기도'}</Text>
+            <Text style={styles.primaryLabel}>
+              {openable ? strings.prayThis : strings.newPrayer}
+            </Text>
           </Pressable>
 
           {/*
@@ -180,7 +182,7 @@ export default function GuideScreen() {
           */}
           {openable && set !== todaySet ? (
             <Text style={styles.primaryNote} testID="guide-today-note">
-              {`오늘 바치는 것은 ${MYSTERY_SETS[todaySet].name}입니다.`}
+              {fill(strings.todayIsSet, { set: strings[todaySet] })}
             </Text>
           ) : null}
         </View>
