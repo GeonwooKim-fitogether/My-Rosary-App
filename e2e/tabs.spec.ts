@@ -8,8 +8,9 @@
  * 1. **탭을 누를 때마다 화면이 쌓이면** 홈·설정·홈·설정… 이 끝없이 포개진다. 눈으로는
  *    보이지 않는다 — 맨 위 한 장만 보이기 때문이다. 그래서 오간 뒤 홈이 **한 장뿐인지**
  *    세어 확인한다.
- * 2. **갤러리 탭은 아직 만들지 않은 화면으로 간다.** 눌러도 아무 일이 없으면 고장으로
- *    읽히므로, "곧 만들어집니다" 한 줄이 실제로 보이는지 본다.
+ * 2. **탭이 실제로 그 화면을 연다.** 주소만 바뀌고 화면이 서지 않으면 눌린 것이 아니므로,
+ *    탭마다 그 화면이 자기 것임을 말하는 자리 하나를 함께 본다. 갤러리 탭은 W3 슬라이스 B
+ *    까지 "곧 만들어집니다" 한 줄이었고, 이제 성화 격자가 선다.
  */
 import { expect, test } from '@playwright/test';
 import { collectConsoleErrors, enterHome, openApp, tapTab } from './support/harness';
@@ -24,15 +25,15 @@ test('아래 탭 바로 홈 · 갤러리 · 여정 · 설정을 오간다', asyn
   // 홈에 서 있는 동안 탭 바가 보인다.
   await expect(page.getByTestId('tab-bar')).toBeVisible();
 
-  // 갤러리 — W3 의 화면이라 아직 한 줄뿐이지만, 눌러서 닿는다.
+  // 갤러리 — W3 슬라이스 B 가 시안의 성화 갤러리로 채웠다.
   await tapTab(page, 'gallery');
   await expect(page.getByTestId('gallery-screen')).toBeVisible();
-  await expect(page.getByTestId('gallery-soon')).toHaveText('곧 만들어집니다.');
+  await expect(page.getByTestId('gallery-grid')).toBeVisible();
 
-  // 여정 — 지금 있는 여정 상세 화면으로 간다 (그 화면을 시안 어법으로 옮기는 일은 W3).
+  // 여정 — W3 슬라이스 A 가 새 시안의 어법으로 다시 세운 여정 목록 화면이다.
   await tapTab(page, 'journeys');
   await expect(page.getByTestId('journey-screen')).toBeVisible();
-  await expect(page.getByTestId('journey-title')).toHaveText('어머니 병환 회복');
+  await expect(page.getByTestId('journey-title-0')).toHaveText('어머니 병환 회복');
 
   // 설정 — M2 에서 홈 머리의 `설정` 글자가 하던 일을 탭이 이어받았다.
   await tapTab(page, 'settings');

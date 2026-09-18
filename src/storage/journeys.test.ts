@@ -51,6 +51,15 @@ describe('날짜는 날짜로 적는다', () => {
   it('날짜가 아닌 것은 되읽지 않는다', () => {
     expect(fromDateKey('2026-9-5')).toBeNull();
     expect(fromDateKey('어제')).toBeNull();
+    /*
+      없는 날짜도 버린다 (W3 슬라이스 C 에서 더했다). 자바스크립트는 이런 값을 오류 없이
+      다음 달로 굴려 버려서, 거르지 않으면 여정이 엉뚱한 날 시작한 것으로 조용히 선다.
+    */
+    expect(fromDateKey('2026-13-45')).toBeNull();
+    expect(fromDateKey('2026-02-30')).toBeNull();
+    expect(fromDateKey('2026-00-10')).toBeNull();
+    // 있는 날짜는 그대로 산다 — 2028년은 윤년이라 2월 29일이 있다.
+    expect(fromDateKey('2028-02-29')).toEqual(new Date(2028, 1, 29));
   });
 });
 

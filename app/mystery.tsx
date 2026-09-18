@@ -180,7 +180,8 @@ export default function MysteryScreen() {
           style={styles.primary}
           onPress={() => {
             if (!openable) {
-              router.push('/new');
+              // W3 에서 여정을 만드는 자리가 여정 화면 하나로 모였다 (§1-2).
+              router.push('/journey');
               return;
             }
             primeSpeech();

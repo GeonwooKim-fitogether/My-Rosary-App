@@ -1,5 +1,9 @@
 /**
- * 앱이 들고 있는 것 하나 — 여정 목록과 설정.
+ * 앱이 들고 있는 것 하나 — 여정 목록과 설정, 그리고 성화 둘(고정한 그림 · 즐겨찾기 목록).
+ *
+ * 성화 둘은 W3 슬라이스 B 에서 들어왔다. 그전까지 고정한 그림은 이 파일 안의 모듈 변수였고
+ * 즐겨찾기는 아예 없었는데, 갤러리와 감상 화면이 **그 값 자체를 그리게 되면서** 화면이
+ * 구독할 수 있는 자리로 옮겨 왔다. 까닭은 아래 `AppState` 의 그 칸에 적혀 있다.
  *
  * 화면 다섯이 같은 여정 목록을 본다(홈 · 새 기도 · 여정 상세 · 여정 완주 · 기도). 그래서
  * 상태를 화면 안에 두지 않고 여기 한 곳에 두고, 화면은 `useAppState()` 로 구독만 한다.
@@ -20,7 +24,10 @@ import { demoJourney } from '../journey/demo';
 import type { Journey } from '../journey/session';
 import { rolledDays, withTodayPrayed } from '../journey/rules';
 import { setHapticEnabled } from '../prayer/channels';
+import { positionStore } from '../storage/asyncStore';
+import type { ParsedBackup } from '../storage/backup';
 import { createJourneyStore } from '../storage/journeys';
+import { createFavoriteArtStore, toggleFavorite } from '../storage/favoriteArt';
 import { createPinnedArtStore, LAST_ART_KEY } from '../storage/pinnedArt';
 import {
   createSettingsStore,
@@ -32,6 +39,7 @@ import type { RegionKey } from '../theme/worldTokens';
 const journeyStore = createJourneyStore(AsyncStorage);
 const settingsStore = createSettingsStore(AsyncStorage);
 const pinnedArtStore = createPinnedArtStore(AsyncStorage);
+const favoriteArtStore = createFavoriteArtStore(AsyncStorage);
 /** 바로 앞에 보여 준 성화의 이름 — 같은 그림이 두 번 이어 나오지 않게 하는 데 쓴다. */
 const lastArtStore = createPinnedArtStore(AsyncStorage, LAST_ART_KEY);
 
@@ -40,9 +48,27 @@ export interface AppState {
   ready: boolean;
   journeys: Journey[];
   settings: AppSettings;
+  /**
+   * 고정한 성화의 파일 이름. 고정한 적이 없으면 null 이다 (W3 슬라이스 B).
+   *
+   * **W2 까지 이 값은 이 파일 안의 모듈 변수였다.** 그때는 화면이 볼 일이 없었기 때문이다 —
+   * 화면이 보는 것은 뽑기가 내어 주는 그림이지 그 그림을 고른 재료가 아니었다. 그런데
+   * 갤러리와 감상 화면은 **재료 자체를 그린다**: 격자의 어느 칸에 `고정됨` 표를 얹을지,
+   * 감상 화면의 단추가 `고정하기` 인지 `고정 해제` 인지가 이 값으로 갈린다. 모듈 변수는
+   * 구독할 수 없어 값이 바뀌어도 화면이 다시 그려지지 않으므로, 상태로 끌어올렸다.
+   */
+  pinnedArt: string | null;
+  /** 즐겨찾기에 담은 성화들의 파일 이름 (W3 슬라이스 B · `src/storage/favoriteArt.ts`). */
+  favoriteArt: string[];
 }
 
-let state: AppState = { ready: false, journeys: [], settings: { ...DEFAULT_SETTINGS } };
+let state: AppState = {
+  ready: false,
+  journeys: [],
+  settings: { ...DEFAULT_SETTINGS },
+  pinnedArt: null,
+  favoriteArt: [],
+};
 const listeners = new Set<() => void>();
 
 export function getAppState(): AppState {
@@ -82,13 +108,14 @@ export interface OpenOptions {
   artSeed?: number;
 }
 
-/* ── 성화 뽑기를 다시 여는 데 필요한 것 셋 (W2 슬라이스 C) ─────────────────────────
+/* ── 성화 뽑기에만 쓰이는 값 둘 (W2 슬라이스 C) ───────────────────────────────────
    화면에 그려지는 값이 아니라 뽑기에만 쓰이는 값이라 `AppState` 에 넣지 않았다. 상태에
-   넣으면 아무도 구독하지 않는 칸이 셋 늘고, 화면은 그 값을 볼 일이 없다 — 화면이 보는
-   것은 뽑기가 내어 주는 **그림**이지 그 그림을 고른 재료가 아니다. ──────────────── */
+   넣으면 아무도 구독하지 않는 칸이 늘고, 화면은 그 값을 볼 일이 없다 — 화면이 보는 것은
+   뽑기가 내어 주는 **그림**이지 그 그림을 고른 재료가 아니다.
 
-/** 고정한 성화의 파일 이름. */
-let pinnedArt: string | null = null;
+   **셋이었다가 둘이 됐다.** 고정한 성화만은 W3 슬라이스 B 에서 `AppState` 로 올라갔다 —
+   갤러리와 감상 화면이 그 값 자체를 그리기 때문이며, 까닭은 그 칸의 주석에 있다. ──── */
+
 /** 바로 앞에 보여 준 성화의 파일 이름. */
 let lastArt: string | null = null;
 /** 씨앗. 사진을 찍는 e2e 만 넘긴다. */
@@ -96,7 +123,13 @@ let artSeed: number | undefined;
 
 /**
  * 성화 뽑기를 다시 연다. 부르는 자리는 셋뿐이다 — 앱을 열 때, 지역을 바꿀 때,
- * 성화를 고정할 때. 셋 다 기도 화면 밖이므로 "기도 중에는 바뀌지 않는다"가 지켜진다.
+ * 성화를 고정하거나 고정을 풀 때. 셋 다 기도 화면 밖이므로 "기도 중에는 바뀌지 않는다"가
+ * 지켜진다.
+ *
+ * 고정한 그림을 **인자로 받는** 이유를 적어 둔다. 이 값은 이제 `AppState` 에 있는데, 앱을
+ * 열 때는 아직 그 상태가 발행되기 전에 뽑기를 열어야 한다(뽑기가 열려야 첫 화면이 그림을
+ * 물을 수 있다). 부르는 쪽이 자기가 아는 값을 넘기게 하면 "상태에 있는 값"과 "아직 발행되지
+ * 않은 값"을 가르는 일이 없어진다.
  *
  * **기억하는 일이 끝날 때까지 기다릴 수 있게 약속을 돌려준다.** 앱을 열 때만 그 약속을
  * 기다린다 — 기다리지 않으면 앱을 열자마자 다시 여는 경우(화면 새로 고침)에 기억이 아직
@@ -104,8 +137,21 @@ let artSeed: number | undefined;
  * 그 어긋남이 화면 사진에서 먼저 드러났다 — 같은 시험을 두 번 돌렸는데 여정 완주 화면의
  * 성화가 달랐다(2026-09-18 실측).
  */
-function reopenArt(region: RegionKey): Promise<void> {
-  const first = configureArtSession({ region, pinned: pinnedArt, avoid: lastArt, seed: artSeed });
+function reopenArt(region: RegionKey, pinned: string | null): Promise<void> {
+  artSeedInUse = artSeed ?? null;
+  /*
+   * 씨앗이 걸려 있으면 **직전 그림 피하기를 끈다.**
+   *
+   * 씨앗은 순서를 고정하지만, 피하기는 기기에 기억된 직전 그림을 읽어 그 순서의 첫 자리를
+   * 한 칸 밀어낸다. 그 기억이 기기에 닿는 시점이 화면을 다시 여는 속도에 따라 갈리므로,
+   * 씨앗을 물려도 사진이 돌릴 때마다 달라지는 자리가 남았다 — 여정 완주와 이어서 바치는
+   * 홈 석 장이 그랬다(2026-09-18 실측, `decisions.md` Q-57).
+   *
+   * 씨앗이 있다는 것은 "지금은 재현이 목적"이라는 뜻이므로 피하기를 끄는 것이 옳다.
+   * 실제 사용자에게는 씨앗이 걸리지 않으므로 피하기가 그대로 산다.
+   */
+  const avoid = artSeed === undefined ? lastArt : null;
+  const first = configureArtSession({ region, pinned, avoid, seed: artSeed });
   if (!first) return Promise.resolve();
   lastArt = first.file;
   return lastArtStore.save(first.file);
@@ -130,13 +176,14 @@ export function openApp(options: OpenOptions = {}): Promise<void> {
     // 성화 뽑기를 이 지역의 묶음으로 연다. 고정한 그림과 지난번 그림을 먼저 읽어야
     // "고정한 것이 있으면 그것"과 "같은 것이 두 번 이어 나오지 않는다"가 성립한다.
     artSeed = options.artSeed;
-    pinnedArt = options.reset ? null : await pinnedArtStore.load();
+    const pinnedArt = options.reset ? null : await pinnedArtStore.load();
+    const favoriteArt = options.reset ? [] : await favoriteArtStore.load();
     lastArt = options.reset ? null : await lastArtStore.load();
-    await reopenArt(settings.region);
+    await reopenArt(settings.region, pinnedArt);
     setHapticEnabled(settings.haptic);
 
     const rolled = journeys.map((journey) => ({ ...journey, days: rolledDays(journey, today) }));
-    publish({ ready: true, journeys: rolled, settings });
+    publish({ ready: true, journeys: rolled, settings, pinnedArt, favoriteArt });
     persistJourneys(rolled);
     if (options.reset) void settingsStore.save(settings);
   })();
@@ -146,8 +193,13 @@ export function openApp(options: OpenOptions = {}): Promise<void> {
 /** 시험이 앱을 여러 번 열 수 있게 문을 다시 잠근다. 화면 코드는 쓰지 않는다. */
 export function resetAppStateForTest(): void {
   opening = null;
-  state = { ready: false, journeys: [], settings: { ...DEFAULT_SETTINGS } };
-  pinnedArt = null;
+  state = {
+    ready: false,
+    journeys: [],
+    settings: { ...DEFAULT_SETTINGS },
+    pinnedArt: null,
+    favoriteArt: [],
+  };
   lastArt = null;
   artSeed = undefined;
 }
@@ -160,10 +212,35 @@ export interface NewJourneyInput {
   startDate: Date;
 }
 
+/** 성화 씨앗이 걸려 있으면 그 값. 여정 번호를 세는 수로 만들지를 이 값이 정한다. */
+let artSeedInUse: number | null = null;
+
+/*
+ * 새 여정의 번호를 만든다.
+ *
+ * 보통은 시각과 난수를 붙여 만든다 — 여정 번호는 기기 안에서만 겹치지 않으면 되고,
+ * 같은 밀리초에 둘을 만드는 일은 사람 손으로는 일어나지 않기 때문이다.
+ *
+ * **다만 성화 씨앗(`?art=<숫자>`)이 걸려 있으면 번호도 세는 수로 만든다.** 성화를 고르는
+ * 규칙이 여정 번호에서 출발하므로(`artSession.forJourney`), 번호가 매번 달라지면 씨앗을
+ * 물려도 그림이 달라진다. 실제로 그랬다 — 씨앗을 넣은 뒤에도 여정 완주 화면의 사진이
+ * 돌릴 때마다 바뀌어, 사진 커밋에 뜻 없는 변경이 계속 섞였다(2026-09-18, `decisions.md`
+ * Q-57). 씨앗은 사진을 찍는 e2e 에서만 걸리는 진단용 손잡이이므로 실제 사용자는 이 길을
+ * 지나가지 않는다.
+ */
+let journeySeq = 0;
+function newJourneyId(): string {
+  if (artSeedInUse !== null) {
+    journeySeq += 1;
+    return `jseed${artSeedInUse}-${journeySeq}`;
+  }
+  return `j${Date.now().toString(36)}${Math.floor(Math.random() * 1296).toString(36)}`;
+}
+
 /** 새 여정을 만들어 목록 맨 앞에 둔다. 만들어진 여정을 돌려준다. */
 export function addJourney(input: NewJourneyInput, today: Date = new Date()): Journey {
   const journey: Journey = {
-    id: `j${Date.now().toString(36)}${Math.floor(Math.random() * 1296).toString(36)}`,
+    id: newJourneyId(),
     title: input.title,
     format: input.format,
     startDate: input.startDate,
@@ -205,11 +282,51 @@ export function finishTodayFor(id: string, today: Date = new Date()): { ended: b
 export function updateSettings(patch: Partial<AppSettings>): void {
   const settings = { ...state.settings, ...patch };
   if (patch.region !== undefined && patch.region !== state.settings.region) {
-    void reopenArt(patch.region);
+    void reopenArt(patch.region, state.pinnedArt);
   }
   if (patch.haptic !== undefined) setHapticEnabled(patch.haptic);
   publish({ ...state, settings });
   void settingsStore.save(settings);
+}
+
+/**
+ * 파일에서 읽어 온 기록으로 **이 기기의 기록을 통째로 갈아 끼운다** (W3 슬라이스 C).
+ *
+ * 이 함수는 되돌릴 수 없다. 그래서 부르는 자리(설정의 `기록 들여오기`)가 먼저 확인 시트를
+ * 띄워 무엇을 잃는지 수로 말하고, 사람이 그 시트에서 누른 뒤에만 여기 닿는다 — 이 저장소가
+ * 자리를 지우는 조작마다 두어 온 관문과 같다 (FR-18 · 시트 S3·S6).
+ *
+ * 하는 일은 넷이다.
+ *
+ * 1. **들어온 여정을 오늘에 맞춰 다시 칠한다**(`rolledDays`). 파일을 만든 날과 넣는 날이
+ *    다를 수 있고, 그 사이의 날들은 못 바친 날이 돼야 한다. 앱을 열 때와 같은 셈이다.
+ * 2. **오늘 바치던 자리를 지운다**(`positionStore.clear`). 그 쪽지는 이 기기에 남아 있던
+ *    것이라 방금 들어온 남의 여정 번호를 가리키지 않는다. 지우지 않으면 이어가기가 없는
+ *    여정을 열려 하고, 홈이 "이어서 바치기" 를 없는 여정에 걸어 둔다.
+ * 3. **성화 뽑기를 다시 연다.** 지역과 고정한 그림이 함께 바뀌었으므로, 다시 열지 않으면
+ *    홈의 큰 그림만 옛 기록의 것으로 남는다.
+ * 4. **진동 통로에 알린다.** `updateSettings` 가 설정 한둘을 고칠 때 하는 것과 같은 일이며,
+ *    여기서는 설정이 통째로 바뀌므로 반드시 다시 알려야 한다.
+ */
+export function importBackup(backup: ParsedBackup, today: Date = new Date()): void {
+  const journeys = backup.journeys.map((journey) => ({
+    ...journey,
+    days: rolledDays(journey, today),
+  }));
+  publish({
+    ready: true,
+    journeys,
+    settings: backup.settings,
+    pinnedArt: backup.pinnedArt,
+    favoriteArt: backup.favoriteArt,
+  });
+  persistJourneys(journeys);
+  void settingsStore.save(backup.settings);
+  void pinnedArtStore.save(backup.pinnedArt);
+  void favoriteArtStore.save(backup.favoriteArt);
+  void positionStore.clear();
+  void reopenArt(backup.settings.region, backup.pinnedArt);
+  setHapticEnabled(backup.settings.haptic);
 }
 
 /* ── 고정한 성화 (W1 §3-6 · W2 슬라이스 C 에서 배선됐다) ─────────────────────────
@@ -217,14 +334,38 @@ export function updateSettings(patch: Partial<AppSettings>): void {
    `고정됨` 으로 바꾸는 데 썼다). W2 슬라이스 C 가 **뽑기를 이 값에 잇는다** — 고정한
    그림이 있으면 홈·오늘의 신비·기도 배경이 모두 그 그림으로 선다.
 
-   상태(`AppState`)에는 여전히 넣지 않았다. 화면이 보는 것은 뽑기가 내어 주는 그림이지
-   그 그림을 고른 재료가 아니므로, 상태로 끌어올리면 아무도 구독하지 않는 칸이 는다. ── */
+   W3 슬라이스 B 가 둘을 더했다. 값이 `AppState` 로 올라가 화면이 구독할 수 있게 됐고,
+   **고정을 푸는 길**이 생겼다 — 시안의 감상 화면은 이미 고정된 그림에서 다시 누르면
+   풀리는데, W2 까지는 거는 길만 있었다. ─────────────────────────────────────── */
 
-/** 이 성화를 고정한다. 파일 이름 하나를 기기에 남기고, 그 자리에서 뽑기를 다시 연다. */
+/**
+ * 이 성화를 고정한다. 파일 이름 하나를 기기에 남기고, 그 자리에서 뽑기를 다시 연다.
+ * 뽑기를 다시 여는 것이 곧 **홈과 기도 배경이 이 그림으로 서는 일**이다.
+ */
 export function pinArt(file: string): void {
-  pinnedArt = file;
+  publish({ ...state, pinnedArt: file });
   void pinnedArtStore.save(file);
-  void reopenArt(state.settings.region);
+  void reopenArt(state.settings.region, file);
+}
+
+/**
+ * 고정을 푼다 (W3 슬라이스 B).
+ *
+ * 저장 자리에서 이름을 지우고 뽑기를 다시 여는데, 이때 뽑기는 고정이 없는 상태로 열리므로
+ * 홈과 기도 배경은 **지역 묶음에서 다시 뽑은 그림**으로 돌아간다. 고정을 건 자리(갤러리와
+ * 감상 화면)에서 같은 단추를 다시 누르는 것이 이 함수를 부른다.
+ */
+export function unpinArt(): void {
+  publish({ ...state, pinnedArt: null });
+  void pinnedArtStore.save(null);
+  void reopenArt(state.settings.region, null);
+}
+
+/** 이 성화를 즐겨찾기에 담거나 뺀다 (W3 슬라이스 B). 고정과 달리 뽑기에는 영향이 없다. */
+export function toggleFavoriteArt(file: string): void {
+  const favoriteArt = toggleFavorite(state.favoriteArt, file);
+  publish({ ...state, favoriteArt });
+  void favoriteArtStore.save(favoriteArt);
 }
 
 /** 고정한 성화의 파일 이름. 고정한 적이 없으면 null 이다. */

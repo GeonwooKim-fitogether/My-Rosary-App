@@ -292,3 +292,40 @@ export async function openHomeTab(page: Page): Promise<void> {
   await tapTab(page, 'home');
   await page.getByTestId('home-screen').waitFor();
 }
+
+/** 아래 탭 바로 여정 화면에 들어간다 (W3 슬라이스 A). */
+export async function openJourneys(page: Page): Promise<void> {
+  await tapTab(page, 'journeys');
+  await page.getByTestId('journey-screen').waitFor();
+}
+
+/* ── W3 슬라이스 A 가 더한 받침대 — 화면을 새로 고칠 때 손잡이가 떨어지는 문제 ──────────
+   `decisions.md` Q-57 의 **남은 한 장**이 여기서 닫혔다. 잰 결과를 그대로 적어 둔다.
+
+   시험이 날짜를 돌린 뒤 `page.reload()` 로 앱을 다시 열면, 그때 주소창에 남아 있는 것은
+   `/home` 뿐이다 — 처음 열 때 붙였던 손잡이 `?demo=1&art=<씨앗>` 이 화면을 옮기는 사이에
+   떨어져 나가기 때문이다(실측: 다시 고친 뒤의 주소가 `http://127.0.0.1:8081/home` 이었다).
+   씨앗이 없으면 성화 뽑기는 다시 난수가 되고, 그래서 **그 시험이 찍는 사진만** 돌릴 때마다
+   그림이 달라졌다. 다시 고치지 않는 나머지 열한 장이 멀쩡했던 까닭도 같다.
+
+   그래서 다시 고치는 대신 **손잡이를 붙인 같은 주소로 다시 연다.** 앱이 하는 일은
+   똑같고(처음부터 다시 읽는다) 씨앗만 살아남는다.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/**
+ * 손잡이를 붙인 채 앱을 다시 연다. `page.reload()` 를 대신한다.
+ *
+ * @param at 다시 열기 전에 세워 둘 시각. 주면 가짜 시계를 그 시각으로 옮긴다.
+ */
+export async function reopenApp(
+  page: Page,
+  options: { demo?: boolean; at?: Date; art?: number; path?: string } = {},
+): Promise<void> {
+  if (options.at) await page.clock.setSystemTime(options.at);
+  const query = new URLSearchParams();
+  if (options.demo !== false) query.set('demo', '1');
+  if (options.art !== undefined) query.set('art', String(options.art));
+  const search = query.toString();
+  const path = options.path ?? '/home';
+  await page.goto(search === '' ? path : `${path}?${search}`);
+}

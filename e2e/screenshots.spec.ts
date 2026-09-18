@@ -18,8 +18,10 @@ import {
   freezeClock,
   leavePrayer,
   openApp,
+  openJourneys,
   openSettings,
   pressMediaButton,
+  reopenApp,
   runUntilVisible,
   tapTab,
 } from './support/harness';
@@ -43,6 +45,8 @@ const M2 = 'docs/plan/m2-screens';
 const W1 = 'docs/plan/w1-screens';
 /** 새 시안의 어법으로 다시 세운 홈과 탭 바 (W2) 를 찍어 두는 자리. */
 const W2 = 'docs/plan/w2-screens';
+/** 새 시안의 어법으로 다시 세운 여정 화면과 여정 완주 (W3) 를 찍어 두는 자리. */
+const W3 = 'docs/plan/w3-screens';
 
 
 test.use({ reducedMotion: 'reduce' });
@@ -92,18 +96,20 @@ test('M2 · 홈 · 여정 상세 · 새 기도 · 초대 코드 · 설정을 찍
   */
   await expect(page.getByTestId('home-card-meta-0')).toHaveText('23일째 · 청원');
 
-  // 여정 상세 — 54칸 격자와 통계.
-  await page.getByTestId('home-ribbon-0').click();
-  await expect(page.getByTestId('journey-grid').locator('> div')).toHaveCount(54);
-  await page.screenshot({ path: `${M2}/journey.png` });
-  await page.getByTestId('journey-back').click();
+  /*
+    **여기서 `m2-screens/journey.png` 와 `m2-screens/new.png` 를 더 찍지 않는다.**
 
-  // 새 기도 — 바람을 한 줄 적은 상태로 찍는다. 빈 화면은 자리 글만 보인다.
-  await page.getByTestId('home-new').click();
-  await page.getByTestId('new-intent').fill('아버지의 건강');
-  await expect(page.getByTestId('new-finish')).toBeVisible();
-  await page.screenshot({ path: `${M2}/new.png` });
-  await page.getByTestId('new-close').click();
+    두 장은 v5 어법의 **여정 상세**와 **새 기도** 화면을 담은 M2 의 기록이고, W3 슬라이스 A 가
+    그 둘을 하나로 합쳐 새 시안의 여정 화면으로 다시 세웠다(`docs/plan/w3-work-order.md`
+    §1-2). 같은 자리에 다시 찍으면 M2 의 기록이 W3 의 화면으로 덮인다 — 홈·설정·나가기 시트
+    에서 이미 세 번 내린 같은 판정이며 처방도 같다. **재던 판정문은 그대로 두고 사진만 내린다.**
+
+    새 여정 화면의 사진은 이 파일 끝의 `W3 · …` 시험들이 `docs/plan/w3-screens/` 에 찍는다.
+    옛 `새 기도` 화면(`app/new.tsx`)은 지우지 않았지만 진입점이 끊겨 사람이 닿지 않으므로,
+    닿지 않는 화면을 계속 찍지 않는다 — 초대 코드 화면에 쓴 판단과 같다.
+  */
+  await page.getByTestId('home-ribbon-0').click();
+  await expect(page.getByTestId('journey-grid-0').locator('> div')).toHaveCount(54);
 
   /*
     초대 코드 — 여기서 `m2-screens/invite.png` 를 더 찍지 않는다.
@@ -138,16 +144,26 @@ test('M2 · 홈 · 여정 상세 · 새 기도 · 초대 코드 · 설정을 찍
   await page.screenshot({ path: `${M2}/sheet-pace.png` });
 });
 
-test('M2 · 여정 완주 화면을 찍는다', async ({ page }) => {
+/**
+ * M2 — 여정 완주 화면. **여기서 `m2-screens/all-done.png` 를 더 찍지 않는다.**
+ *
+ * 그 한 장은 v5 어법의 여정 완주 화면을 담은 M2 의 기록이고, W3 슬라이스 A 가 그 화면을
+ * 새 시안의 어법(성화 배경과 어두운 덮개, 아래에서 위로 쌓는 글)으로 다시 세웠다. 같은
+ * 자리에 다시 찍으면 M2 의 기록이 덮인다. 새 화면의 사진은 아래 `W3 · …` 시험이 찍는다.
+ *
+ * **이 한 장이 `decisions.md` Q-57 의 남은 자리였다.** 원인은 W3 에서 재서 밝혔다 — 아래
+ * `reopenApp` 이 `page.reload()` 를 대신하는 까닭이 그것이며, 잰 내용은
+ * `e2e/support/harness.ts` 의 그 함수 위에 적어 두었다. 요약하면, 화면을 다시 고칠 때
+ * 주소에서 성화 씨앗 손잡이가 떨어져 뽑기가 다시 난수가 되고 있었다.
+ */
+test('M2 · 여정 완주에 닿는 길이 그대로인지 확인한다', async ({ page }) => {
   await openApp(page, { art: ART_SEED });
   await enterHome(page);
-  await page.clock.setSystemTime(new Date('2026-10-06T09:00:00'));
-  await page.reload();
+  await reopenApp(page, { at: new Date('2026-10-06T09:00:00'), art: ART_SEED });
   await expect(page.getByTestId('home-card-meta-0')).toHaveText('54일째 · 감사');
   await enterPrayerFromHome(page);
   await runUntilVisible(page, 'all-done-screen');
   await expect(page.getByTestId('all-done-screen')).toBeVisible();
-  await page.screenshot({ path: `${M2}/all-done.png` });
 });
 
 
@@ -264,13 +280,19 @@ test('W1 · 기도 화면을 나가는 방법을 묻는 시트를 찍는다', as
 
 
 /**
- * W2 — 새 시안의 어법으로 다시 세운 홈과, 탭 바가 닿는 자리들을 찍는다 (통과 조건 6).
+ * W2 — 새 시안의 어법으로 다시 세운 홈을 찍는다 (통과 조건 6).
  *
- * 세 가지 상태를 찍는다. 여정이 서 있는 홈, 여정이 하나도 없는 홈, 그리고 아직 비어 있는
- * 성화 갤러리다. 빈 홈을 함께 찍는 이유는 그것이 **처음 설치한 사람이 보는 화면**이기
- * 때문이다 — 여정이 있는 홈만 찍으면 그 첫인상을 아무도 보지 못한다.
+ * 두 가지 상태를 찍는다. 여정이 서 있는 홈과 여정이 하나도 없는 홈(아래 시험)이다.
+ * 빈 홈을 함께 찍는 이유는 그것이 **처음 설치한 사람이 보는 화면**이기 때문이다 —
+ * 여정이 있는 홈만 찍으면 그 첫인상을 아무도 보지 못한다.
+ *
+ * **갤러리 한 장은 2026-09-18 에 이 시험에서 빠졌다.** 그때 찍던 것은 "곧 만들어집니다"
+ * 한 줄뿐인 자리 지킴이였고, W3 슬라이스 B 가 그 자리를 시안의 갤러리로 채웠다. 계속
+ * 찍으면 `w2-screens/gallery.png` 가 덮여 **자리 지킴이가 어떻게 생겼었는지의 기록이
+ * 사라지므로**, 그 한 장은 얼리고 새 갤러리의 사진은 `docs/plan/w3-screens/` 에 둔다.
+ * 홈 한 장을 M2 에서 W2 로 옮길 때와 같은 판단이다.
  */
-test('W2 · 새 홈과 성화 갤러리 자리를 찍는다', async ({ page }) => {
+test('W2 · 새 홈을 찍는다', async ({ page }) => {
   await openApp(page, { art: ART_SEED });
   await enterHome(page);
 
@@ -279,11 +301,6 @@ test('W2 · 새 홈과 성화 갤러리 자리를 찍는다', async ({ page }) =
   await expect(page.getByTestId('home-today-set')).toBeVisible();
   await page.waitForTimeout(400); // 성화가 떠오르는 움직임이 끝난 뒤에 찍는다
   await page.screenshot({ path: `${W2}/home.png` });
-
-  // 갤러리 탭 — W3 의 화면이라 아직 "곧 만들어집니다" 한 줄만 선다.
-  await tapTab(page, 'gallery');
-  await expect(page.getByTestId('gallery-soon')).toBeVisible();
-  await page.screenshot({ path: `${W2}/gallery.png` });
 });
 
 test('W2 · 여정이 하나도 없는 홈을 찍는다', async ({ page }) => {
@@ -374,10 +391,18 @@ test('W2 슬라이스 C · 설정과 지역·언어 화면을 찍는다', async 
   await openApp(page, { art: ART_SEED });
   await enterHome(page);
 
-  // 설정 — 아래 탭 바로 들어간다.
+  /*
+    설정 — 아래 탭 바로 들어간다.
+
+    **여기서 사진은 더 찍지 않는다 (2026-09-18, W3 슬라이스 C 에서 얼렸다).** `w2-screens/settings.png`
+    은 W2 가 세운 설정 화면의 기록인데, 슬라이스 C 가 그 화면 아래쪽에 줄 둘(기록 내보내기 ·
+    들여오기)을 더하면서 계속 찍으면 그 기록이 덮인다 — 실제로 한 번 덮여 화면 맨 아래에 새 줄이
+    걸쳐 나왔다. 재던 판정문은 그대로 두고 **사진을 남기는 줄만 뺐다.** 이 폴더가 `gallery.png` 과
+    `pray-leave.png` 에 이미 쓴 처방과 같으며, 새 두 줄이 선 설정의 사진은 `w3-screens/settings-backup.png`
+    에 있다.
+  */
   await openSettings(page);
   await expect(page.getByTestId('settings-region-value')).toHaveText('한국 · 한국어');
-  await page.screenshot({ path: `${W2}/settings.png` });
 
   // 지역·언어 — 설정의 맨 위 줄을 눌러 들어간다.
   await page.getByTestId('settings-region').click();
@@ -390,4 +415,215 @@ test('W2 슬라이스 C · 설정과 지역·언어 화면을 찍는다', async 
   await expect(page.getByTestId('language-ko-tag')).toHaveText('지금');
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${W2}/region-southamerica.png` });
+});
+
+
+/**
+ * W3 슬라이스 A — 새 시안의 어법으로 다시 세운 여정 화면 (통과 조건 4).
+ *
+ * 넉 장을 찍는다. 줄이 **접힌** 목록, 줄이 **펴진** 목록을 **390 과 320 두 너비**에서, 그리고
+ * 여정이 하나도 없을 때의 화면이다.
+ *
+ * **두 너비를 찍는 까닭**이 날짜 격자에 있다. 시안은 27칸이 넘는 격자를 열여덟 열로 그리는데
+ * 320px 에서는 칸 하나가 11.33px 이 되어 칠해진 칸·오늘 칸·빈 칸을 가를 수 없다. 그래서 이
+ * 저장소는 아홉 열로 통일했고(`docs/plan/w3-work-order.md` §1-1), 두 너비의 사진이 나란히
+ * 있어야 그 판단이 옳았는지를 사람이 눈으로 확인할 수 있다.
+ *
+ * 모두 **아래 탭 바를 눌러 들어간 자리에서** 찍는다. 주소를 직접 열고 찍으면 배선이 없어도
+ * 사진이 나오므로, 사진 자체가 "닿을 수 있다"의 증거가 되게 하려는 것이다.
+ */
+test('W3 · 여정 화면을 접힌 것과 펴진 것으로, 두 너비에서 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+
+  // 접힌 목록 — 줄 하나, 진행선, 그리고 아래쪽의 `새 여정 시작` 이 한 화면에 든다.
+  await openJourneys(page);
+  await expect(page.getByTestId('journey-title-0')).toHaveText('어머니 병환 회복');
+  await expect(page.getByTestId('journey-grid-0')).toHaveCount(0);
+  await page.screenshot({ path: `${W3}/journeys.png` });
+
+  // 펴진 줄 — 54칸 격자가 아홉 열 여섯 줄로 선다.
+  await page.getByTestId('journey-row-0').click();
+  await expect(page.getByTestId('journey-grid-0').locator('> div')).toHaveCount(54);
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: `${W3}/journeys-open-390.png` });
+
+  // 같은 격자를 시안이 요구하는 최소 너비에서 한 번 더.
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.waitForTimeout(300);
+  await expect(page.getByTestId('journey-grid-0').locator('> div')).toHaveCount(54);
+  await page.screenshot({ path: `${W3}/journeys-open-320.png` });
+});
+
+test('W3 · 여정이 하나도 없는 여정 화면을 찍는다', async ({ page }) => {
+  await openApp(page, { demo: false, art: ART_SEED });
+  await enterHome(page);
+  await openJourneys(page);
+  await expect(page.getByTestId('journey-empty')).toBeVisible();
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: `${W3}/journeys-empty.png` });
+});
+
+/**
+ * W3 슬라이스 A — 새 어법으로 옮긴 여정 완주 화면.
+ *
+ * `page.reload()` 가 아니라 `reopenApp` 을 쓰는 까닭은 `decisions.md` Q-57 이다 — 다시
+ * 고치면 주소에서 성화 씨앗 손잡이가 떨어져 뽑기가 난수로 돌아가고, 그래서 이 한 장만
+ * 돌릴 때마다 그림이 달라졌다. 잰 내용은 `e2e/support/harness.ts` 의 그 함수 위에 있다.
+ */
+test('W3 · 여정 완주 화면을 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+  await reopenApp(page, { at: new Date('2026-10-06T09:00:00'), art: ART_SEED });
+  await expect(page.getByTestId('home-card-meta-0')).toHaveText('54일째 · 감사');
+  await enterPrayerFromHome(page);
+  await runUntilVisible(page, 'all-done-screen');
+  await expect(page.getByTestId('all-done-screen')).toBeVisible();
+  await page.waitForTimeout(400); // 성화가 떠오르는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W3}/all-done.png` });
+});
+
+/**
+ * W3 슬라이스 B — 성화 갤러리 석 장.
+ *
+ * 탭 셋 중 둘(지역 · 모든 성화)과 아무것도 담지 않은 즐겨찾기 탭을 찍는다. 셋째 장이
+ * 필요한 이유는 **시안이 그 상태를 그리지 않았기** 때문이다 — 빈 화면을 그냥 두면 고장으로
+ * 읽히므로 이 저장소가 한 줄을 파생했고, 그 판단은 글이 아니라 사진으로 확인돼야 한다.
+ *
+ * 모두 **아래 탭 바를 눌러 들어간 자리에서** 찍는다. 주소를 직접 열고 찍으면 배선이 없어도
+ * 사진이 나오므로, 사진 자체가 "닿을 수 있다"의 증거가 되게 하려는 것이다.
+ */
+test('W3 · 성화 갤러리를 탭 셋 중 둘과 빈 즐겨찾기로 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+
+  await tapTab(page, 'gallery');
+  await expect(page.getByTestId('gallery-screen')).toBeVisible();
+
+  // 지역 탭 — 한국이 쓰는 일곱 장이 2열 격자에 선다.
+  await expect(page.getByTestId('gallery-tab-region')).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('[data-testid^="gallery-open-"]')).toHaveCount(7);
+  await page.waitForTimeout(400); // 그림이 떠오르는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W3}/gallery-region.png` });
+
+  // 모든 성화 탭 — 표에 오른 열여섯 장 전부.
+  await page.getByTestId('gallery-tab-all').click();
+  await expect(page.locator('[data-testid^="gallery-open-"]')).toHaveCount(16);
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${W3}/gallery-all.png` });
+
+  // 즐겨찾기 탭 — 아직 비어 있다 (시안에 없는 자리).
+  await page.getByTestId('gallery-tab-favorites').click();
+  await expect(page.getByTestId('gallery-empty')).toBeVisible();
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${W3}/gallery-favorites-empty.png` });
+});
+
+/**
+ * W3 슬라이스 B — 전체 화면 감상 두 장.
+ *
+ * 껍데기가 **보일 때**와 **사라졌을 때**를 나란히 남긴다. 두 장이 함께 있어야 "그림을
+ * 누르면 껍데기가 사라진다"(시안의 `toggleViewUi`)가 눈으로 확인되고, 사라진 쪽에서
+ * 그림이 조금도 달라지지 않은 것도 함께 보인다.
+ *
+ * 갤러리에서 그림을 눌러 들어간다 — 탭 바로 갤러리에 닿고 거기서 한 번 더 누르는 길이
+ * 사람이 실제로 지나는 길이기 때문이다.
+ */
+test('W3 · 전체 화면 감상을 껍데기가 보일 때와 사라졌을 때로 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+
+  await tapTab(page, 'gallery');
+  const first = page.locator('[data-testid^="gallery-open-"]').first();
+  const testId = await first.getAttribute('data-testid');
+  const id = testId!.replace('gallery-open-', '');
+  await first.click();
+
+  await expect(page.getByTestId('art-screen')).toBeVisible();
+  await expect(page.getByTestId('art-title')).toBeVisible();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${W3}/art-view.png` });
+
+  // 그림을 누르면 닫기 단추와 아래 띠가 사라진다.
+  await page.getByTestId(`art-image-${id}`).click();
+  await expect(page.getByTestId('art-close')).toHaveCount(0);
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${W3}/art-view-bare.png` });
+});
+
+/**
+ * W3 슬라이스 C — 설정에 선 기록 내보내기·들여오기 두 줄과, 들여오기 확인 시트.
+ *
+ * 두 장을 찍는다. 설정 화면의 두 줄이 보이는 자리와, 파일을 고른 뒤에 뜨는 확인 시트다.
+ *
+ * **둘째 장이 이 슬라이스의 핵심 증거다.** 들여오기는 되돌릴 수 없는 조작인데, 그 앞에 관문을
+ * 세웠다는 것은 글로만 적으면 확인할 수 없다. 사진에는 시트가 잃을 것과 얻을 것을 **수로**
+ * 말하는 것이 그대로 찍히므로, 이 앱이 "정말 하시겠습니까" 로 묻지 않는다는 것이 보인다.
+ *
+ * **아래 탭 바의 `설정` 을 눌러 들어간 자리에서 찍는다.** 주소를 직접 열고 찍으면 배선이
+ * 없어도 사진이 나오므로, 사진 자체가 "닿을 수 있다"의 증거가 되게 하려는 것이다.
+ */
+test('W3 슬라이스 C · 기록 내보내기·들여오기 두 줄과 확인 시트를 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+  await openSettings(page);
+
+  /*
+    두 줄은 설정의 아래쪽에 있어 첫 화면에 들어오지 않는다. 사람이 하는 그대로 굴려 내린 뒤에
+    찍는다 — 사진이 담아야 하는 것은 화면의 맨 위가 아니라 이번에 세운 두 줄이다.
+
+    굴려 내리는 목표를 두 줄이 아니라 **맨 아래 줄(`소개`)** 로 잡은 까닭이 있다. 첫 줄만
+    보이게 굴리면 그 줄이 화면의 맨 아래에 걸쳐 서고 둘째 줄은 잘려 나간다 — 실제로 처음
+    찍은 사진이 그랬다. 마지막 줄까지 굴리면 두 줄이 함께 화면 안에 들어오므로, 찍기 전에
+    둘 다 화면 안에 있는지를 `toBeInViewport` 로 못 박는다.
+  */
+  await page.getByTestId('settings-about').scrollIntoViewIfNeeded();
+  await expect(page.getByTestId('settings-export')).toBeInViewport();
+  await expect(page.getByTestId('settings-import')).toBeInViewport();
+  await expect(page.getByTestId('settings-export')).toContainText('여정 1개와 설정을 파일 하나로');
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${W3}/settings-backup.png` });
+
+  // 확인 시트 — 파일을 하나 골라 준 뒤에 뜬다.
+  const chooser = page.waitForEvent('filechooser');
+  await page.getByTestId('settings-import').click();
+  const file = {
+    kind: 'myrosary.backup',
+    version: 1,
+    exportedAt: '2026-09-05T00:00:00.000Z',
+    journeys: [
+      {
+        id: 'j1',
+        title: '어머니 병환 회복',
+        format: 'fiftyfour',
+        startDate: '2026-08-14',
+        days: ['prayed'],
+        kind: 'petition',
+        recitation: 'alternate',
+      },
+      {
+        id: 'j2',
+        title: '아버지를 위하여',
+        format: 'novena9',
+        startDate: '2026-09-01',
+        days: ['prayed'],
+        kind: 'petition',
+        recitation: 'alternate',
+      },
+    ],
+    settings: {},
+    pinnedArt: null,
+    favoriteArt: [],
+  };
+  await (
+    await chooser
+  ).setFiles({
+    name: 'myrosary-backup-2026-09-05.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(file), 'utf-8'),
+  });
+
+  await expect(page.getByTestId('sheet-import')).toBeVisible();
+  await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W3}/settings-import-sheet.png` });
 });

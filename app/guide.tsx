@@ -161,7 +161,8 @@ export default function GuideScreen() {
             style={styles.primary}
             onPress={() => {
               if (!openable) {
-                router.push('/new');
+                // W3 에서 여정을 만드는 자리가 여정 화면 하나로 모였다 (§1-2).
+                router.push('/journey');
                 return;
               }
               primeSpeech();
@@ -234,7 +235,7 @@ const guideStyles = (palette: WorldPalette) =>
       아니므로 시안의 `accent` 를 그대로 쓴다 (Q-51).
     */
     segOptOn: { borderWidth: 1, borderColor: palette.accent },
-    segLabel: { ...worldGuideType.tab, color: palette.muted, textAlign: 'center' },
+    segLabel: { ...worldGuideType.tab, color: palette.ink, textAlign: 'center' },
     segLabelOn: { color: palette.accentText },
     list: { marginTop: 10 },
     row: {

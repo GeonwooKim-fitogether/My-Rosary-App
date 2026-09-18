@@ -151,8 +151,9 @@ test('여정이 하나도 없으면 두 화면이 요일 규칙으로 서고 단
   await page.getByTestId('mystery-guide-link').click();
   await expect(page.getByTestId('guide-set')).toHaveText(WEEKDAY_SET);
   await expect(page.getByTestId('guide-pray')).toHaveText('새 기도');
+  // W3 에서 여정을 만드는 자리가 여정 화면 하나로 모였다 (W3 지시서 §1-2).
   await page.getByTestId('guide-pray').click();
-  await expect(page.getByTestId('new-screen')).toBeVisible();
+  await expect(page.getByTestId('journey-screen')).toBeVisible();
 
   expect(errors).toEqual([]);
 });

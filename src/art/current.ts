@@ -46,8 +46,39 @@ export interface ArtSessionConfig {
   seed?: number;
 }
 
+/**
+ * 주소에 걸린 씨앗을 읽는다 — `?art=<숫자>` (`app/_layout.tsx` 가 같은 손잡이를 읽는다).
+ *
+ * **왜 첫 뽑기도 이 값을 읽어야 하나.** 저장된 것을 읽는 일은 비동기라, 그것이 끝나기 전에
+ * 첫 화면(로그인)이 이미 그림을 묻는다. 그 첫 뽑기에 씨앗이 없으면 **난수로** 답하고, 읽기가
+ * 끝난 뒤 씨앗을 물린 새 뽑기로 갈린다. 즉 씨앗을 걸어 두어도 순서가 한 번은 난수로 정해지는
+ * 구간이 남아 있었다. 이미 쓴 그림은 다시 집지 않는 방식이므로(비복원 추출), 그 구간에서
+ * 누가 먼저 묻느냐에 따라 뒤의 배정까지 갈릴 수 있다.
+ *
+ * 첫 뽑기가 같은 씨앗을 읽으면 첫 순서와 다시 연 순서가 **같은 순서**가 되어 그 구간이
+ * 사라진다. 씨앗이 걸리지 않은 실제 사용자에게는 아무 영향이 없다 — 아래 함수가
+ * `undefined` 를 돌려주어 지금까지와 똑같이 난수로 열린다.
+ *
+ * **정직하게 적어 둘 것 하나.** 이 구간이 실제로 사진을 흔드는 것을 이 컨테이너에서는
+ * 재현하지 못했다 — 이 줄을 넣기 전과 넣은 뒤 모두, 흔들린다던 두 장(`w2-screens/
+ * home-resume.png` · `home-again-sheet.png`)이 열한 번을 돌려도 한 바이트도 달라지지
+ * 않았고 두 상태의 결과가 서로 같았다(2026-09-18 실측). 그래도 이 줄을 두는 까닭은 위의
+ * 난수 구간이 **글로 따져도 분명히 있는** 것이고, 없애는 값이 진단용 손잡이를 쓸 때만
+ * 지나가는 길이라 잃는 것이 없기 때문이다.
+ */
+function seedFromLocation(): number | undefined {
+  if (typeof window === 'undefined' || typeof window.location === 'undefined') return undefined;
+  const value = new URLSearchParams(window.location.search).get('art');
+  if (value === null) return undefined;
+  const seed = Number(value);
+  return Number.isFinite(seed) ? seed : undefined;
+}
+
 /** 아직 설정을 읽기 전의 뽑기. 기본 지역으로 열어 두어 첫 그림이 비지 않게 한다. */
-let session = createArtSession({ plates: regionArtPlates(DEFAULT_SETTINGS.region) });
+let session = createArtSession({
+  plates: regionArtPlates(DEFAULT_SETTINGS.region),
+  seed: seedFromLocation(),
+});
 
 /**
  * 뽑기를 다시 연다. 앱을 열 때 · 지역을 바꿀 때 · 성화를 고정할 때 불린다.

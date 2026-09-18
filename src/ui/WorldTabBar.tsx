@@ -56,8 +56,8 @@ export type TabKey = 'home' | 'gallery' | 'journeys' | 'settings';
 const TAB_ROUTE: Record<TabKey, '/home' | '/gallery' | '/journey' | '/settings'> = {
   home: '/home',
   gallery: '/gallery',
-  // 여정 탭은 **지금 있는 여정 상세 화면**으로 간다. 그 화면은 주소에 여정 번호가 없으면
-  // 첫 여정을 편다(`app/journey.tsx`). 그 화면을 시안의 어법으로 옮기는 일은 W3 이다.
+  // 여정 탭은 여정 목록 화면으로 간다 (`app/journey.tsx`). W2 때는 그 자리가 v5 어법의
+  // 여정 **상세** 화면이었고, W3 슬라이스 A 가 새 시안의 목록 화면으로 다시 세웠다.
   journeys: '/journey',
   settings: '/settings',
 };
