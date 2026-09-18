@@ -495,10 +495,10 @@ const settingsStyles = (palette: WorldPalette, isKorean: boolean) =>
 
     rowText: { flex: 1, minWidth: 0 },
     rowLabel: { ...worldSettingsType.rowLabel, color: palette.ink, ...koWordBreak },
-    rowNote: { ...worldSettingsType.rowNote, color: palette.muted, marginTop: 2 },
+    rowNote: { ...worldSettingsType.rowNote, color: palette.muted, marginTop: 2, ...koWordBreak },
     rowValue: { ...worldSettingsType.rowValue, color: palette.accentText, textAlign: 'right' },
     count: { ...worldSettingsType.count, color: palette.accentText },
-    note: { ...worldSettingsType.rowNote, color: palette.muted, paddingTop: 10 },
+    note: { ...worldSettingsType.rowNote, color: palette.muted, paddingTop: 10, ...koWordBreak },
 
     /* 글자 크기 고르개 — 「Classical」 의 `.seg` (테 1px, 모서리 4, 칸 사이 세로선). */
     seg: {
@@ -512,7 +512,12 @@ const settingsStyles = (palette: WorldPalette, isKorean: boolean) =>
     segDivider: { borderLeftWidth: 1, borderLeftColor: RULE },
     /* 고른 칸은 강조색 테 하나로만 표시한다 (「Classical」 의 `inset 0 0 0 1px`). */
     segOn: { borderWidth: 1, borderColor: palette.accent },
-    segLabel: { fontFamily: worldFontStack('body', isKorean), color: palette.muted },
+    /*
+      `koWordBreak` 를 펴 넣는 자리다. 좁은 기기(320)에서는 넉 칸이 `아주 크게` 를 한 줄에
+      담지 못하는데, 그냥 두면 브라우저가 한국어를 글자 단위로 끊어 `아주 크 / 게` 가 된다.
+      이 값이 있으면 띄어쓰기에서만 끊겨 `아주 / 크게` 가 된다 — 줄이 하나 늘 뿐 낱말은 산다.
+    */
+    segLabel: { fontFamily: worldFontStack('body', isKorean), color: palette.muted, ...koWordBreak },
     segLabelOn: { color: palette.accentText },
 
     /* 토글 — 시안의 44×26. 켠 바탕은 글자가 아니므로 `accent` 를 그대로 쓴다. */
