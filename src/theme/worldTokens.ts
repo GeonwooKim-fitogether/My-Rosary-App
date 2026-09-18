@@ -714,3 +714,74 @@ export const worldRegionType = scaleTypeScale(
   },
   TEXT_SCALE,
 );
+
+/**
+ * 여정 화면(W3 슬라이스 A)의 서체 — 시안의 `data-screen-label="Journeys"` 블록에
+ * 인라인으로 적혀 있던 크기와 자간을 그대로 옮긴 것이다. 앞선 화면들과 같은 이유로 화면
+ * 이름으로 모았다: 시안은 화면마다 크기를 직접 정하고, 그 값이 그 화면의 정본이다.
+ *
+ * **여기 없는 것 하나.** 큰 제목(`기도 여정`)의 크기는 시안이 `clamp(30px, 8vw, 38px)` 로
+ * 적었고, 그 식은 신비 해설·설정 화면과 같으므로 이미 있는 `guideTitleSizeFor` 를 그대로
+ * 쓴다 — 같은 식을 두 번 적지 않는다.
+ *
+ * 제목 자리에 한글 명조를 쓰는 것은 앞선 화면들과 같은 이유다. 시안의 제목 글꼴
+ * (Cormorant Garamond)에는 한글 글리프가 없어 `어머니 병환 회복` 이 네모로 나온다.
+ */
+export const worldJourneyType = scaleTypeScale(
+  {
+    /** 12px · 자간 .14em · 대문자. 큰 제목 위의 작은 라벨 (시안의 `todayLabel`). */
+    label: {
+      fontFamily: fonts.sans,
+      fontSize: 12,
+      lineHeight: 12 * 1.25,
+      letterSpacing: 12 * 0.14,
+    },
+    /** 14px. 여정이 하나도 없을 때의 한 줄 (시안의 `t.noJourney`). */
+    empty: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 14 * 1.4 },
+    /** 11.5px · 자간 .1em · 대문자. 줄 위의 작은 라벨 (시안의 `j.kicker`). */
+    kicker: {
+      fontFamily: fonts.sans,
+      fontSize: 11.5,
+      lineHeight: 11.5 * 1.25,
+      letterSpacing: 11.5 * 0.1,
+    },
+    /** 21px 명조 · 줄 높이 1.25. 줄의 바람 한 줄 (시안의 `j.intention`). */
+    intention: { fontFamily: fonts.serif, fontSize: 21, lineHeight: 21 * 1.25 },
+    /** 12.5px. 줄 오른쪽의 며칠째 (시안의 `j.dayLabel`). */
+    dayLabel: { fontFamily: fonts.sans, fontSize: 12.5, lineHeight: 12.5 * 1.25 },
+    /** 12.5px. 펴진 자리 아래의 상태 한 줄과 `지우기` (시안의 `j.footer` · `t.delete`). */
+    footer: { fontFamily: fonts.sans, fontSize: 12.5, lineHeight: 12.5 * 1.35 },
+    /** 16px 명조. 펴진 자리의 주 단추 (시안의 `j.prayLabel`). */
+    rowButton: { fontFamily: fonts.serif, fontSize: 16, lineHeight: 16 * 1.2 },
+    /** 22px 명조. 아래쪽 `새 여정 시작` 제목 (시안의 `t.newJourney`). */
+    newTitle: { fontFamily: fonts.serif, fontSize: 22, lineHeight: 22 * 1.15 },
+    /** 13px. 형식 셋을 고르는 띠의 글자 (「Classical」 의 `.seg-opt`). */
+    segLabel: { fontFamily: fonts.sans, fontSize: 13, lineHeight: 13 * 1.3 },
+    /** 12px. 입력칸 위의 이름 (「Classical」 의 `.field > label`). */
+    fieldLabel: { fontFamily: fonts.sans, fontSize: 12, lineHeight: 12 * 1.3 },
+    /** 16px. 지향을 적는 입력칸 (시안이 `.input` 에 덧쓴 `font-size:16px`). */
+    input: { fontFamily: fonts.sans, fontSize: 16, lineHeight: 16 * 1.35 },
+    /** 17px 명조. `기도 시작` 단추의 글자 (시안의 `t.startJourney`). */
+    startLabel: { fontFamily: fonts.serif, fontSize: 17, lineHeight: 17 * 1.2 },
+  },
+  TEXT_SCALE,
+);
+
+/**
+ * 날짜 격자의 칸 수 — **언제나 아홉의 배수**다 (`docs/plan/w3-work-order.md` §1-1).
+ *
+ * 시안은 54일 여정의 격자를 열여덟 열로 그리는데, 시안 자신이 요구하는 최소 너비 320px
+ * 에서 칸 하나가 11.33px 이 된다. 그 격자에서 **오늘 칸은 바탕이 아니라 1px 테두리 하나로만
+ * 구별되므로**, 테두리가 네모 넓이의 18% 를 차지해 칠해진 칸·오늘 칸·빈 칸 셋을 눈으로
+ * 가를 수 없다. 그래서 이 저장소는 아홉 열로 통일했다 — 9일 여정은 한 줄, 54일 여정은
+ * 여섯 줄, 날마다 여정은 아홉 칸씩 늘어나는 줄이 된다.
+ *
+ * 날마다 여정의 칸 수를 아홉의 배수로 키우는 식(`max(9, ceil(며칠째/9)*9)`)은 시안의 것을
+ * 그대로 쓴다 — 시안도 같은 식으로 아홉의 배수를 만든다.
+ */
+export const GRID_COLUMNS = 9;
+
+/** 날마다 여정의 칸 수 — 시안의 `Math.max(9, Math.ceil(day / 9) * 9)`. */
+export function openEndedGridSize(dayIndex: number): number {
+  return Math.max(GRID_COLUMNS, Math.ceil(Math.max(1, dayIndex) / GRID_COLUMNS) * GRID_COLUMNS);
+}

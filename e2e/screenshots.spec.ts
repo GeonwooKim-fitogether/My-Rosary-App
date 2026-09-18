@@ -18,8 +18,10 @@ import {
   freezeClock,
   leavePrayer,
   openApp,
+  openJourneys,
   openSettings,
   pressMediaButton,
+  reopenApp,
   runUntilVisible,
   tapTab,
 } from './support/harness';
@@ -43,6 +45,8 @@ const M2 = 'docs/plan/m2-screens';
 const W1 = 'docs/plan/w1-screens';
 /** 새 시안의 어법으로 다시 세운 홈과 탭 바 (W2) 를 찍어 두는 자리. */
 const W2 = 'docs/plan/w2-screens';
+/** 새 시안의 어법으로 다시 세운 여정 화면과 여정 완주 (W3) 를 찍어 두는 자리. */
+const W3 = 'docs/plan/w3-screens';
 
 
 test.use({ reducedMotion: 'reduce' });
@@ -92,18 +96,20 @@ test('M2 · 홈 · 여정 상세 · 새 기도 · 초대 코드 · 설정을 찍
   */
   await expect(page.getByTestId('home-card-meta-0')).toHaveText('23일째 · 청원');
 
-  // 여정 상세 — 54칸 격자와 통계.
-  await page.getByTestId('home-ribbon-0').click();
-  await expect(page.getByTestId('journey-grid').locator('> div')).toHaveCount(54);
-  await page.screenshot({ path: `${M2}/journey.png` });
-  await page.getByTestId('journey-back').click();
+  /*
+    **여기서 `m2-screens/journey.png` 와 `m2-screens/new.png` 를 더 찍지 않는다.**
 
-  // 새 기도 — 바람을 한 줄 적은 상태로 찍는다. 빈 화면은 자리 글만 보인다.
-  await page.getByTestId('home-new').click();
-  await page.getByTestId('new-intent').fill('아버지의 건강');
-  await expect(page.getByTestId('new-finish')).toBeVisible();
-  await page.screenshot({ path: `${M2}/new.png` });
-  await page.getByTestId('new-close').click();
+    두 장은 v5 어법의 **여정 상세**와 **새 기도** 화면을 담은 M2 의 기록이고, W3 슬라이스 A 가
+    그 둘을 하나로 합쳐 새 시안의 여정 화면으로 다시 세웠다(`docs/plan/w3-work-order.md`
+    §1-2). 같은 자리에 다시 찍으면 M2 의 기록이 W3 의 화면으로 덮인다 — 홈·설정·나가기 시트
+    에서 이미 세 번 내린 같은 판정이며 처방도 같다. **재던 판정문은 그대로 두고 사진만 내린다.**
+
+    새 여정 화면의 사진은 이 파일 끝의 `W3 · …` 시험들이 `docs/plan/w3-screens/` 에 찍는다.
+    옛 `새 기도` 화면(`app/new.tsx`)은 지우지 않았지만 진입점이 끊겨 사람이 닿지 않으므로,
+    닿지 않는 화면을 계속 찍지 않는다 — 초대 코드 화면에 쓴 판단과 같다.
+  */
+  await page.getByTestId('home-ribbon-0').click();
+  await expect(page.getByTestId('journey-grid-0').locator('> div')).toHaveCount(54);
 
   /*
     초대 코드 — 여기서 `m2-screens/invite.png` 를 더 찍지 않는다.
@@ -138,16 +144,26 @@ test('M2 · 홈 · 여정 상세 · 새 기도 · 초대 코드 · 설정을 찍
   await page.screenshot({ path: `${M2}/sheet-pace.png` });
 });
 
-test('M2 · 여정 완주 화면을 찍는다', async ({ page }) => {
+/**
+ * M2 — 여정 완주 화면. **여기서 `m2-screens/all-done.png` 를 더 찍지 않는다.**
+ *
+ * 그 한 장은 v5 어법의 여정 완주 화면을 담은 M2 의 기록이고, W3 슬라이스 A 가 그 화면을
+ * 새 시안의 어법(성화 배경과 어두운 덮개, 아래에서 위로 쌓는 글)으로 다시 세웠다. 같은
+ * 자리에 다시 찍으면 M2 의 기록이 덮인다. 새 화면의 사진은 아래 `W3 · …` 시험이 찍는다.
+ *
+ * **이 한 장이 `decisions.md` Q-57 의 남은 자리였다.** 원인은 W3 에서 재서 밝혔다 — 아래
+ * `reopenApp` 이 `page.reload()` 를 대신하는 까닭이 그것이며, 잰 내용은
+ * `e2e/support/harness.ts` 의 그 함수 위에 적어 두었다. 요약하면, 화면을 다시 고칠 때
+ * 주소에서 성화 씨앗 손잡이가 떨어져 뽑기가 다시 난수가 되고 있었다.
+ */
+test('M2 · 여정 완주에 닿는 길이 그대로인지 확인한다', async ({ page }) => {
   await openApp(page, { art: ART_SEED });
   await enterHome(page);
-  await page.clock.setSystemTime(new Date('2026-10-06T09:00:00'));
-  await page.reload();
+  await reopenApp(page, { at: new Date('2026-10-06T09:00:00'), art: ART_SEED });
   await expect(page.getByTestId('home-card-meta-0')).toHaveText('54일째 · 감사');
   await enterPrayerFromHome(page);
   await runUntilVisible(page, 'all-done-screen');
   await expect(page.getByTestId('all-done-screen')).toBeVisible();
-  await page.screenshot({ path: `${M2}/all-done.png` });
 });
 
 
@@ -390,4 +406,70 @@ test('W2 슬라이스 C · 설정과 지역·언어 화면을 찍는다', async 
   await expect(page.getByTestId('language-ko-tag')).toHaveText('지금');
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${W2}/region-southamerica.png` });
+});
+
+
+/**
+ * W3 슬라이스 A — 새 시안의 어법으로 다시 세운 여정 화면 (통과 조건 4).
+ *
+ * 넉 장을 찍는다. 줄이 **접힌** 목록, 줄이 **펴진** 목록을 **390 과 320 두 너비**에서, 그리고
+ * 여정이 하나도 없을 때의 화면이다.
+ *
+ * **두 너비를 찍는 까닭**이 날짜 격자에 있다. 시안은 27칸이 넘는 격자를 열여덟 열로 그리는데
+ * 320px 에서는 칸 하나가 11.33px 이 되어 칠해진 칸·오늘 칸·빈 칸을 가를 수 없다. 그래서 이
+ * 저장소는 아홉 열로 통일했고(`docs/plan/w3-work-order.md` §1-1), 두 너비의 사진이 나란히
+ * 있어야 그 판단이 옳았는지를 사람이 눈으로 확인할 수 있다.
+ *
+ * 모두 **아래 탭 바를 눌러 들어간 자리에서** 찍는다. 주소를 직접 열고 찍으면 배선이 없어도
+ * 사진이 나오므로, 사진 자체가 "닿을 수 있다"의 증거가 되게 하려는 것이다.
+ */
+test('W3 · 여정 화면을 접힌 것과 펴진 것으로, 두 너비에서 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+
+  // 접힌 목록 — 줄 하나, 진행선, 그리고 아래쪽의 `새 여정 시작` 이 한 화면에 든다.
+  await openJourneys(page);
+  await expect(page.getByTestId('journey-title-0')).toHaveText('어머니 병환 회복');
+  await expect(page.getByTestId('journey-grid-0')).toHaveCount(0);
+  await page.screenshot({ path: `${W3}/journeys.png` });
+
+  // 펴진 줄 — 54칸 격자가 아홉 열 여섯 줄로 선다.
+  await page.getByTestId('journey-row-0').click();
+  await expect(page.getByTestId('journey-grid-0').locator('> div')).toHaveCount(54);
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: `${W3}/journeys-open-390.png` });
+
+  // 같은 격자를 시안이 요구하는 최소 너비에서 한 번 더.
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.waitForTimeout(300);
+  await expect(page.getByTestId('journey-grid-0').locator('> div')).toHaveCount(54);
+  await page.screenshot({ path: `${W3}/journeys-open-320.png` });
+});
+
+test('W3 · 여정이 하나도 없는 여정 화면을 찍는다', async ({ page }) => {
+  await openApp(page, { demo: false, art: ART_SEED });
+  await enterHome(page);
+  await openJourneys(page);
+  await expect(page.getByTestId('journey-empty')).toBeVisible();
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: `${W3}/journeys-empty.png` });
+});
+
+/**
+ * W3 슬라이스 A — 새 어법으로 옮긴 여정 완주 화면.
+ *
+ * `page.reload()` 가 아니라 `reopenApp` 을 쓰는 까닭은 `decisions.md` Q-57 이다 — 다시
+ * 고치면 주소에서 성화 씨앗 손잡이가 떨어져 뽑기가 난수로 돌아가고, 그래서 이 한 장만
+ * 돌릴 때마다 그림이 달라졌다. 잰 내용은 `e2e/support/harness.ts` 의 그 함수 위에 있다.
+ */
+test('W3 · 여정 완주 화면을 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+  await reopenApp(page, { at: new Date('2026-10-06T09:00:00'), art: ART_SEED });
+  await expect(page.getByTestId('home-card-meta-0')).toHaveText('54일째 · 감사');
+  await enterPrayerFromHome(page);
+  await runUntilVisible(page, 'all-done-screen');
+  await expect(page.getByTestId('all-done-screen')).toBeVisible();
+  await page.waitForTimeout(400); // 성화가 떠오르는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W3}/all-done.png` });
 });

@@ -29,10 +29,10 @@ test('아래 탭 바로 홈 · 갤러리 · 여정 · 설정을 오간다', asyn
   await expect(page.getByTestId('gallery-screen')).toBeVisible();
   await expect(page.getByTestId('gallery-soon')).toHaveText('곧 만들어집니다.');
 
-  // 여정 — 지금 있는 여정 상세 화면으로 간다 (그 화면을 시안 어법으로 옮기는 일은 W3).
+  // 여정 — W3 슬라이스 A 가 새 시안의 어법으로 다시 세운 여정 목록 화면이다.
   await tapTab(page, 'journeys');
   await expect(page.getByTestId('journey-screen')).toBeVisible();
-  await expect(page.getByTestId('journey-title')).toHaveText('어머니 병환 회복');
+  await expect(page.getByTestId('journey-title-0')).toHaveText('어머니 병환 회복');
 
   // 설정 — M2 에서 홈 머리의 `설정` 글자가 하던 일을 탭이 이어받았다.
   await tapTab(page, 'settings');

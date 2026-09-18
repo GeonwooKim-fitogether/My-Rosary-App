@@ -30,6 +30,8 @@ import {
   enterPrayerFromHome,
   freezeClock,
   openApp,
+  openHomeTab,
+  openSettings,
   pressMediaButton,
 } from './support/harness';
 
@@ -120,13 +122,29 @@ test('읽지 않기 여정에서는 소리 없이 진행 중으로 보인다', a
   const errors = collectConsoleErrors(page);
   const rosary = page.getByTestId('pray-rosary');
 
-  // 빈 홈에서 읽지 않기 여정을 만든다 — 사용자가 하는 그대로.
+  /*
+    빈 홈에서 읽지 않기 여정을 만든다 — 사용자가 하는 그대로.
+
+    **두 화면에 걸치게 된 까닭을 적어 둔다.** 그전에는 옛 `새 기도` 화면 하나에서 바람과
+    낭송 방식을 함께 골랐는데, W2 가 낭송 방식을 **설정 화면**으로 옮겼고(결정 12-E)
+    W3 이 여정을 만드는 자리를 **여정 화면**으로 모았다(W3 지시서 §1-2). 그래서 사용자가
+    실제로 하는 순서도 둘로 나뉜다 — 설정에서 낭송 방식을 정해 두고, 여정 화면에서 여정을
+    만들면 그 값이 새 여정에 물려진다. 이 시험이 재는 것(읽지 않기 여정의 묵주가 무엇을
+    말하는가)은 한 줄도 바뀌지 않았다.
+  */
   await openApp(page, { demo: false, art: ART_SEED });
   await enterHome(page);
+
+  await openSettings(page);
+  await page.getByTestId('settings-recitation').click();
+  await page.getByTestId('sheet-choice-silent').click();
+  await expect(page.getByTestId('settings-recitation-value')).toHaveText('소리 없이');
+  await openHomeTab(page);
+
   await page.getByTestId('home-new').click();
-  await page.getByTestId('new-intent').fill('어머니의 평안');
-  await page.getByTestId('new-recitation-silent').click();
-  await page.getByTestId('new-start').click();
+  await expect(page.getByTestId('journey-screen')).toBeVisible();
+  await page.getByTestId('journey-intent').fill('어머니의 평안');
+  await page.getByTestId('journey-start').click();
   await expect(page.getByTestId('pray-title')).toContainText('어머니의 평안');
   await freezeClock(page);
 

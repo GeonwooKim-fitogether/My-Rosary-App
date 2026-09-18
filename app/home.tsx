@@ -303,7 +303,14 @@ export default function HomeScreen() {
             */}
             <Pressable
               style={openable ? styles.secondary : styles.primary}
-              onPress={() => router.push('/new')}
+              /*
+                W3 에서 목적지가 옛 `새 기도` 화면(`app/new.tsx`)에서 **여정 화면**으로
+                바뀌었다. 여정을 만드는 자리를 한 곳으로 모은 결정이며
+                (`docs/plan/w3-work-order.md` §1-2), 두 자리를 다 두면 사람이 "둘 중
+                어디서 만들어야 맞나"를 묻게 되기 때문이다. 옛 화면은 지우지 않고
+                진입점만 끊었다.
+              */
+              onPress={() => router.push('/journey')}
               accessibilityRole="button"
               testID="home-new"
             >
@@ -486,6 +493,12 @@ function JourneyRow({
       </Pressable>
 
       <Pressable
+        /*
+          W3 에서 이 길의 끝이 달라졌다. 그전에는 여정 하나짜리 **상세 화면**이 열렸는데,
+          새 시안에는 상세가 없고 목록의 줄이 펴진다. 그래서 여정 번호를 그대로 들고 가되
+          닿는 곳이 **그 줄이 펴진 여정 화면**이다 — 사람이 보는 것(이 여정의 격자와 상태)은
+          같고, 화면 하나가 줄었다.
+        */
         onPress={() => router.push({ pathname: '/journey', params: { id: journey.id } })}
         accessibilityRole="button"
         accessibilityLabel="여정 상세"
