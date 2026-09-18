@@ -11,6 +11,7 @@ import type { KeyValueStore } from './position';
 
 /** 저장 열쇠. */
 import { ENABLED_LANGUAGES, REGION_DEFAULT_LANGUAGE, type LanguageKey } from '../i18n';
+import { PRAYER_FONT_DEFAULT, asFontScaleIndex, type FontScaleIndex } from '../theme/prayerFont';
 import { REGION_ORDER, type RegionKey } from '../theme/worldTokens';
 
 export const SETTINGS_KEY = 'myrosary.settings.v1';
@@ -49,6 +50,15 @@ export interface AppSettings {
   region: RegionKey;
   /** 화면 문구의 언어. 기도문의 언어는 이것과 갈릴 수 있다 (`src/i18n` 의 `prayerLanguage`). */
   language: LanguageKey;
+  /**
+   * 앱 안 글자 크기 — 0 작게 · 1 보통 · 2 크게 · 3 아주 크게 (W1 §3-5 · FR-28).
+   *
+   * 다른 설정과 달리 **설정 화면이 아니라 기도 화면의 `Aa` 단추**가 바꾼다. 시안이 그
+   * 손잡이를 기도 화면 머리에 두었기 때문이고, 글자 크기는 기도문을 보면서 고쳐야
+   * 맞는지 알 수 있는 값이기 때문이다. 크기 넷의 실제 px 값과 기기 배율과의 관계는
+   * `src/theme/prayerFont.ts` 가 정한다.
+   */
+  fontScale: FontScaleIndex;
 }
 
 /** 묵주의 우리말 이름. */
@@ -125,6 +135,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   theme: 'day',
   region: 'korea',
   language: 'ko',
+  fontScale: PRAYER_FONT_DEFAULT,
 };
 
 /** 읽어 들인 값에서 아는 것만 골라 쓴다. 모르는 값은 기본값으로 메운다. */
@@ -158,6 +169,7 @@ export function parseSettings(raw: string | null): AppSettings {
               ? (value.region as RegionKey)
               : DEFAULT_SETTINGS.region
           ],
+      fontScale: asFontScaleIndex(value.fontScale),
     };
   } catch {
     return { ...DEFAULT_SETTINGS };

@@ -52,8 +52,8 @@
  * (`4 / 10`) — 로 옮겼다(`app/pray.tsx` 의 `pray-counter`). 정보는 그대로 있고 자리만
  * 바뀌었으며, 옮긴 자리가 더 크고 화면 낭독기도 읽는다.
  */
-import { useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, Animated, Easing } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, Easing } from 'react-native';
 import Svg, { Circle, Defs, G, Line, Path, RadialGradient, Stop } from 'react-native-svg';
 import { onScrim } from '../theme/worldTokens';
 import type { RosaryKey } from '../storage/settings';
@@ -61,6 +61,7 @@ import type { PrayerPhase } from './phase';
 import { Bead, BeadGlow, BeadGradients, Cross, Medal, gradientIds } from './beadPaint';
 import { DECADE_PULSE_MS } from './phase';
 import { materialFor } from './rosaryMaterials';
+import { useReduceMotion } from './useReduceMotion';
 import {
   BEADS,
   BEAD_RADIUS,
@@ -143,21 +144,6 @@ const CHAIN_DASH = [2.4, 1.4];
 
 /** 어떤 값이 흐름(Animated)일 수도, 그냥 숫자일 수도 있다. 정지 화면에서는 숫자다. */
 type Flow = number | Animated.Value | Animated.AnimatedInterpolation<number>;
-
-/** 동작 줄이기 설정을 한 번 읽는다. 켜져 있으면 다섯 상태를 움직임 대신 모양으로 갈라 그린다. */
-function useReduceMotion(): boolean {
-  const [still, setStill] = useState(false);
-  useEffect(() => {
-    let cancelled = false;
-    void AccessibilityInfo.isReduceMotionEnabled().then((reduce) => {
-      if (!cancelled && reduce) setStill(true);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-  return still;
-}
 
 /** 지금 자리를 그리는 데 필요한 값 넷. */
 interface PhaseLook {

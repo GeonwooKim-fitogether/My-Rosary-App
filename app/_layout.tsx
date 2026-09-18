@@ -8,11 +8,19 @@
  * (`openApp`). 화면마다 읽으면 같은 것을 여러 번 읽게 되고, 읽는 동안 화면이 빈 목록을
  * 그려 "여정이 없다"고 잘못 말하게 된다. 둘째, **낮 벌과 밤 벌을 갈아 끼우는 `ThemeProvider`**
  * 가 화면 전체를 감싼다.
+ *
+ * W1 에서 셋째가 더해졌다. **안전 영역을 재는 `SafeAreaProvider`** 가 가장 바깥에 선다.
+ * 안전 영역(safe area)이란 노치·홈 인디케이터·상태 표시줄에 가리지 않는 화면의 속살을
+ * 말하며, 시안은 기도 화면의 머리를 `env(safe-area-inset-top) + 6` 으로 잡는다. 그 값을
+ * 읽으려면 이 공급자가 화면보다 위에 서 있어야 한다 — 없으면 `useSafeAreaInsets()` 가
+ * 어디서도 값을 얻지 못한다. 웹에서는 네 변이 모두 0 이라 시안과 같은 6px 이 되고, 노치가
+ * 있는 기기에서만 그만큼 내려온다.
  */
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
 import { openApp } from '../src/state/appStore';
 import { ThemeProvider, useTheme } from '../src/theme';
@@ -60,9 +68,11 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) return null;
 
   return (
-    <ThemeProvider>
-      <Shell />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <Shell />
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
 

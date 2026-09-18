@@ -19,6 +19,7 @@ import { demoJourney } from '../journey/demo';
 import type { Journey } from '../journey/session';
 import { rolledDays, withTodayPrayed } from '../journey/rules';
 import { createJourneyStore } from '../storage/journeys';
+import { createPinnedArtStore } from '../storage/pinnedArt';
 import {
   createSettingsStore,
   DEFAULT_SETTINGS,
@@ -27,6 +28,7 @@ import {
 
 const journeyStore = createJourneyStore(AsyncStorage);
 const settingsStore = createSettingsStore(AsyncStorage);
+const pinnedArtStore = createPinnedArtStore(AsyncStorage);
 
 export interface AppState {
   /** 저장소를 한 번 읽어 왔나. 읽기 전에는 화면이 빈 목록을 그리지 않고 기다린다. */
@@ -150,4 +152,20 @@ export function updateSettings(patch: Partial<AppSettings>): void {
   const settings = { ...state.settings, ...patch };
   publish({ ...state, settings });
   void settingsStore.save(settings);
+}
+
+/* ── 고정한 성화 (W1 §3-6) ───────────────────────────────────────────────────────
+   앱이 들고 있는 상태(`AppState`)에 넣지 않은 이유가 있다. 이 값을 지금 읽는 화면은
+   하루 완주 화면 하나뿐이고, 그 화면이 뜰 때 한 번 읽으면 충분하다. **홈과 기도 배경이
+   이 값을 쓰게 되는 W2 에서** 비로소 여러 화면이 같은 값을 봐야 하므로, 그때 상태로
+   끌어올린다. 지금 끌어올리면 아무도 구독하지 않는 상태 한 칸이 늘어난다. ──────────── */
+
+/** 이 성화를 고정한다. 파일 이름 하나를 기기에 남긴다. */
+export function pinArt(file: string): void {
+  void pinnedArtStore.save(file);
+}
+
+/** 고정한 성화의 파일 이름. 고정한 적이 없으면 null 이다. */
+export function loadPinnedArt(): Promise<string | null> {
+  return pinnedArtStore.load();
 }

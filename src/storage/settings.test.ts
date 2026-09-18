@@ -110,4 +110,27 @@ describe('지역과 언어 (결정 11 의 새 시안)', () => {
     expect(loaded.region).toBe('asia');
     expect(loaded.language).toBe('en');
   });
+
+  /* ── 앱 안 글자 크기 (W1 §3-5) ──────────────────────────────────────────────── */
+
+  it('앱 안 글자 크기의 기본값은 보통(1)이다', () => {
+    expect(DEFAULT_SETTINGS.fontScale).toBe(1);
+  });
+
+  it('글자 크기가 없던 옛 기기는 보통으로 열린다', () => {
+    expect(parseSettings(JSON.stringify({ recitation: 'silent' })).fontScale).toBe(1);
+  });
+
+  it('아는 자리 넷은 그대로 돌아오고, 범위를 벗어난 값은 보통으로 떨어진다', () => {
+    expect(parseSettings(JSON.stringify({ fontScale: 0 })).fontScale).toBe(0);
+    expect(parseSettings(JSON.stringify({ fontScale: 3 })).fontScale).toBe(3);
+    expect(parseSettings(JSON.stringify({ fontScale: 7 })).fontScale).toBe(1);
+    expect(parseSettings(JSON.stringify({ fontScale: '2' })).fontScale).toBe(1);
+  });
+
+  it('저장한 글자 크기가 그대로 돌아온다', async () => {
+    const store = createSettingsStore(memoryStore());
+    await store.save({ ...DEFAULT_SETTINGS, fontScale: 3 });
+    expect((await store.load()).fontScale).toBe(3);
+  });
 });

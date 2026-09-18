@@ -18,7 +18,7 @@
  * | 조작 | 앞·뒤 단추 두 칸 | 앞·뒤 단추 두 칸 **더하기** 고리 돌리기와 가운데 누르기 |
  * | 넘침 | 화면 전체가 스크롤된다 | 화면은 고정이고 **기도문만** 스크롤된다 |
  *
- * ── 시안과 다르게 한 자리 넷 (그리고 그 이유) ──────────────────────────────────
+ * ── 시안과 다르게 한 자리 다섯 (그리고 그 이유) ────────────────────────────────
  *
  * 1. **머리 가운데의 두 줄이 시안과 다른 것을 적는다.** 시안은 계정도 여정도 없는 앱이라
  *    그 자리에 `신비 이름 · 구간` 과 `n / 81` 을 적는다. 이 앱은 여정이 척추이므로 첫 줄에
@@ -29,15 +29,22 @@
  *    나뉜다. 지금 차례가 아닌 절은 **흐리게** 물러나게 해, 한 덩어리라는 인상을 지키면서
  *    교대가 보이게 했다.
  * 3. **잠시 멈춤과 여기서 끝내기가 시안에 없다.** 시안은 그 두 단추를 그리지 않았지만
- *    FR-18 이 요구하는 것이라 없앨 수 없다. 그래서 시안의 어법으로 자리를 만들었다 —
- *    머리 오른쪽의 44×44 아이콘 단추가 잠시 멈춤(자리를 남기고 나간다)이고, 머리 왼쪽의
- *    뒤로 단추가 여기서 끝내기(오늘 자리를 지우고 나간다)다.
- * 4. **CSS 에만 있는 것 셋을 다른 수단으로 풀었다.** `dvh`(화면 높이 비율)는 화면 크기를
+ *    FR-18 이 요구하는 것이라 없앨 수 없다. 그래서 **뒤로 화살표가 나가는 방법을 묻는
+ *    시트를 열고**, 그 안에 두 길이 글자로 선다(`src/ui/LeavePrayerSheet.tsx`).
+ *
+ *    이 자리는 한 번 고쳤다. 첫 판은 뒤로 화살표에 `여기서 끝내기`(오늘 바친 자리를
+ *    지운다)를 곧바로 걸었는데, **되돌아가려고 누른 사람의 오늘이 한 번의 오조작으로
+ *    사라지는** 자리였다. 옛 화면에서는 같은 일이 글자로 쓰인 단추에 걸려 있어 오해할 수
+ *    없었다는 점이 그 결함을 드러냈다. 지금은 화살표가 묻기만 하고 사람이 고른다.
+ * 4. **오른쪽 단추 둘 중 하나만 세웠다.** 시안의 머리 오른쪽에는 글자 크기(`Aa`)와 음성
+ *    켜고 끄기가 있는데, 음성은 이 앱에서 여정마다 고정되는 값이라(FR-34) 화면에서 켜고
+ *    끄지 않는다. 그래서 `Aa` 하나만 선다.
+ * 5. **CSS 에만 있는 것 셋을 다른 수단으로 풀었다.** `dvh`(화면 높이 비율)는 화면 크기를
  *    직접 재서 계산하고, `color-mix()`(색 섞기)는 그러데이션의 정지점 불투명도로 풀고,
  *    `mask-image`(아래쪽을 흐리게 지우는 가리개)는 React Native 에 없어 **넣지 않았다** —
  *    기도문이 아래에서 부드럽게 사라지는 효과가 빠진 것이며, 글이 잘리지는 않는다.
  */
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import {
@@ -51,6 +58,7 @@ import {
   type GestureResponderEvent,
 } from 'react-native';
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { artSession } from '../src/art';
 import { MYSTERY_SETS } from '../src/domain/mysteries';
 import { PRAYERS } from '../src/domain/sequence';
@@ -71,17 +79,19 @@ import {
   type RosaryPlacement,
 } from '../src/prayer/rosaryState';
 import { sectionLabel, sectionOf } from '../src/prayer/sections';
+import { useReduceMotion } from '../src/prayer/useReduceMotion';
 import { buildDayQueue } from '../src/prayer/steps';
 import type { PrayerKey } from '../src/domain/types';
 import { usePrayerSession, type DayResult } from '../src/prayer/usePrayerSession';
 import type { RosaryKey } from '../src/storage/settings';
 import type { PaceKey } from '../src/domain/types';
-import { stringsFor } from '../src/i18n';
+import { stringsFor, type Strings } from '../src/i18n';
 import { dayIndexOn, dayLabelOn } from '../src/journey/rules';
 import type { Journey } from '../src/journey/session';
 import { leaveToHome } from '../src/navigation/leaveToHome';
-import { finishTodayFor } from '../src/state/appStore';
+import { finishTodayFor, updateSettings } from '../src/state/appStore';
 import { useAppState } from '../src/state/useAppState';
+import { LeavePrayerSheet } from '../src/ui/LeavePrayerSheet';
 import {
   OFF_TURN_OPACITY,
   onScrim,
@@ -89,7 +99,14 @@ import {
   worldPrayType,
   type WorldPalette,
 } from '../src/theme/worldTokens';
-import { type } from '../src/theme';
+import {
+  FONT_SCALE_LABEL_KEYS,
+  nextFontScale,
+  prayerTextStyle,
+  type FontScaleIndex,
+} from '../src/theme/prayerFont';
+import { TEXT_SCALE } from '../src/theme/fontScale';
+import { fonts, type } from '../src/theme';
 
 /**
  * 성화 배경의 초점을 아래로 미는 정도 — 시안의 `Math.min(60, +m[2] + 14)`.
@@ -101,6 +118,20 @@ const FOCUS_SHIFT = { by: 14, max: 60 };
 
 /** 성화의 짙기. 시안의 `opacity:.92`. */
 const PLATE_OPACITY = 0.92;
+
+/** 머리가 안전 영역 아래로 더 내려오는 만큼. 시안의 `calc(env(safe-area-inset-top) + 6px)`. */
+const HEADER_TOP_GAP = 6;
+
+/** 아래 안내 한 줄이 안전 영역 위로 띄우는 만큼. 시안의 `calc(env(safe-area-inset-bottom) + 10px)`. */
+const HINT_BOTTOM_GAP = 10;
+
+/**
+ * 받는 사이에 뒷 절까지 굴러갈 때, 뒷 절 **위로** 남겨 두는 여백(px).
+ *
+ * 0 으로 두면 뒷 절이 칸의 맨 위 선에 딱 붙어, 앞 절이 한 글자도 보이지 않는다. 그러면
+ * 받을 글이 어디에서 이어지는지가 끊기므로 앞 절의 끝자락이 한 줄쯤 남을 만큼만 띄운다.
+ */
+const RESPONSE_SCROLL_GAP = 24;
 
 /**
  * 묵주 그림의 높이 — 시안의 `min(38dvh, calc(66vw * 1.35), 400px)`.
@@ -138,7 +169,8 @@ export default function PrayScreen() {
       handsFree={settings.handsFree}
       rosary={settings.rosary}
       palette={palette}
-      hint={`${stringsFor(settings.language).tapHint} · ${stringsFor(settings.language).dragHint}`}
+      strings={stringsFor(settings.language)}
+      fontScale={settings.fontScale}
     />
   );
 }
@@ -149,7 +181,8 @@ function PraySession({
   handsFree,
   rosary,
   palette,
-  hint,
+  strings,
+  fontScale,
 }: {
   journey: Journey;
   pace: PaceKey;
@@ -158,11 +191,14 @@ function PraySession({
   rosary: RosaryKey;
   /** 지역의 색 벌. 덮개 색이 여기서 온다. */
   palette: WorldPalette;
-  /** 화면 맨 아래의 조작 안내 한 줄. */
-  hint: string;
+  /** 고른 언어의 화면 문구 한 벌. 아래 안내 한 줄과 단추의 낭독 이름이 여기서 온다. */
+  strings: Strings;
+  /** 앱 안 글자 크기 넷 중 지금 자리 (§3-5). 머리의 `Aa` 단추가 이 값을 돌린다. */
+  fontScale: FontScaleIndex;
 }) {
   const styles = useMemo(() => prayStyles(palette), [palette]);
   const window = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const plate = artSession.forJourney(journey.id);
 
   const onFinish = useCallback(
@@ -243,16 +279,41 @@ function PraySession({
     return map;
   }, [queue]);
 
+  /**
+   * 나가는 방법을 묻는 시트가 열려 있나 (§4-2 의 3번).
+   *
+   * 머리의 뒤로 화살표는 **묻기만 한다.** 첫 판은 그 화살표에 `여기서 끝내기`(오늘 바친
+   * 자리를 지운다)를 곧바로 걸었는데, 되돌아가려고 누른 사람의 오늘이 한 번의 오조작으로
+   * 사라지는 자리였다. 무엇을 할지는 이제 사람이 시트 안에서 고른다.
+   */
+  const [leaveOpen, setLeaveOpen] = useState(false);
+
   /** 잠시 멈춤 — 자리를 남기고 나간다 (FR-18). */
   const pauseAndLeave = useCallback(() => {
+    setLeaveOpen(false);
     session.pause();
     leaveToHome();
   }, [session]);
 
   /** 여기서 끝내기 — 오늘 자리를 지우고 나간다. 다음에 열면 오늘 처음부터다 (FR-18). */
   const discardAndLeave = useCallback(() => {
+    setLeaveOpen(false);
     void session.discard().then(leaveToHome);
   }, [session]);
+
+  /**
+   * 기도문의 글자 크기 — 앱 안에서 고른 자리와 기기 배율을 함께 셈한 값 (§3-5).
+   *
+   * 웹에서는 `TEXT_SCALE.font` 가 기기 배율이고, iOS·Android 에서는 1 이다(React Native 가
+   * 스스로 곱하기 때문이며, 그쪽의 상한은 `maxFontSizeMultiplier` 로 걸린다). 두 경우를
+   * 가르는 일은 `src/theme/prayerFont.ts` 가 하고 화면은 결과만 쓴다.
+   */
+  const prayerText = useMemo(() => prayerTextStyle(fontScale, TEXT_SCALE.font), [fontScale]);
+
+  /** `Aa` 를 한 번 누르면 한 칸 커지고, 넷째에서 처음으로 돌아온다. */
+  const cycleFont = useCallback(() => {
+    updateSettings({ fontScale: nextFontScale(fontScale) });
+  }, [fontScale]);
 
   /**
    * 고리에서 집은 알로 옮긴다.
@@ -378,6 +439,64 @@ function PraySession({
   const responding = session.phase === 'response';
   const progress = Math.round(((session.index + 1) / queue.length) * 100);
 
+  /*
+   * 받을 절이 화면 밖에 있지 않게 한다.
+   *
+   * 앞 절이 길면(성모송 · 주님의 기도 · 사도신경) 내 차례가 됐을 때 **받아야 할 뒷 절이
+   * 스크롤 아래에 있다.** 교대 낭송이 이 앱의 차별점인데 받을 글이 안 보이면 그 차별점이
+   * 그 자리에서 무너지므로, 차례가 넘어오는 순간 기도문 칸이 스스로 뒷 절까지 굴러간다.
+   *
+   * 뒷 절의 자리는 그 글이 놓일 때(`onLayout`) 적어 둔다. 재는 시점과 차례가 넘어오는
+   * 시점 중 **어느 쪽이 먼저일지는 정해져 있지 않으므로**(아래 `live` 의 주석), 두 곳
+   * 모두에서 굴린다 — 늦게 온 쪽이 굴리면 된다.
+   */
+  const scrollRef = useRef<ScrollView>(null);
+  const still = useReduceMotion();
+
+  /**
+   * 그리기마다 갱신하는 지금 값들 — 자를 재는 일(`onLayout`)처럼 **그리기 밖에서 늦게
+   * 오는 일**이 읽는다.
+   *
+   * 왜 필요한지 적어 둔다. 뒷 절의 자리를 재 주는 `onLayout` 은 브라우저가 배치를 끝낸
+   * 뒤에 부르는데, 그 시점이 갈고리(`useEffect`)보다 **뒤일 때가 있다**. 실제로 이
+   * 컨테이너에서 재 보니 차례가 넘어온 갈고리가 먼저 돌고 자리가 그 뒤에 재어졌다. 그때
+   * 붙들고 있는 값이 그리기 당시의 것이면 이미 지난 값이라, 굴려야 할 때 굴리지 못한다.
+   * 참조에 담아 두면 어느 쪽이 먼저 오든 언제나 지금 값을 읽는다. 이 화면이 손가락 처리
+   * (`actions`)에 쓰는 것과 같은 수법이다.
+   */
+  const live = useRef({ index: session.index, responding, still });
+  live.current = { index: session.index, responding, still };
+
+  /**
+   * 뒷 절이 놓인 자리와, **그것을 어느 단계에서 쟀는가.**
+   *
+   * 단계 번호를 함께 적어 두는 이유가 있다. 자리를 재는 일은 뒷 절의 **크기가 바뀔 때만**
+   * 일어나므로, 크기가 같은 두 단계가 이어지면 다음 단계에서는 재지 않는다. 번호를 함께
+   * 적어 두면 다른 단계에서 잰 값을 쓰는 일이 없다.
+   */
+  const responseTop = useRef<{ at: number; y: number } | null>(null);
+
+  /** 받을 절이 보이게 칸을 굴린다. 잰 적이 없거나 다른 단계에서 잰 값이면 아무것도 안 한다. */
+  const scrollToResponse = useCallback(() => {
+    const measured = responseTop.current;
+    if (!measured || measured.at !== live.current.index) return;
+    scrollRef.current?.scrollTo({
+      y: Math.max(0, measured.y - RESPONSE_SCROLL_GAP),
+      animated: !live.current.still,
+    });
+  }, []);
+
+  // 단계가 바뀌면 맨 위로 되돌린다. 되돌리지 않으면 긴 기도문을 내려 읽은 다음 단계가
+  // 중간부터 열려, 새 기도문의 첫 줄을 사람이 직접 찾아 올려야 한다.
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  }, [session.index]);
+
+  // 내 차례가 되면 뒷 절까지 굴러간다. 움직임 줄이기가 켜져 있으면 굴리지 않고 곧바로 옮긴다.
+  useEffect(() => {
+    if (responding) scrollToResponse();
+  }, [responding, session.index, scrollToResponse]);
+
   return (
     <View style={styles.screen} testID="pray-screen">
       {/* 성화와 어두운 덮개. 손가락을 받지 않으므로 통째로 막아 둔다. */}
@@ -411,18 +530,19 @@ function PraySession({
         </Svg>
       </View>
 
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + HEADER_TOP_GAP }]}>
         {/*
-          뒤로 단추가 곧 `여기서 끝내기` 다 (§4-2 의 2번). 시안에는 그만두는 단추가 없고
-          뒤로 단추 하나가 화면을 벗어나는 유일한 길이므로, 지금까지 그 일을 하던 단추의
-          이름표(`pray-stop`)를 그대로 여기로 옮겼다.
+          뒤로 화살표 — 나가는 방법을 **묻는다** (§4-2 의 3번). 시안에는 화면을 벗어나는
+          길이 이 화살표 하나뿐인데 이 앱에는 나가는 방법이 둘이므로(자리를 남기는 잠시
+          멈춤과 자리를 지우는 여기서 끝내기), 화살표는 시트를 열고 사람이 그 안에서
+          고른다. 파괴적인 일을 화살표에 곧바로 걸지 않는 것이 이 자리의 요점이다.
         */}
         <Pressable
           style={styles.iconButton}
-          onPress={discardAndLeave}
+          onPress={() => setLeaveOpen(true)}
           accessibilityRole="button"
-          accessibilityLabel="여기서 끝내기, 오늘 처음부터"
-          testID="pray-stop"
+          accessibilityLabel={`${strings.back}, 기도 나가기`}
+          testID="pray-back"
         >
           <Icon path="M15 18 L9 12 L15 6" />
         </Pressable>
@@ -445,18 +565,18 @@ function PraySession({
         </View>
 
         {/*
-          잠시 멈춤 — 소리를 멈추고 자리를 남긴 채 홈으로 나간다 (FR-18). 시안에는 이 자리에
-          글자 크기(`Aa`)와 음성 단추가 있는데, 글자 크기는 다음 슬라이스의 일이고 음성은 이
-          앱에서 여정마다 고정되는 값이라(FR-34) 화면에서 켜고 끄지 않는다.
+          글자 크기 — 한 번 누를 때마다 한 칸 커지고 넷째에서 처음으로 돌아온다 (§3-5).
+          시안은 이 자리에 `Aa` 와 음성 단추 둘을 두는데, 음성은 이 앱에서 여정마다
+          고정되는 값이라(FR-34) 화면에서 켜고 끄지 않는다. 그래서 `Aa` 하나만 선다.
         */}
         <Pressable
           style={styles.iconButton}
-          onPress={pauseAndLeave}
+          onPress={cycleFont}
           accessibilityRole="button"
-          accessibilityLabel="잠시 멈춤, 자리가 남습니다"
-          testID="pray-pause"
+          accessibilityLabel={`${strings.fontSize}, ${strings[FONT_SCALE_LABEL_KEYS[fontScale]]}`}
+          testID="pray-font"
         >
-          <Icon path="M9.5 5 L9.5 19 M14.5 5 L14.5 19" />
+          <Text style={styles.fontButton}>Aa</Text>
         </Pressable>
       </View>
 
@@ -501,21 +621,46 @@ function PraySession({
           </Text>
         </View>
         <View style={styles.prayerScrollBox}>
-        <ScrollView style={styles.prayerScroll} contentContainerStyle={styles.prayerScrollInner}>
+        <ScrollView
+          ref={scrollRef}
+          style={styles.prayerScroll}
+          contentContainerStyle={styles.prayerScrollInner}
+        >
           {mysteryLine ? <Text style={styles.mysteryLine}>{mysteryLine}</Text> : null}
           {/*
             교대 낭송의 두 절 (카드 E). 지금 차례가 아닌 절은 흐리게 물러난다 — 앞 절은 앱이
             읽고 뒷 절은 사용자가 받으므로, 받는 사이(`response`)에는 뒷 절이 앞으로 나온다.
+
+            두 절의 **크기는 같다.** 시안의 기도문은 크기 하나짜리 한 덩어리이고, 이 앱이
+            더한 교대는 색과 흐림으로만 갈린다. 이 저장소의 옛 서체 계단은 앞 절 26px ·
+            뒷 절 21px 로 갈라 두었는데, 그 값을 그대로 두면 앱 안 글자 크기를 아무리 키워도
+            **사람이 직접 받는 절이 앱이 읽는 절보다 언제나 작다.**
           */}
           <Text
-            style={[styles.prayerLead, responding ? styles.offTurn : null]}
+            style={[
+              styles.prayerLead,
+              { fontSize: prayerText.fontSize, lineHeight: prayerText.lineHeight },
+              responding ? styles.offTurn : null,
+            ]}
+            maxFontSizeMultiplier={prayerText.maxFontSizeMultiplier}
             testID="pray-a"
           >
             {step?.a ?? ''}
           </Text>
           {step?.b ? (
             <Text
-              style={[styles.prayerResponse, responding ? null : styles.offTurn]}
+              style={[
+                styles.prayerResponse,
+                { fontSize: prayerText.fontSize, lineHeight: prayerText.lineHeight },
+                responding ? null : styles.offTurn,
+              ]}
+              maxFontSizeMultiplier={prayerText.maxFontSizeMultiplier}
+              onLayout={(event) => {
+                responseTop.current = { at: live.current.index, y: event.nativeEvent.layout.y };
+                // 자리가 차례보다 **늦게** 재어지는 일이 실제로 있다(위 `live` 의 주석).
+                // 그때는 차례를 알리는 갈고리가 이미 지나갔으므로 여기서 굴린다.
+                if (live.current.responding) scrollToResponse();
+              }}
               testID="pray-b"
             >
               {step.b}
@@ -563,9 +708,19 @@ function PraySession({
         />
       </View>
 
-      <Text style={styles.hint} numberOfLines={1}>
-        {hint}
+      <Text
+        style={[styles.hint, { paddingBottom: insets.bottom + HINT_BOTTOM_GAP }]}
+        numberOfLines={1}
+      >
+        {`${strings.tapHint} · ${strings.dragHint}`}
       </Text>
+
+      <LeavePrayerSheet
+        visible={leaveOpen}
+        onPause={pauseAndLeave}
+        onStop={discardAndLeave}
+        onClose={() => setLeaveOpen(false)}
+      />
     </View>
   );
 }
@@ -675,9 +830,12 @@ function StepButton({
 
 /**
  * 색은 지역의 덮개 위에 얹히는 값들(`onScrim`)과 그 지역의 덮개 색(`palette.scrim`)에서만
- * 온다. 크기와 간격은 시안의 기도 화면 마크업에서 그대로 옮겼고, 글자 크기 셋
- * (`pray-step` · `pray-a` · `pray-b`)만은 이 저장소의 서체 계단을 그대로 쓴다 — 시안의
- * 값으로 바꾸는 일은 앱 안 글자 크기 넷(§3-5)과 함께 다음 슬라이스에서 한다.
+ * 온다. 크기와 간격은 시안의 기도 화면 마크업에서 그대로 옮겼다.
+ *
+ * **기도문의 크기는 여기에 없다.** 그 값만은 사람이 화면에서 고르는 값이라(§3-5) 화면이
+ * 그릴 때 `prayerTextStyle` 로 셈해 얹는다. 여기 남는 것은 글꼴과 색뿐이다. 구간 라벨
+ * (`pray-step`)은 그대로 이 저장소의 서체 계단(`type.stepLabel`)을 쓴다 — 시안의 같은
+ * 자리(11px)와 크기가 가깝고, 전례색을 입히는 유일한 글자라 계단 쪽이 정본이다.
  */
 const prayStyles = (palette: WorldPalette) =>
   StyleSheet.create({
@@ -687,12 +845,12 @@ const prayStyles = (palette: WorldPalette) =>
       overflow: 'hidden',
     },
     /*
-     * 머리. 시안은 위 여백을 `env(safe-area-inset-top) + 6` 으로 잡는데 이 앱에는 아직
-     * 안전 영역을 읽는 장치가 없어(`SafeAreaProvider` 를 세우지 않았다) 고정값으로 둔다.
-     * 노치가 있는 기기에서 머리가 상태 표시줄에 닿는지는 실기기에서 확인할 일이다.
+     * 머리. 위 여백은 시안과 같이 **안전 영역 + 6** 이다 — 노치나 상태 표시줄에 가리지
+     * 않는 자리가 어디서 시작하는지를 `useSafeAreaInsets()` 가 재 주고, 화면이 그 값에
+     * 6 을 더해 쓴다(`HEADER_TOP_GAP`). 그 값은 기기마다 다르므로 여기 고정값으로 적지
+     * 않고 그릴 때 얹는다. 웹에서는 안전 영역이 0 이라 여백이 6 이 된다.
      */
     header: {
-      paddingTop: 44,
       paddingHorizontal: 8,
       flexDirection: 'row',
       alignItems: 'center',
@@ -701,6 +859,9 @@ const prayStyles = (palette: WorldPalette) =>
       flexShrink: 0,
     },
     iconButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+    // 시안의 `Aa` — `font-family:var(--font-heading); font-size:20px`. 라틴 제목 글꼴 대신
+    // 한글 명조를 쓰는 이유는 이 화면의 다른 제목들과 같다(`worldPrayType.title` 의 주석).
+    fontButton: { ...worldPrayType.fontButton, color: onScrim.ink },
     headerCenter: { flex: 1, alignItems: 'center', minWidth: 0 },
     // 시안의 `font-size:12px; letter-spacing:.12em`.
     headerTitle: { ...worldPrayType.header, color: onScrim.ink, textAlign: 'center' },
@@ -753,8 +914,9 @@ const prayStyles = (palette: WorldPalette) =>
     prayerScrollInner: { paddingTop: 12, paddingBottom: 16 },
     // 시안의 `font-size:13px; color:#e9c877` — 지금 단에서 무엇을 묵상하는가.
     mysteryLine: { ...worldPrayType.mystery, color: onScrim.accent, marginBottom: 10 },
-    prayerLead: { ...type.prayerLead, color: onScrim.ink },
-    prayerResponse: { ...type.prayerResponse, color: onScrim.accent, marginTop: 12 },
+    // 크기와 줄 높이는 그릴 때 얹는다 (위 주석). 여기 있는 것은 글꼴과 색뿐이다.
+    prayerLead: { fontFamily: fonts.serif, color: onScrim.ink },
+    prayerResponse: { fontFamily: fonts.serif, color: onScrim.accent, marginTop: 12 },
     offTurn: { opacity: OFF_TURN_OPACITY },
 
     // 앞·뒤 단추. 시안의 두 칸 격자 — 최소 높이 48, 둥근 알약, 다음 쪽만 강조색 테.
@@ -792,7 +954,7 @@ const prayStyles = (palette: WorldPalette) =>
       textAlign: 'center',
       paddingHorizontal: 16,
       paddingTop: 6,
-      paddingBottom: 16,
+      // 아래 여백은 안전 영역 위로 10 을 띄운 값이다 (`HINT_BOTTOM_GAP`, 시안과 같다).
       flexGrow: 0,
       flexShrink: 0,
     },

@@ -206,6 +206,23 @@ export async function enterPrayerFromHome(page: Page, index = 0): Promise<void> 
 }
 
 /**
+ * 기도 화면에서 나간다 — 뒤로 화살표를 눌러 시트를 열고, 나가는 두 길 중 하나를 고른다.
+ *
+ * W1 에서 화면의 동작이 바뀌어 생긴 받침대다. 그전에는 머리의 단추 둘이 `잠시 멈춤` 과
+ * `여기서 끝내기` 를 곧바로 했는데, 뒤의 것(오늘 바친 자리를 지운다)이 뒤로 화살표에
+ * 걸려 있어 되돌아가려던 사람의 오늘이 한 번의 오조작으로 사라질 수 있었다. 지금은
+ * 화살표가 시트를 열고 사람이 그 안에서 고른다(`src/ui/LeavePrayerSheet.tsx`).
+ *
+ * **이름표 둘(`pray-pause` · `pray-stop`)은 그대로다.** 두 줄이 하는 일도 그대로이고,
+ * 누르기 전에 시트를 한 번 여는 것만 달라졌다. 그래서 시험들이 재는 것(자리가 남는가 ·
+ * 지워지는가)은 한 줄도 바뀌지 않고, 여는 동작만 이 한 곳에 적어 둔다.
+ */
+export async function leavePrayer(page: Page, how: 'pause' | 'stop'): Promise<void> {
+  await page.getByTestId('pray-back').click();
+  await page.getByTestId(how === 'pause' ? 'pray-pause' : 'pray-stop').click();
+}
+
+/**
  * 지금 시각에서 시간을 멈춘다. 이 뒤로는 `page.clock.runFor` 로만 시간이 흐른다.
  *
  * `openApp` 이 세우는 가짜 시계는 **시각을 고정할 뿐 시간은 실시간으로 흐른다.** 그래서 기도

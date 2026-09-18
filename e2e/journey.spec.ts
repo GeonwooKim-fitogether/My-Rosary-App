@@ -14,6 +14,7 @@ import {
   collectConsoleErrors,
   enterHome,
   enterPrayerFromHome,
+  leavePrayer,
   openApp,
   runUntilVisible,
 } from './support/harness';
@@ -116,7 +117,7 @@ test('여정 상세에서 오늘 처음부터 바치고, 여정을 그만둘 수
   await enterPrayerFromHome(page);
   await page.clock.runFor(40000);
   await expect(page.getByTestId('pray-step')).not.toHaveText('시작 기도 · 성호경');
-  await page.getByTestId('pray-pause').click();
+  await leavePrayer(page, 'pause');
   await expect(page.getByTestId('home-screen')).toBeVisible();
 
   // 리본으로 여정 상세에 들어가 오늘 자리를 지운다 (시트 S3).
@@ -129,7 +130,7 @@ test('여정 상세에서 오늘 처음부터 바치고, 여정을 그만둘 수
   await expect(page.getByTestId('pray-step')).toHaveText('시작 기도 · 성호경');
 
   // 다시 상세로 돌아와 여정을 그만둔다 (시트 S6). 홈이 빈 홈으로 돌아간다.
-  await page.getByTestId('pray-pause').click();
+  await leavePrayer(page, 'pause');
   await page.getByTestId('home-ribbon-0').click();
   await page.getByTestId('journey-quit').click();
   await expect(page.getByTestId('sheet-quit')).toContainText('이 기도를 지웁니다.');

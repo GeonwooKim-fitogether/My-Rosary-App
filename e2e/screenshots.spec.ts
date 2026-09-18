@@ -188,3 +188,24 @@ test('W1 · 알이 부풀지 않는 새 화면에서 지금 자리가 보이는�
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${W1}/pray-bead.png` });
 });
+
+/**
+ * W1 — 기도 화면을 나가는 방법을 묻는 시트 (§4-2 의 3번).
+ *
+ * 이 한 장이 있어야 하는 이유가 있다. 그전에는 머리의 뒤로 화살표를 한 번 누르면 **오늘
+ * 바친 자리가 곧바로 지워졌다.** 되돌아가려고 누른 사람이 오늘을 잃는 자리였고, 그것이
+ * 화면에서 실제로 어떻게 바뀌었는지는 글로만 적으면 확인할 수 없다. 사진은 화살표가
+ * 이제 **묻기만 한다**는 것을 보여 준다.
+ */
+test('W1 · 기도 화면을 나가는 방법을 묻는 시트를 찍는다', async ({ page }) => {
+  await openApp(page);
+  await enterHome(page);
+  await enterPrayerFromHome(page);
+
+  await page.getByTestId('pray-back').click();
+  await expect(page.getByTestId('sheet-leave')).toBeVisible();
+  await expect(page.getByTestId('pray-pause')).toContainText('자리가 남습니다');
+  await expect(page.getByTestId('pray-stop')).toContainText('오늘 처음부터');
+  await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W1}/pray-leave.png` });
+});
