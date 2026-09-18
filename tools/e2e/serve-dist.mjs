@@ -22,6 +22,12 @@ const MIME = {
   '.js': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
+  /*
+   * 설명서 한 장(W4 슬라이스 A). 확장자가 `.json` 이 아니라 `.webmanifest` 라 따로 적는다 —
+   * 적지 않으면 「무엇인지 모르는 파일」로 내보내게 되고, 브라우저가 설치할 수 있는 앱으로
+   * 알아보지 못한다.
+   */
+  '.webmanifest': 'application/manifest+json; charset=utf-8',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',

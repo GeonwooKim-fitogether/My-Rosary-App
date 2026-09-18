@@ -44,10 +44,10 @@ import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { artSession } from '../src/art';
 import { MYSTERY_SETS } from '../src/domain/mysteries';
-import { stringsFor } from '../src/i18n';
+import { fill, stringsFor } from '../src/i18n';
 import { TEXT_SCALE } from '../src/theme/fontScale';
 import { fonts } from '../src/theme';
-import { monthDayKo, ordinalKo } from '../src/journey/format';
+import { monthDay, ordinalKo } from '../src/journey/format';
 import { countDays, dayIndexOn, journeyLength } from '../src/journey/rules';
 import { dateOfDay } from '../src/journey/session';
 import type { MysteryKey } from '../src/domain/types';
@@ -116,6 +116,11 @@ export default function DayDoneScreen() {
   // 방금 바친 날. 기도 화면이 넘겨준다. 값이 없으면(화면을 직접 열었으면) 오늘을 쓴다.
   const prayedDay = numberParam(params.dayIndex, dayIndexOn(journey.startDate, new Date()));
   const hails = numberParam(params.hails, 0);
+
+  /*
+    성모송 수를 적는 한 줄을 `{n}` 자리에서 둘로 가른다. 까닭은 아래 그 자리의 주석에 있다.
+  */
+  const [hailsHead = '', hailsTail = ''] = strings.hailCount.split('{n}');
   const elapsedMs = numberParam(params.elapsedMs, 0);
   const resumeCount = numberParam(params.resumeCount, 0);
   const mystery = (Array.isArray(params.mystery) ? params.mystery[0] : params.mystery) as
@@ -124,7 +129,7 @@ export default function DayDoneScreen() {
 
   const counts = countDays(journey.days);
   const length = journeyLength(journey.format) ?? journey.days.length;
-  const mysteryName = mystery ? MYSTERY_SETS[mystery]?.name : undefined;
+  const mysteryName = mystery ? strings[mystery] : undefined;
   const minutes = Math.max(1, Math.round(elapsedMs / 60000));
   const focal = plate ? plate.focus.finish : null;
   const pinned = plate !== null && pinnedFile === plate.file;
@@ -191,19 +196,37 @@ export default function DayDoneScreen() {
             붙여 적는다. 글은 시안대로 붙이고 이름표는 숫자에 그대로 두어, 시험이 재던 것을
             한 글자도 바꾸지 않았다.
           */}
+          {/*
+            성모송 수는 시안의 표가 가진 `hailCount`(`성모송 {n}번` · `{n} Hail Marys`)를
+            **`{n}` 자리에서 둘로 갈라** 쓴다. 앞말만 바깥에 두고 숫자부터 끝까지를 이름표가
+            달린 안쪽 글에 담는 까닭은, 시험이 재는 것이 그 안쪽(한국어에서 `53번`)이기
+            때문이다. 언어마다 숫자가 앞에 오기도 하고 뒤에 오기도 하지만, 이렇게 가르면
+            어느 쪽에서도 같은 한 줄이 나온다.
+          */}
           <Text style={styles.stat}>
-            성모송 <Text testID="day-done-hails">{`${hails}번`}</Text>
+            {hailsHead}
+            <Text testID="day-done-hails">{`${hails}${hailsTail}`}</Text>
           </Text>
-          <Text style={styles.stat}>{`${minutes}분`}</Text>
-          {resumeCount > 0 ? <Text style={styles.stat}>{`이어서 ${resumeCount}번`}</Text> : null}
+          <Text style={styles.stat}>{fill(strings.minutes, { n: minutes })}</Text>
+          {resumeCount > 0 ? (
+            <Text style={styles.stat}>{fill(strings.resumedCount, { n: resumeCount })}</Text>
+          ) : null}
         </View>
 
         <View style={styles.journeyLines}>
           <Text style={styles.journeyLine} testID="day-done-head">
-            {monthDayKo(dateOfDay(journey, prayedDay))} · {ordinalKo(prayedDay)} 날
+            {fill(strings.dayDoneHead, {
+              date: monthDay(dateOfDay(journey, prayedDay), settings.language),
+              ord: ordinalKo(prayedDay),
+              n: prayedDay,
+            })}
           </Text>
           <Text style={styles.journeyLine} testID="day-done-summary">
-            {length}일 중 {counts.prayed}일 바쳤습니다 · 남은 {counts.remaining}일
+            {fill(strings.dayDoneSummary, {
+              t: length,
+              p: counts.prayed,
+              r: counts.remaining,
+            })}
           </Text>
         </View>
 

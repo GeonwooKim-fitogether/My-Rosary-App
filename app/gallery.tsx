@@ -195,7 +195,7 @@ export default function GalleryScreen() {
         {/* ── 격자 (2열) ─────────────────────────────────────────────── */}
         {plates.length === 0 ? (
           <Text style={styles.empty} testID="gallery-empty">
-            아직 즐겨찾기에 담은 성화가 없습니다. 그림 아래의 하트를 누르면 여기에 모입니다.
+            {strings.favoritesEmpty}
           </Text>
         ) : (
           <View style={styles.grid} testID="gallery-grid">

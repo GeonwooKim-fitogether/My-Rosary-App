@@ -47,6 +47,8 @@ const W1 = 'docs/plan/w1-screens';
 const W2 = 'docs/plan/w2-screens';
 /** 새 시안의 어법으로 다시 세운 여정 화면과 여정 완주 (W3) 를 찍어 두는 자리. */
 const W3 = 'docs/plan/w3-screens';
+/** 설치형 웹앱 (W4 슬라이스 A) 을 찍어 두는 자리. */
+const W4 = 'docs/plan/w4-screens';
 
 
 test.use({ reducedMotion: 'reduce' });
@@ -562,6 +564,14 @@ test('W3 · 전체 화면 감상을 껍데기가 보일 때와 사라졌을 때�
  *
  * **아래 탭 바의 `설정` 을 눌러 들어간 자리에서 찍는다.** 주소를 직접 열고 찍으면 배선이
  * 없어도 사진이 나오므로, 사진 자체가 "닿을 수 있다"의 증거가 되게 하려는 것이다.
+ *
+ * ── 이 두 장이 2026-09-18 에 `w4-screens/` 로 옮겨 갔다 (W4 슬라이스 A) ─────────────
+ *
+ * 시험이 재는 것은 한 줄도 바뀌지 않았고 **찍은 것을 두는 자리만 옮겼다.** 까닭은 W4 가 같은
+ * 화면 아래쪽에 `홈 화면에 추가` 줄을 하나 더 세웠기 때문이다 — 그대로 두면 W3 이 남긴 두 장이
+ * 덮여, "W3 이 끝났을 때 이 화면이 어떠했나" 를 되짚을 수 없게 된다. 그래서 `w3-screens/` 의
+ * 두 장은 그 자리에 얼려 두고, 지금 화면의 사진은 `w4-screens/` 에 쌓는다. 이 저장소가
+ * `w2-screens/gallery.png` 와 `m2-screens/home.png` 에 이미 쓴 것과 같은 처방이다.
  */
 test('W3 슬라이스 C · 기록 내보내기·들여오기 두 줄과 확인 시트를 찍는다', async ({ page }) => {
   await openApp(page, { art: ART_SEED });
@@ -582,7 +592,7 @@ test('W3 슬라이스 C · 기록 내보내기·들여오기 두 줄과 확인 �
   await expect(page.getByTestId('settings-import')).toBeInViewport();
   await expect(page.getByTestId('settings-export')).toContainText('여정 1개와 설정을 파일 하나로');
   await page.waitForTimeout(200);
-  await page.screenshot({ path: `${W3}/settings-backup.png` });
+  await page.screenshot({ path: `${W4}/settings-backup.png` });
 
   // 확인 시트 — 파일을 하나 골라 준 뒤에 뜬다.
   const chooser = page.waitForEvent('filechooser');
@@ -625,5 +635,106 @@ test('W3 슬라이스 C · 기록 내보내기·들여오기 두 줄과 확인 �
 
   await expect(page.getByTestId('sheet-import')).toBeVisible();
   await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
-  await page.screenshot({ path: `${W3}/settings-import-sheet.png` });
+  await page.screenshot({ path: `${W4}/settings-import-sheet.png` });
+});
+
+/**
+ * W4 슬라이스 A · 설치형 웹앱 — 설정의 `홈 화면에 추가` 줄과 그 안내 시트를 찍는다.
+ *
+ * **아래 탭 바의 `설정` 을 눌러 들어간 자리에서 찍는다.** 주소를 직접 열고 찍으면 배선이
+ * 없어도 사진이 나오므로, 사진 자체가 "닿을 수 있다"의 증거가 되게 하려는 것이다.
+ *
+ * ── 이 사진이 헤드리스 크로미움에서 어느 갈래를 보여 주나 (정직하게 적어 둔다) ──────
+ *
+ * 이 줄은 브라우저가 설치 창을 내주느냐에 따라 두 갈래로 갈린다. 시험을 돌리는 헤드리스
+ * 크로미움은 사람이 그 자리에 머문 시간을 세지 않아 설치 사건(`beforeinstallprompt`)을 보내
+ * 주지 않으므로, **여기 찍히는 것은 언제나 「놓는 방법을 알려 드립니다」 쪽**이다. 진짜 설치
+ * 창이 뜨는 모습은 안드로이드 실기기에서만 볼 수 있고, 이 컨테이너에는 폰이 없다.
+ */
+test('W4 슬라이스 A · 홈 화면에 추가 줄과 안내 시트를 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+  await openSettings(page);
+
+  // 줄은 설정의 아래쪽에 있다. 사람이 하는 그대로 맨 아래까지 굴려 내린 뒤에 찍는다.
+  await page.getByTestId('settings-about').scrollIntoViewIfNeeded();
+  await expect(page.getByTestId('settings-install')).toBeInViewport();
+  await expect(page.getByTestId('settings-install')).toContainText('홈 화면에 추가');
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${W4}/settings-install.png` });
+
+  // 안내 시트 — 설치 창을 내주지 않는 브라우저에서 줄을 누르면 이것이 뜬다.
+  await page.getByTestId('settings-install').click();
+  await expect(page.getByTestId('sheet-install')).toBeVisible();
+  await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W4}/install-sheet.png` });
+});
+
+/**
+ * W4 슬라이스 B · 영어로 바꾼 화면 넷을 찍는다 — **이 저장소가 영어 화면을 찍는 첫 사진이다.**
+ *
+ * 지금까지 스물몇 장을 모두 한국어로만 찍어 왔다. 그래서 "영어로 바꿔도 화면이 무너지지
+ * 않는다"는 말에는 근거가 없었다. 영어는 같은 뜻을 한국어보다 긴 글자로 적는 자리가 많아
+ * (`받는 사이` 다섯 글자 · `Response pace` 열세 글자), 잘리거나 겹치는 자리가 생기면
+ * 거기서 드러난다. 그것을 사람이 눈으로 보라고 찍는 사진이다 (W4 통과 조건 3).
+ *
+ * **아래 탭 바를 눌러 들어간 자리에서 찍는다.** 주소를 직접 열고 찍으면 배선이 없어도 사진이
+ * 나오므로, 사진 자체가 "닿을 수 있다"의 증거가 되게 하려는 것이다.
+ *
+ * 기도 화면의 기도문이 한국어로 남는 것은 결함이 아니라 결정이다 — 확인되지 않은 기도문을
+ * 사람이 바치지 않게 하려고 화면 문구만 옮기고 바치는 말은 한국어 정본을 쓴다
+ * (`src/i18n/index.ts` 의 `prayerLanguage` · 결정 12-2 카드 C).
+ */
+test('W4 슬라이스 B · 영어로 바꾼 화면 넷을 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+
+  // 사람이 하는 그대로 — 설정 탭 → 지역·언어 → English.
+  await openSettings(page);
+  await page.getByTestId('settings-region').click();
+  await expect(page.getByTestId('region-screen')).toBeVisible();
+  await page.getByTestId('language-en').click();
+  await expect(page.getByTestId('language-en-tag')).toHaveText('Now');
+  await page.getByTestId('region-back').click();
+
+  // 1. 설정 — 줄 이름이 가장 긴 화면이라 잘림이 여기서 먼저 드러난다.
+  await expect(page.getByTestId('settings-screen')).toBeVisible();
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${W4}/en-settings.png` });
+
+  // 2. 홈.
+  await tapTab(page, 'home');
+  await expect(page.getByTestId('home-screen')).toBeVisible();
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${W4}/en-home.png` });
+
+  // 3. 여정.
+  await openJourneys(page);
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: `${W4}/en-journeys.png` });
+
+  // 4. 기도 — 홈의 첫 카드를 눌러 들어간다.
+  await tapTab(page, 'home');
+  await expect(page.getByTestId('home-screen')).toBeVisible();
+  await enterPrayerFromHome(page);
+  await freezeClock(page);
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${W4}/en-pray.png` });
+});
+
+/**
+ * W4 슬라이스 C · 소개 시트 — **앱을 처음 여는 사람이 아무것도 누르기 전에 보는 화면**이다.
+ *
+ * 이 한 장이 묻는 것은 하나다. 08 검증에 들어온 사람이 이 앱이 무엇을 하는 앱인지 **한 장을
+ * 읽고 알 수 있는가.** 그래서 손짓 없이 앱을 열자마자 찍는다 — 찍히는 상태가 곧 그 사람이
+ * 보는 상태다.
+ *
+ * 다른 사진들과 달리 `intro: true` 로 연다. 시험의 기본은 "이미 소개를 본 기기" 인데
+ * (그러지 않으면 모든 시험이 이 시트에 막힌다), 이 한 장만은 처음 여는 기기여야 한다.
+ */
+test('W4 슬라이스 C · 처음 여는 자리의 소개 시트를 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED, intro: true });
+  await expect(page.getByTestId('sheet-intro')).toBeVisible();
+  await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
+  await page.screenshot({ path: `${W4}/intro-sheet.png` });
 });

@@ -19,6 +19,8 @@
  * 않기 위해서다. 이름표만 `sheet-again` 으로 갈라 두어, 어느 화면에서 뜬 시트인지
  * 시험이 가릴 수 있게 했다.
  */
+import { stringsFor } from '../i18n';
+import { useAppState } from '../state/useAppState';
 import { ConfirmSheet } from './Sheet';
 
 export function RestartTodaySheet({
@@ -31,13 +33,15 @@ export function RestartTodaySheet({
   onConfirm: () => void;
   onClose: () => void;
 }) {
+  const { settings } = useAppState();
+  const strings = stringsFor(settings.language);
   return (
     <ConfirmSheet
       visible={visible}
-      label="다시 바치기"
-      message="오늘 자리를 지우고 처음부터 바칩니다."
-      confirmLabel="처음부터"
-      cancelLabel="아니요, 이어서"
+      label={strings.again}
+      message={strings.restartTodayMessage}
+      confirmLabel={strings.restartTodayYes}
+      cancelLabel={strings.restartTodayNo}
       onConfirm={onConfirm}
       onClose={onClose}
       testID="sheet-again"

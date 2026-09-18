@@ -53,6 +53,7 @@ import {
   LANGUAGE_ORDER,
   REGION_LANGUAGES,
   stringsFor,
+  type Strings,
   type LanguageKey,
 } from '../src/i18n';
 import { updateSettings } from '../src/state/appStore';
@@ -162,6 +163,7 @@ export default function RegionScreen() {
               regionName={strings[settings.region]}
               palette={palette}
               isKorean={isKorean}
+              strings={strings}
               onPress={() => updateSettings({ language })}
             />
           ))}
@@ -254,6 +256,7 @@ function LanguageRow({
   regionName,
   palette,
   isKorean,
+  strings,
   onPress,
 }: {
   language: LanguageKey;
@@ -262,11 +265,18 @@ function LanguageRow({
   regionName: string;
   palette: WorldPalette;
   isKorean: boolean;
+  strings: Strings;
   onPress: () => void;
 }) {
   const styles = regionStyles(palette, isKorean);
   const enabled = ENABLED_LANGUAGES.includes(language);
-  const tag = here ? '지금' : enabled ? (inRegion ? regionName : '') : '준비 중';
+  const tag = here
+    ? strings.languageHere
+    : enabled
+      ? inRegion
+        ? regionName
+        : ''
+      : strings.languageComingSoon;
   return (
     <Pressable
       style={styles.langRow}

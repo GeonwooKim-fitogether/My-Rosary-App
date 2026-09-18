@@ -30,7 +30,11 @@
  */
 import { dayColors, nightColors } from '../theme/tokens';
 import { REGION_PALETTES, onScrim } from '../theme/worldTokens';
-import { ROSARY_CHOICES, ROSARY_NAMES, DEFAULT_SETTINGS, parseSettings } from '../storage/settings';
+import { ROSARY_KEYS, DEFAULT_SETTINGS, parseSettings } from '../storage/settings';
+import { stringsFor } from '../i18n';
+
+/** 재질의 이름은 이제 문구 표가 갖는다 (W4 슬라이스 E). 이 시험은 한국어 한 벌로 잰다. */
+const ko = stringsFor('ko');
 import {
   BEAD_GLOW,
   BEAD_OPACITY,
@@ -84,14 +88,14 @@ const VELS = [
 describe('재질 넷이 자리를 다 갖췄다', () => {
   it('두 벌이 같은 재질 넷을 갖는다', () => {
     expect(Object.keys(ROSARY_MATERIALS.day).sort()).toEqual(Object.keys(ROSARY_MATERIALS.night).sort());
-    expect(Object.keys(ROSARY_MATERIALS.day).sort()).toEqual(Object.keys(ROSARY_NAMES).sort());
+    expect(Object.keys(ROSARY_MATERIALS.day).sort()).toEqual([...ROSARY_KEYS].sort());
   });
 
   it('고르기 시트의 줄 넷이 재질 넷과 하나씩 짝을 이룬다', () => {
-    expect(ROSARY_CHOICES.map((choice) => choice.key).sort()).toEqual(Object.keys(ROSARY_NAMES).sort());
-    for (const choice of ROSARY_CHOICES) {
-      expect(choice.name).toBe(ROSARY_NAMES[choice.key]);
-      expect(choice.note.length).toBeGreaterThan(0);
+    expect([...ROSARY_KEYS].sort()).toEqual(Object.keys(ko.rosaryName).sort());
+    for (const key of ROSARY_KEYS) {
+      expect(ko.rosaryName[key].length).toBeGreaterThan(0);
+      expect(ko.rosaryNote[key].length).toBeGreaterThan(0);
     }
   });
 
@@ -143,7 +147,7 @@ describe('넷 다 두 벌에서 읽힌다', () => {
   for (const [name, background] of VELS) {
     const mode = name === '낮' ? 'day' : 'night';
     it(`${name} 벌: 알 · 줄 · 금속이 바탕과 3:1 을 넘는다`, () => {
-      for (const key of Object.keys(ROSARY_NAMES) as (keyof typeof ROSARY_NAMES)[]) {
+      for (const key of ROSARY_KEYS) {
         const material = materialFor(mode, key);
         for (const color of [material.bead, material.bigBead, material.thread, material.metal]) {
           expect(contrast(color, background)).toBeGreaterThanOrEqual(3);
@@ -161,7 +165,7 @@ describe('넷 다 두 벌에서 읽힌다', () => {
     // 어느 재질에도 치자색이 들어 있지 않다는 것이 곧 "상태의 색을 덮어쓰지 않았다"이다.
     for (const mode of ['day', 'night'] as const) {
       const colors = mode === 'day' ? dayColors : nightColors;
-      for (const key of Object.keys(ROSARY_NAMES) as (keyof typeof ROSARY_NAMES)[]) {
+      for (const key of ROSARY_KEYS) {
         const material = materialFor(mode, key);
         expect(material.bead).not.toBe(colors.accentFill);
         expect(material.bigBead).not.toBe(colors.accentFill);
@@ -236,7 +240,7 @@ describe('지역 다섯의 어두운 덮개 위에서 재질 넷이 읽힌다 (W
 
   it('다섯 지역 모두에서, 재질 넷의 알·줄·금속이 덮개와 3:1 을 넘는다', () => {
     for (const [region, scrim] of scrims) {
-      for (const key of Object.keys(ROSARY_NAMES) as (keyof typeof ROSARY_NAMES)[]) {
+      for (const key of ROSARY_KEYS) {
         const material = materialFor('night', key);
         for (const color of [material.bead, material.bigBead, material.thread, material.metal]) {
           // 어느 지역에서 걸렸는지 보이도록 지역 이름을 함께 남긴다.
@@ -254,7 +258,7 @@ describe('지역 다섯의 어두운 덮개 위에서 재질 넷이 읽힌다 (W
   it('낮 벌의 재질은 이 덮개 위에서 묻힌다 — 그래서 기도 화면은 밤 벌만 쓴다', () => {
     // 하나라도 3:1 에 못 미치면 "낮 벌을 어두운 덮개에 쓰면 안 된다"가 참이다.
     const failing = scrims.some(([, scrim]) =>
-      (Object.keys(ROSARY_NAMES) as (keyof typeof ROSARY_NAMES)[]).some((key) => {
+      ROSARY_KEYS.some((key) => {
         const material = materialFor('day', key);
         return [material.bead, material.bigBead, material.thread, material.metal].some(
           (color) => contrast(color, scrim) < 3,

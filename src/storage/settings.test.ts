@@ -5,10 +5,12 @@ import {
   createSettingsStore,
   DEFAULT_SETTINGS,
   parseSettings,
-  RECITATION_CHOICES,
-  PACE_CHOICES,
+  RECITATION_KEYS,
+  PACE_KEYS,
 } from './settings';
 import type { KeyValueStore } from './position';
+import { ENABLED_LANGUAGES } from '../i18n';
+import { REGION_ORDER } from '../theme/worldTokens';
 
 function memoryStore(): KeyValueStore {
   const data = new Map<string, string>();
@@ -38,8 +40,8 @@ describe('기본값', () => {
   });
 
   it('고를 수 있는 것은 낭송 셋과 받는 사이 셋이다', () => {
-    expect(RECITATION_CHOICES.map((c) => c.key)).toEqual(['full', 'alternate', 'silent']);
-    expect(PACE_CHOICES.map((c) => c.key)).toEqual(['slow', 'normal', 'fast']);
+    expect(RECITATION_KEYS).toEqual(['full', 'alternate', 'silent']);
+    expect(PACE_KEYS).toEqual(['slow', 'normal', 'fast']);
   });
 });
 
@@ -95,6 +97,17 @@ describe('지역과 언어 (결정 11 의 새 시안)', () => {
     // 이탈리아어는 데이터는 들어와 있으나 아직 켜지지 않았다 (기도문 대조 전 — D-4).
     const parsed = parseSettings(JSON.stringify({ region: 'europe', language: 'it' }));
     expect(parsed.language).toBe('en');
+  });
+
+  /*
+    남미가 이 시험의 요점이다. 남미의 기본 언어는 스페인어인데 스페인어는 꺼져 있으므로,
+    "꺼진 언어 → 그 지역의 기본 언어" 로만 떨어뜨리면 **또 다른 꺼진 언어**로 앱이 선다.
+    다섯 지역을 한꺼번에 돌려, 어느 지역에서든 떨어지는 자리가 켜진 언어인지 확인한다.
+  */
+  it.each(REGION_ORDER)('%s 에서 꺼진 언어가 저장돼 있으면 켜진 언어로 떨어진다', (region) => {
+    const parsed = parseSettings(JSON.stringify({ region, language: 'it' }));
+    expect(ENABLED_LANGUAGES).toContain(parsed.language);
+    expect(parsed.region).toBe(region);
   });
 
   it('지역도 언어도 모르는 값이면 한국·한국어다', () => {

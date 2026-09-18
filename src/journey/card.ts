@@ -5,6 +5,7 @@
  * 다섯 갈래로 갈리고, 갈래마다 다른 말을 한다. 화면이 아니라 여기서 갈래를 정하는 것은
  * 그래야 갈래를 시험할 수 있기 때문이다.
  */
+import { fill, type Strings } from '../i18n';
 import type { PrayerPosition } from '../storage/position';
 import { dayIndexOn, hasEnded, prayedTodayAlready } from './rules';
 import type { Journey } from './session';
@@ -49,14 +50,18 @@ export function isResumable(
  *
  * @param prayerName 알에 걸리지 않는 자리에서 쓸 기도문 이름 (예: `영광송`).
  */
-export function resumeLine(position: PrayerPosition, prayerName?: string): string {
+export function resumeLine(
+  position: PrayerPosition,
+  strings: Strings,
+  prayerName?: string,
+): string {
   if (position.decade && position.bead !== null) {
-    return `제${position.decade}단 ${position.bead + 1}번째 알부터 이어서`;
+    return fill(strings.resumeFromBead, { d: position.decade, i: position.bead + 1 });
   }
   if (position.decade) {
     return prayerName
-      ? `제${position.decade}단 ${prayerName}부터 이어서`
-      : `제${position.decade}단부터 이어서`;
+      ? fill(strings.resumeFromPrayer, { d: position.decade, prayer: prayerName })
+      : fill(strings.resumeFromDecade, { d: position.decade });
   }
-  return '시작 기도부터 이어서';
+  return strings.resumeFromOpening;
 }

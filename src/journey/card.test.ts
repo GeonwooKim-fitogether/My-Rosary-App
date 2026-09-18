@@ -4,6 +4,10 @@
 import { cardStatus, isResumable, resumeLine } from './card';
 import type { Journey } from './session';
 import type { PrayerPosition } from '../storage/position';
+import { stringsFor } from '../i18n';
+
+/** 이 시험이 재는 것은 갈래를 가르는 규칙이므로, 문구는 한국어 한 벌로 고정한다. */
+const ko = stringsFor('ko');
 
 const TODAY = new Date(2026, 8, 8);
 
@@ -77,14 +81,14 @@ describe('어제 자리로는 이어가지 않는다', () => {
 
 describe('멈춘 자리를 말로 적는다', () => {
   it('알에 걸린 자리는 몇 단 몇 번째 알인지 적는다', () => {
-    expect(resumeLine(position())).toBe('제3단 4번째 알부터 이어서');
+    expect(resumeLine(position(), ko)).toBe('제3단 4번째 알부터 이어서');
   });
 
   it('알에 걸리지 않는 자리는 기도문 이름으로 적는다', () => {
-    expect(resumeLine(position({ bead: null }), '영광송')).toBe('제3단 영광송부터 이어서');
+    expect(resumeLine(position({ bead: null }), ko, '영광송')).toBe('제3단 영광송부터 이어서');
   });
 
   it('시작 기도 구간이면 그렇게 적는다', () => {
-    expect(resumeLine(position({ decade: null, bead: null }))).toBe('시작 기도부터 이어서');
+    expect(resumeLine(position({ decade: null, bead: null }), ko)).toBe('시작 기도부터 이어서');
   });
 });

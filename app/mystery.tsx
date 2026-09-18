@@ -41,7 +41,7 @@ import { MYSTERY_SETS, mysteryForWeekday } from '../src/domain/mysteries';
 import { stringsFor } from '../src/i18n';
 import { cardStatus } from '../src/journey/card';
 import { mysteryOf } from '../src/journey/session';
-import { mysteryRows, todayLabelKo } from '../src/mystery/text';
+import { mysteryRows, todayLabel } from '../src/mystery/text';
 import { primeSpeech } from '../src/prayer/channels';
 import { useAppState } from '../src/state/useAppState';
 import { fonts } from '../src/theme';
@@ -130,10 +130,10 @@ export default function MysteryScreen() {
             style={[styles.title, { fontSize: titleFontSize, lineHeight: titleFontSize * 1.05 }]}
             testID="mystery-set"
           >
-            {MYSTERY_SETS[todaySet].name}
+            {strings[todaySet]}
           </Text>
           <Text style={styles.date} testID="mystery-date">
-            {todayLabelKo(today)}
+            {todayLabel(today, settings.language)}
           </Text>
         </View>
 
@@ -190,7 +190,9 @@ export default function MysteryScreen() {
           accessibilityRole="button"
           testID="mystery-primary"
         >
-          <Text style={styles.primaryLabel}>{openable ? strings.start : '새 기도'}</Text>
+          <Text style={styles.primaryLabel}>
+            {openable ? strings.start : strings.newPrayer}
+          </Text>
         </Pressable>
       </ScrollView>
     </View>

@@ -69,9 +69,9 @@ import {
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { JourneyFormat } from '../src/domain/types';
-import { fill, stringsFor, type Strings } from '../src/i18n';
+import { fill, stringsFor, type LanguageKey, type Strings } from '../src/i18n';
 import { isResumable } from '../src/journey/card';
-import { monthDayKo } from '../src/journey/format';
+import { monthDay } from '../src/journey/format';
 import {
   countDays,
   dayIndexOn,
@@ -227,7 +227,7 @@ export default function JourneysScreen() {
       >
         {/* ── 머리 · 오늘 날짜와 큰 제목 ────────────────────────────────── */}
         <Text style={styles.label} testID="journey-label">
-          {monthDayKo(today)}
+          {monthDay(today, settings.language)}
         </Text>
         <Text
           style={[styles.title, { fontSize: titleFontSize, lineHeight: titleFontSize * 1.05 }]}
@@ -248,6 +248,7 @@ export default function JourneysScreen() {
               key={journey.id}
               palette={palette}
               isKorean={isKorean}
+              language={settings.language}
               strings={strings}
               journey={journey}
               today={today}
@@ -313,7 +314,7 @@ export default function JourneysScreen() {
           {/* 바람이 비면 시작되지 않는다 (머리 6번 · FR-33). */}
           {missingTitle ? (
             <Text style={styles.missing} testID="journey-missing-title">
-              무엇을 위하여 바치는지 한 줄 적어 주세요.
+              {strings.missingIntention}
             </Text>
           ) : null}
 
@@ -352,6 +353,7 @@ export default function JourneysScreen() {
 function JourneyRow({
   palette,
   isKorean,
+  language,
   strings,
   journey,
   today,
@@ -363,6 +365,7 @@ function JourneyRow({
 }: {
   palette: WorldPalette;
   isKorean: boolean;
+  language: LanguageKey;
   strings: Strings;
   journey: Journey;
   today: Date;
@@ -395,10 +398,10 @@ function JourneyRow({
 
   /** 오른쪽의 며칠째 — 끝이 있는 여정은 시안의 `{d}일째 / {t}일`, 없는 여정은 `N일째`. */
   const dayLabel = notStarted
-    ? '시작 전'
+    ? strings.notStarted
     : journeyLength(journey.format) !== null
       ? fill(strings.dayOf, { d: Math.min(dayIndex, total), t: total })
-      : dayLabelOn(journey, dayIndex);
+      : dayLabelOn(journey, dayIndex, strings);
 
   const percent = Math.min(100, Math.round((counts.prayed / Math.max(1, total)) * 100));
   const prayedToday = prayedTodayAlready(journey, today);
@@ -406,10 +409,10 @@ function JourneyRow({
 
   /** 펴진 자리 아래 왼쪽의 상태 한 줄 — 시안의 `j.footer`. */
   const footer = notStarted
-    ? notStartedLabel(journey, today)
+    ? notStartedLabel(journey, today, strings, language)
     : [
         prayedToday ? (strings.prayedToday as string) : (strings.notYet as string),
-        finish ? fill(strings.dueDate, { date: monthDayKo(finish) }) : '',
+        finish ? fill(strings.dueDate, { date: monthDay(finish, language) }) : '',
       ]
         .filter(Boolean)
         .join(' · ');
@@ -492,7 +495,7 @@ function JourneyRow({
           >
             <Text style={styles.rowButtonLabel}>
               {ended
-                ? '마친 여정 보기'
+                ? strings.viewEndedJourney
                 : resumable
                   ? (strings.resume as string)
                   : (strings.prayForThis as string)}

@@ -12,7 +12,8 @@
 import { Text, View } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { BottomSheet, ChoiceRow } from '../ui/Sheet';
-import { ROSARY_CHOICES, type RosaryKey } from '../storage/settings';
+import { stringsFor } from '../i18n';
+import { ROSARY_KEYS, type RosaryKey } from '../storage/settings';
 import { useAppState } from '../state/useAppState';
 import {
   paletteFor,
@@ -39,9 +40,10 @@ export function RosarySheet({
   testID?: string;
 }) {
   const { settings } = useAppState();
+  const strings = stringsFor(settings.language);
   const styles = sheetStyles(paletteFor(settings.region));
   return (
-    <BottomSheet visible={visible} label="묵주" onClose={onClose} testID={testID}>
+    <BottomSheet visible={visible} label={strings.rosaryLabel} onClose={onClose} testID={testID}>
       {/*
         미리보기를 목록 **위**에 둔다. 아래에 두면 줄 넷을 훑는 동안 그림이 시야 밖으로
         밀려, 고를 때마다 눈이 위아래로 오간다.
@@ -49,15 +51,15 @@ export function RosarySheet({
       <View style={styles.stage}>
         <RosaryPreview rosary={selected} />
       </View>
-      {ROSARY_CHOICES.map((choice, index) => (
+      {ROSARY_KEYS.map((key, index) => (
         <ChoiceRow
-          key={choice.key}
-          name={choice.name}
-          note={choice.note}
-          selected={choice.key === selected}
+          key={key}
+          name={strings.rosaryName[key]}
+          note={strings.rosaryNote[key]}
+          selected={key === selected}
           first={index === 0}
-          onPress={() => onSelect(choice.key)}
-          testID={`sheet-choice-${choice.key}`}
+          onPress={() => onSelect(key)}
+          testID={`sheet-choice-${key}`}
         />
       ))}
       {note ? <Text style={styles.note}>{note}</Text> : null}

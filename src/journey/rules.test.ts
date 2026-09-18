@@ -16,6 +16,10 @@ import {
 } from './rules';
 import type { DayState, Journey } from './session';
 import type { JourneyFormat } from '../domain/types';
+import { stringsFor } from '../i18n';
+
+/** 이 시험이 재는 것은 날짜와 국면의 규칙이므로, 문구는 한국어 한 벌로 고정한다. */
+const ko = stringsFor('ko');
 
 function journey(over: Partial<Journey> = {}): Journey {
   return {
@@ -71,7 +75,7 @@ describe('며칠째는 달력에서 온다', () => {
 
   it('시작일이 미래면 0 이하다 — 홈에서 흐린 카드가 되는 조건이다 (FR-36)', () => {
     expect(dayIndexOn(new Date(2026, 8, 10), new Date(2026, 8, 8))).toBe(-1);
-    expect(notStartedLabel(journey({ startDate: new Date(2026, 8, 10) }), new Date(2026, 8, 8))).toBe(
+    expect(notStartedLabel(journey({ startDate: new Date(2026, 8, 10) }), new Date(2026, 8, 8), ko, 'ko')).toBe(
       '2일 뒤에 시작합니다 · 9월 10일',
     );
   });
@@ -138,17 +142,17 @@ describe('청원과 감사 (FR-35 · v5 새 기도의 구역 ②)', () => {
     const j = journey();
     expect(phaseOn(j, 27)).toBe('petition');
     expect(phaseOn(j, 28)).toBe('thanksgiving');
-    expect(dayLabelOn(j, 23)).toBe('23일째 · 청원');
+    expect(dayLabelOn(j, 23, ko)).toBe('23일째 · 청원');
   });
 
   it('감사로 시작하면 쉰네 날 내내 감사다', () => {
     const j = journey({ kind: 'thanksgiving' });
     expect(phaseOn(j, 1)).toBe('thanksgiving');
-    expect(dayLabelOn(j, 1)).toBe('1일째 · 감사');
+    expect(dayLabelOn(j, 1, ko)).toBe('1일째 · 감사');
   });
 
   it('9일 기도와 날마다에는 국면이 없다', () => {
     expect(phaseOn(journey({ format: 'novena9' }), 3)).toBeNull();
-    expect(dayLabelOn(journey({ format: 'daily' }), 3)).toBe('3일째');
+    expect(dayLabelOn(journey({ format: 'daily' }), 3, ko)).toBe('3일째');
   });
 });

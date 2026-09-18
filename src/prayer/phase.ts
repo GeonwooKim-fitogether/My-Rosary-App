@@ -19,6 +19,7 @@
  * 앞의 넷은 진행기가 알고 있는 사실이라 진행기가 내보내고(`RunnerPhase`), 마지막 `paused`
  * 는 진행기의 `isRunning()` 이 거짓이라는 뜻이라 세션 갈고리가 붙인다.
  */
+import type { Strings } from '../i18n';
 
 /** 진행기가 내보내는 상태 넷. */
 export type RunnerPhase = 'reading' | 'response' | 'silent' | 'decade';
@@ -44,10 +45,13 @@ export const DECADE_PULSE_MS = 500;
  * 화면 낭독기와 시험이 읽는 상태 이름. 색과 움직임을 볼 수 없는 사용자에게도 다섯 상태가
  * 전해져야 한다 (06-design-system §7 — 색만으로 상태를 알리지 않는다).
  */
-export const PHASE_LABEL: Readonly<Record<PrayerPhase, string>> = {
-  reading: '지금 알: 앱이 읽는 중',
-  response: '지금 알: 내가 받을 차례',
-  silent: '지금 알: 소리 없이 진행 중',
-  decade: '지금 알: 단이 바뀌었습니다',
-  paused: '지금 알: 멈춤',
-};
+export function phaseLabel(phase: PrayerPhase, strings: Strings): string {
+  const byPhase: Readonly<Record<PrayerPhase, string>> = {
+    reading: strings.beadReading,
+    response: strings.beadResponse,
+    silent: strings.beadSilent,
+    decade: strings.beadDecade,
+    paused: strings.beadPaused,
+  };
+  return byPhase[phase];
+}

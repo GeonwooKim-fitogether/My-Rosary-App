@@ -43,29 +43,50 @@
  * 기록이 통째로 사라진다. 로드맵 §7 의 위험 표가 그 위험의 절반을 파일 하나로 보완하라고
  * 적은 자리가 이 두 줄이며, 카드 A 는 이 받침을 전제로 계정을 미뤘다.
  *
- * **두 줄은 웹에서만 선다.** iOS·안드로이드에서 파일을 사람에게 건네고 사람에게서 받으려면
- * 지금 이 저장소에 없는 부품 둘(공유 시트 · 문서 고르기)이 필요하다. 눌러도 아무 일이 없는
- * 줄을 놓는 것은 기능이 있는 척하는 일이므로, 되는 곳에만 놓고 되지 않는 곳에는 놓지 않았다.
- * 잰 내용은 `src/storage/backupFile.ts` 의 머리글에 표로 있다.
+ * **두 줄은 2026-09-18 부터 기기(iOS·안드로이드)에서도 선다** (W4 슬라이스 D · Q-73).
+ * W3 때는 웹에서만 섰다 — 기기에서 파일을 사람에게 건네고 사람에게서 받는 부품 둘이 이
+ * 저장소에 없었기 때문이다. W4 가 그 둘(`expo-sharing` · `expo-document-picker`)을 들여
+ * 통로 한 파일(`src/storage/backupFile.ts`)만 갈아 끼웠고, 이 화면은 그 줄의 손잡이만
+ * 기다리는 모양으로 바뀌었다(내보내기가 공유 시트를 여느라 시간이 걸린다).
+ *
+ * **다만 기기 쪽은 아직 한 번도 돌려 보지 못했다 — 웹에서만 확인했다.** 기기에서 돌려
+ * 보려면 기기 빌드가 필요하고 그것은 스토어 계정이 있어야 한다. 무엇을 확인했고 무엇을
+ * "될 것으로 보는지" 는 `src/storage/backupFile.ts` 의 머리글에 표로 갈라 적혀 있다.
  *
  * **들여오기는 확인 시트를 거친다.** 들여오면 지금 기기의 여정과 설정이 사라지므로, 이
  * 저장소가 자리를 지우는 조작마다 두어 온 관문을 여기에도 둔다 (FR-18 · 시트 S3·S6). 시트는
  * "정말 하시겠습니까" 로 묻지 않고 **무엇을 몇 개 잃는지 수로** 말한다 — 사람이 판단할 수
  * 있어야 관문이지, 한 번 더 누르게 하는 것만으로는 관문이 아니기 때문이다.
  *
- * ── 시안에 있으나 아직 놓지 않은 줄 둘 ──────────────────────────────────────────
+ * ── `홈 화면에 추가` 가 2026-09-18 에 살아났다 (W4 슬라이스 A) ──────────────────
  *
- * `홈 화면에 추가`(설치형 웹앱)와 `진행 중인 기도 지우기`는 놓지 않았다. 앞의 것은 설치형
- * 웹앱을 세우는 **W4** 의 일이라 지금 놓으면 눌러도 아무 일이 없고, 뒤의 것은 이 앱에서
- * 이미 홈의 `다시 바치기` 가 하는 일이라(확인 시트까지 붙어 있다) 두 곳에서 같은 일을
- * 하게 된다. 둘 다 **없는 것이 아니라 아직 아닌 것**이므로 여기 적어 둔다.
+ * 그전까지 이 줄은 **놓지 않은 자리**였다. 까닭은 "설치형 웹앱을 세우는 W4 의 일이라 지금
+ * 놓으면 눌러도 아무 일이 없다" 였는데, W4 가 그 전제를 바꿨다 — `public/manifest.webmanifest`
+ * 와 `public/sw.js` 가 서고 `app/+html.tsx` 가 그 둘을 가리키게 되면서, 이제 이 줄은 누르면
+ * 실제로 무엇인가를 한다.
+ *
+ * **다만 무엇을 하는지는 브라우저마다 다르다.** 안드로이드 크롬 계열에서는 진짜 설치 창이
+ * 뜨고, iOS 에서는 애플이 그 창을 앱에게 내주지 않으므로 **어떻게 하는지 알려 주는 시트**가
+ * 뜬다. 스토어로 받은 앱에서는 홈 화면에 놓을 것이 없으므로 **줄 자체를 그리지 않는다.**
+ * 가름은 `src/install/homeScreen.ts` 가 맡고 이 화면은 그 답만 쓴다.
+ *
+ * ── 시안에 있으나 아직 놓지 않은 줄 하나 ────────────────────────────────────────
+ *
+ * `진행 중인 기도 지우기`는 놓지 않았다. 이 앱에서 이미 홈의 `다시 바치기` 가 하는 일이라
+ * (확인 시트까지 붙어 있다) 두 곳에서 같은 일을 하게 되기 때문이다. **없는 것이 아니라
+ * 아직 아닌 것**이므로 여기 적어 둔다.
  */
 import { useState } from 'react';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LANGUAGES, stringsFor } from '../src/i18n';
+import { fill, LANGUAGES, stringsFor, type Strings } from '../src/i18n';
+import {
+  installRowSupported,
+  promptHomeScreenInstall,
+  useHomeScreenInstall,
+} from '../src/install/homeScreen';
 import { countDays } from '../src/journey/rules';
 import type { PaceKey, RecitationMode } from '../src/domain/types';
 import { importBackup, updateSettings } from '../src/state/appStore';
@@ -78,11 +99,8 @@ import {
 } from '../src/storage/backup';
 import { backupFileSupported, downloadTextFile, pickTextFile } from '../src/storage/backupFile';
 import {
-  PACE_CHOICES,
-  PACE_NAMES,
-  RECITATION_CHOICES,
-  RECITATION_NAMES,
-  ROSARY_NAMES,
+  PACE_KEYS,
+  RECITATION_KEYS,
 } from '../src/storage/settings';
 import { FONT_SCALE_LABEL_KEYS, asFontScaleIndex, type FontScaleIndex } from '../src/theme/prayerFont';
 import { TEXT_SCALE } from '../src/theme/fontScale';
@@ -97,10 +115,11 @@ import {
   type WorldPalette,
 } from '../src/theme/worldTokens';
 import { RosarySheet } from '../src/prayer/RosarySheet';
+import { AboutSheet } from '../src/ui/AboutSheet';
 import { BottomSheet, ChoiceSheet, ConfirmSheet } from '../src/ui/Sheet';
 import { TAB_BAR_HEIGHT, WorldTabBar } from '../src/ui/WorldTabBar';
 
-type Sheet = 'none' | 'recitation' | 'pace' | 'rosary' | 'about';
+type Sheet = 'none' | 'recitation' | 'pace' | 'rosary' | 'about' | 'install';
 
 /** 시안의 괘선 — 화면마다 쓰는 `rgba(0,0,0,.14)` 하나다. */
 const RULE = 'rgba(0,0,0,.14)';
@@ -127,6 +146,8 @@ export default function SettingsScreen() {
   */
   const [pending, setPending] = useState<ParsedBackup | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  /* 「홈 화면에 추가」 줄이 지금 무엇을 할 수 있는가 (W4 슬라이스 A). */
+  const install = useHomeScreenInstall();
 
   const titleFontSize = guideTitleSizeFor(window.width) * TEXT_SCALE.font;
 
@@ -139,17 +160,37 @@ export default function SettingsScreen() {
    */
   const prayedDays = journeys.reduce((sum, journey) => sum + countDays(journey.days).prayed, 0);
 
-  /** 지금 기기의 기록을 글로 만들어 파일로 내려받는다. */
-  const exportRecords = () => {
-    const ok = downloadTextFile(
+  /*
+    고르개 시트에 세울 줄들. **차례는 `src/storage/settings.ts` 가, 말은 문구 표가 갖는다**
+    (W4 슬라이스 E). 그전에는 이름과 설명까지 저장소 파일에 한국어로 박혀 있어서, 영어로
+    바꾼 화면의 이 시트들이 한국어로 떴다.
+  */
+  const recitationChoices = RECITATION_KEYS.map((key) => ({
+    key,
+    name: strings.recitationName[key],
+    note: strings.recitationNote[key],
+  }));
+  const paceChoices = PACE_KEYS.map((key) => ({
+    key,
+    name: strings.paceName[key],
+    note: strings.paceNote[key],
+  }));
+
+  /**
+   * 지금 기기의 기록을 글로 만들어 파일로 내보낸다.
+   *
+   * **웹과 기기가 서로 다른 일을 한다** (W4 슬라이스 D). 웹에서는 파일이 곧바로 내려받기
+   * 폴더로 떨어지고, iOS·안드로이드에서는 공유 시트가 올라와 사람이 어디에 둘지 고른다.
+   * 알림 문구가 「내려받았습니다」 대신 「파일로 내보냈습니다」인 까닭이다 — 어느 쪽에서도
+   * 참인 말이어야 한다.
+   */
+  const exportRecords = async () => {
+    const ok = await downloadTextFile(
       backupText({ journeys, settings, pinnedArt, favoriteArt }),
       backupFileName(),
+      strings.backupDialogTitle,
     );
-    setNotice(
-      ok
-        ? `기록 파일을 내려받았습니다. 여정 ${journeys.length}개와 설정이 담겼습니다.`
-        : '이 기기에서는 파일을 내려받을 수 없습니다.',
-    );
+    setNotice(ok ? fill(strings.exportDone, { n: journeys.length }) : strings.exportFailed);
   };
 
   /**
@@ -165,10 +206,22 @@ export default function SettingsScreen() {
     if (text === null) return; // 고르지 않고 닫았다 — 알릴 것이 없다
     const read = parseBackup(text);
     if (!read) {
-      setNotice('읽을 수 없는 파일입니다. 이 기기의 기록은 그대로 있습니다.');
+      setNotice(strings.importUnreadable);
       return;
     }
     setPending(read);
+  };
+
+  /**
+   * 「홈 화면에 추가」를 눌렀다 (W4 슬라이스 A).
+   *
+   * 브라우저가 설치 창을 내주는 곳에서는 그 창을 띄우고, 내주지 않는 곳(iOS 가 그렇다)에서는
+   * 방법을 알려 주는 시트를 연다. **어느 쪽이든 누르면 무엇인가가 일어난다** — 눌러도 아무
+   * 일이 없는 단추를 두지 않는다는 이 저장소의 규칙이 여기에도 그대로 선다.
+   */
+  const addToHomeScreen = async () => {
+    const outcome = await promptHomeScreenInstall();
+    if (outcome === 'unavailable') setSheet('install');
   };
 
   /** 확인 시트에서 눌렀다 — 여기서부터는 되돌릴 수 없다. */
@@ -177,7 +230,7 @@ export default function SettingsScreen() {
     const count = pending.journeys.length;
     importBackup(pending);
     setPending(null);
-    setNotice(`여정 ${count}개와 설정을 들여왔습니다.`);
+    setNotice(fill(strings.importDone, { n: count }));
   };
 
   return (
@@ -259,7 +312,16 @@ export default function SettingsScreen() {
                   <Text
                     style={[
                       styles.segLabel,
-                      { fontSize: FONT_SEG_PX[index], lineHeight: FONT_SEG_PX[index]! },
+                      /*
+                        줄 높이를 글자 크기의 1.25 배로 둔다. 1배(글자 크기와 같은 값)로 두면
+                        **두 줄이 되는 순간 글자가 칸 밖으로 잘려 나간다** — 칸은 `overflow:
+                        hidden` 이라 위 줄의 윗머리가 테두리에 잘리고 아래 줄은 아래 테두리를
+                        넘는다. 영어로 바꾼 화면을 처음 찍어 보고 `Extra large` 에서 실제로
+                        그렇게 잘리는 것을 확인했다 (W4 슬라이스 B, `docs/plan/w4-screens/`).
+                        한국어에서도 좁은 기기(320)에서 `아주 크게` 가 두 줄이 되므로 같은 일이
+                        일어나던 자리다.
+                      */
+                      { fontSize: FONT_SEG_PX[index], lineHeight: Math.round(FONT_SEG_PX[index]! * 1.25) },
                       here ? styles.segLabelOn : null,
                     ]}
                   >
@@ -275,24 +337,24 @@ export default function SettingsScreen() {
         <ValueRow
           palette={palette}
           isKorean={settings.language === 'ko'}
-          label="낭송 방식"
-          value={RECITATION_NAMES[settings.recitation]}
+          label={strings.recitationLabel}
+          value={strings.recitationShort[settings.recitation]}
           onPress={() => setSheet('recitation')}
           testID="settings-recitation"
         />
         <ValueRow
           palette={palette}
           isKorean={settings.language === 'ko'}
-          label="받는 사이"
-          value={PACE_NAMES[settings.pace]}
+          label={strings.paceLabel}
+          value={strings.paceShort[settings.pace]}
           onPress={() => setSheet('pace')}
           testID="settings-pace"
         />
         <ValueRow
           palette={palette}
           isKorean={settings.language === 'ko'}
-          label="묵주"
-          value={ROSARY_NAMES[settings.rosary]}
+          label={strings.rosaryLabel}
+          value={strings.rosaryName[settings.rosary]}
           onPress={() => setSheet('rosary')}
           testID="settings-rosary"
         />
@@ -301,14 +363,15 @@ export default function SettingsScreen() {
         <ToggleRow
           palette={palette}
           isKorean={settings.language === 'ko'}
-          label="손 없이 조작"
+          strings={strings}
+          label={strings.handsFree}
           on={settings.handsFree}
           onPress={() => updateSettings({ handsFree: !settings.handsFree })}
           testID="settings-handsfree"
         />
         {settings.handsFree ? (
           <Text style={styles.note} testID="settings-handsfree-note">
-            폰을 흔들면 다음 알로, 이어폰 버튼으로 앞뒤로 갑니다.
+            {strings.handsFreeNote}
           </Text>
         ) : null}
         {/*
@@ -319,7 +382,8 @@ export default function SettingsScreen() {
         <ToggleRow
           palette={palette}
           isKorean={settings.language === 'ko'}
-          label="진동"
+          strings={strings}
+          label={strings.vibration}
           on={settings.haptic}
           onPress={() => updateSettings({ haptic: !settings.haptic })}
           testID="settings-haptic"
@@ -327,6 +391,7 @@ export default function SettingsScreen() {
         <ToggleRow
           palette={palette}
           isKorean={settings.language === 'ko'}
+          strings={strings}
           label={strings.reduceMotion}
           on={settings.reduceMotion}
           onPress={() => updateSettings({ reduceMotion: !settings.reduceMotion })}
@@ -338,7 +403,9 @@ export default function SettingsScreen() {
           <View style={styles.rowText}>
             <Text style={styles.rowLabel}>{strings.history}</Text>
             <Text style={styles.rowNote}>
-              {prayedDays > 0 ? `지금까지 ${prayedDays}일을 바쳤습니다` : '아직 바친 날이 없습니다'}
+              {prayedDays > 0
+                ? fill(strings.historySome, { n: prayedDays })
+                : strings.historyNone}
             </Text>
           </View>
           <Text style={styles.count} testID="settings-history-count">
@@ -347,24 +414,29 @@ export default function SettingsScreen() {
         </View>
 
         {/*
-          ── 기록 내보내기·들여오기 (W3 슬라이스 C) ──────────────────────────
+          ── 기록 내보내기·들여오기 (W3 슬라이스 C · W4 슬라이스 D) ──────────
           완주 기록 바로 아래에 둔다. 셋 다 "내 기록" 을 다루는 줄이라 한자리에 모이는 것이
           읽기 쉽고, 소개는 앱에 대한 줄이므로 맨 아래에 그대로 남는다.
 
-          웹이 아니면 아예 그리지 않는다 — 까닭은 이 파일의 머리글에 있다.
+          `backupFileSupported` 는 이제 표면 셋에서 모두 참이다(W4 슬라이스 D). 그래도 이
+          가름을 **지우지 않고 남겨 둔다** — 넷째 표면이 생겼을 때 아무도 재 보지 않은 채
+          줄이 서는 일을 막는 자리이기 때문이다. 까닭은 이 파일과
+          `src/storage/backupFile.ts` 의 머리글에 있다.
         */}
         {backupFileSupported ? (
           <>
             <Pressable
               style={styles.countRow}
-              onPress={exportRecords}
+              onPress={() => {
+                void exportRecords();
+              }}
               accessibilityRole="button"
               testID="settings-export"
             >
               <View style={styles.rowText}>
-                <Text style={styles.rowLabel}>기록 내보내기</Text>
+                <Text style={styles.rowLabel}>{strings.exportRecords}</Text>
                 <Text style={styles.rowNote}>
-                  {`여정 ${journeys.length}개와 설정을 파일 하나로 내려받습니다`}
+                  {fill(strings.exportNote, { n: journeys.length })}
                 </Text>
               </View>
             </Pressable>
@@ -377,10 +449,8 @@ export default function SettingsScreen() {
               testID="settings-import"
             >
               <View style={styles.rowText}>
-                <Text style={styles.rowLabel}>기록 들여오기</Text>
-                <Text style={styles.rowNote}>
-                  내려받아 둔 파일을 읽어 지금 기록을 갈아 끼웁니다
-                </Text>
+                <Text style={styles.rowLabel}>{strings.importRecords}</Text>
+                <Text style={styles.rowNote}>{strings.importNote}</Text>
               </View>
             </Pressable>
             {notice ? (
@@ -391,6 +461,50 @@ export default function SettingsScreen() {
           </>
         ) : null}
 
+        {/*
+          ── 홈 화면에 추가 (W4 슬라이스 A) ──────────────────────────────────
+          시안은 이 줄을 완주 기록 **바로 다음**에 두고, 아래 작은 글로 `오프라인 사용 가능`
+          을 적고, 오른쪽에 단추 하나를 세운다. 이 화면에서는 완주 기록과 이 줄 사이에 기록
+          내보내기·들여오기 두 줄이 끼어 있는데, 그 둘은 완주 기록과 같은 "내 기록" 묶음이라
+          떼어 놓으면 오히려 읽기 어렵다. 그래서 **시안의 앞뒤 순서(기록 다음)는 지키되 그
+          묶음 뒤로 물렸다.**
+
+          오른쪽 단추를 따로 세우지 않고 **줄 전체를 누르게 했다.** 이 화면의 다른 줄들
+          (지역·언어 · 소개 · 기록 두 줄)이 모두 그렇고, 한 화면 안에서 어떤 줄은 줄이
+          눌리고 어떤 줄은 줄 안의 단추만 눌리면 손이 어디를 눌러야 할지 매번 다시 재야 한다.
+        */}
+        {installRowSupported ? (
+          <Pressable
+            style={styles.countRow}
+            onPress={() => {
+              void addToHomeScreen();
+            }}
+            accessibilityRole="button"
+            testID="settings-install"
+          >
+            <View style={styles.rowText}>
+              <Text style={styles.rowLabel}>{strings.install}</Text>
+              <Text style={styles.rowNote} testID="settings-install-note">
+                {install.installed
+                  ? strings.installedAlready
+                  : install.canPrompt
+                    ? `${strings.offline} · ${strings.installTapToAdd}`
+                    : `${strings.offline} · ${strings.installShowHow}`}
+              </Text>
+            </View>
+            <Svg width={20} height={20} viewBox="0 0 24 24">
+              <Path
+                d="m9 18 6-6-6-6"
+                stroke={palette.ink}
+                strokeWidth={1.6}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </Svg>
+          </Pressable>
+        ) : null}
+
         {/* ── 소개 ────────────────────────────────────────────────────────── */}
         <Pressable
           style={styles.linkRow}
@@ -398,7 +512,7 @@ export default function SettingsScreen() {
           accessibilityRole="button"
           testID="settings-about"
         >
-          <Text style={styles.rowLabel}>소개</Text>
+          <Text style={styles.rowLabel}>{strings.about}</Text>
           <Svg width={20} height={20} viewBox="0 0 24 24">
             <Path
               d="m9 18 6-6-6-6"
@@ -415,10 +529,10 @@ export default function SettingsScreen() {
       {/* 낭송 방식 — 이름과 설명은 06-screen-spec 화면 E 의 문구 표 그대로다. */}
       <ChoiceSheet
         visible={sheet === 'recitation'}
-        label="낭송 방식"
-        choices={RECITATION_CHOICES}
+        label={strings.recitationLabel}
+        choices={recitationChoices}
         selected={settings.recitation}
-        note="새로 만드는 기도에 적용됩니다"
+        note={strings.applyToNew}
         onSelect={(key: RecitationMode) => {
           updateSettings({ recitation: key });
           close();
@@ -430,8 +544,8 @@ export default function SettingsScreen() {
       {/* S2 받는 사이 */}
       <ChoiceSheet
         visible={sheet === 'pace'}
-        label="받는 사이"
-        choices={PACE_CHOICES}
+        label={strings.paceLabel}
+        choices={paceChoices}
         selected={settings.pace}
         onSelect={(key: PaceKey) => {
           updateSettings({ pace: key });
@@ -448,7 +562,7 @@ export default function SettingsScreen() {
       <RosarySheet
         visible={sheet === 'rosary'}
         selected={settings.rosary}
-        note="모든 여정의 기도 화면에 적용됩니다"
+        note={strings.applyToAll}
         onSelect={(key) => {
           updateSettings({ rosary: key });
           close();
@@ -460,23 +574,43 @@ export default function SettingsScreen() {
       {/*
         S7 소개 — 08 검증 참가자에게 이 빌드가 무엇을 묻는지 알린다.
 
-        **이 시트의 글자색이 W2 슬라이스 C 에서 고쳐졌다.** 그전에는 이 화면이 한지 벌이라
-        시트 안의 글도 한지 벌의 색을 썼는데, 슬라이스 B 가 시트 부품을 새 시안의 어법으로
-        옮기면서 판은 종이색이 되고 글만 옛 벌에 남았다. 밤 벌에서는 밝은 종이 위에 밝은
-        글자가 얹혀 읽히지 않았다. 이제 글도 그 지역의 색 벌에서 색을 고른다.
+        **W4 슬라이스 C 에서 글과 모양이 부품으로 떠났다**(`src/ui/AboutSheet.tsx`). 같은 글이
+        이제 두 자리에서 뜨기 때문이다 — 이 줄과, 앱을 처음 여는 자리. 한쪽만 고치면 두 말이
+        갈리므로 한 곳에 두고 둘이 함께 부른다. 이 줄이 여는 것은 `firstRun` 이 아닌 쪽이라
+        맨 아래 `시작하기` 단추가 서지 않는다 — 이 자리에서는 이미 앱을 쓰고 있다.
+
+        그전 판에서 이 시트의 글자색이 W2 슬라이스 C 에 고쳐진 일이 있었다(밤 벌에서 밝은
+        종이 위에 밝은 글자가 얹혀 읽히지 않았다). 그 고침은 부품으로 그대로 옮겨 갔다.
       */}
-      <BottomSheet visible={sheet === 'about'} label="소개" onClose={close} testID="sheet-about">
-        <Text style={styles.aboutTitle}>이 앱이 지금 묻는 것</Text>
-        <Text style={styles.aboutBody}>
-          화면을 보지 않고 손을 쓰지 않고도 다섯 단을 끝까지 바칠 수 있는가 — 이 하나를
-          알아보려고 만든 검증 빌드입니다. 흔들기와 이어폰 단추로 알을 넘기고, 앱이 앞 절을
-          읽으면 뒷 절을 소리 내어 받습니다.
+      <AboutSheet visible={sheet === 'about'} onClose={close} testID="sheet-about" />
+
+      {/*
+        홈 화면에 추가 — 방법을 알려 주는 시트 (W4 슬라이스 A).
+
+        이 시트는 브라우저가 설치 창을 내주지 않을 때만 열린다. 내주는 곳에서는 줄을 누른
+        자리에서 진짜 설치 창이 뜨므로 이 시트를 볼 일이 없다.
+
+        **아래 두 번째 문단이 작업 지시서가 요구한 "오프라인에서 무엇이 되고 무엇이 안
+        되는지" 한 줄이다.** 되는 것만 적고 마는 것은 정직하지 않아, 되지 않는 둘(아직 한 번도
+        보지 않은 성화 · 기기에 목소리가 없을 때의 소리 내어 읽기)을 함께 적었다.
+
+        글은 한국어로만 적혀 있다. 이 화면의 다른 줄들(낭송 방식 · 받는 사이 · 기록 두 줄)이
+        이미 그러하며, 언어 표에 문구를 더하는 일은 언어를 둘로 좁히는 **슬라이스 B** 의 몫이다.
+      */}
+      <BottomSheet
+        visible={sheet === 'install'}
+        label={strings.install}
+        onClose={close}
+        testID="sheet-install"
+      >
+        <Text style={styles.aboutTitle}>
+          {install.guide === 'ios' ? strings.installIosTitle : strings.installBrowserTitle}
         </Text>
-        <Text style={styles.aboutTitle}>아직 아닌 것</Text>
         <Text style={styles.aboutBody}>
-          함께 바치기와 계정 연결은 아직 붙지 않았습니다. 기도문은 임시 판본이고, 성화도
-          검증 기간용입니다. 결제는 없습니다.
+          {install.guide === 'ios' ? strings.installIosBody : strings.installBrowserBody}
         </Text>
+        <Text style={styles.aboutTitle}>{strings.installAfterTitle}</Text>
+        <Text style={styles.aboutBody}>{strings.installAfterBody}</Text>
       </BottomSheet>
 
       {/*
@@ -489,12 +623,13 @@ export default function SettingsScreen() {
       */}
       <ConfirmSheet
         visible={pending !== null}
-        label="기록 들여오기"
-        message={`지금 이 기기의 여정 ${journeys.length}개와 설정이 사라지고, 파일에 담긴 여정 ${
-          pending?.journeys.length ?? 0
-        }개와 설정으로 바뀝니다. 되돌릴 수 없습니다.`}
-        confirmLabel="들여오기"
-        cancelLabel="그대로 두기"
+        label={strings.importRecords}
+        message={fill(strings.importConfirm, {
+          a: journeys.length,
+          b: pending?.journeys.length ?? 0,
+        })}
+        confirmLabel={strings.importConfirmYes}
+        cancelLabel={strings.importConfirmNo}
         onConfirm={applyImport}
         onClose={() => setPending(null)}
         testID="sheet-import"
@@ -548,6 +683,7 @@ function ValueRow({
 function ToggleRow({
   palette,
   isKorean,
+  strings,
   label,
   on,
   onPress,
@@ -555,6 +691,7 @@ function ToggleRow({
 }: {
   palette: WorldPalette;
   isKorean: boolean;
+  strings: Strings;
   label: string;
   on: boolean;
   onPress: () => void;
@@ -574,7 +711,7 @@ function ToggleRow({
       <View
         style={[styles.track, on ? styles.trackOn : null]}
         testID={`${testID}-value`}
-        accessibilityLabel={on ? '켜짐' : '꺼짐'}
+        accessibilityLabel={on ? strings.switchOn : strings.switchOff}
       >
         <View style={[styles.knob, on ? styles.knobOn : null]} />
       </View>
@@ -652,7 +789,17 @@ const settingsStyles = (palette: WorldPalette, isKorean: boolean) =>
       borderRadius: worldRadius.md,
       overflow: 'hidden',
     },
-    segOption: { flex: 1, minHeight: 44, alignItems: 'center', justifyContent: 'center', paddingVertical: 6 },
+    /*
+      좌우 여백 4 는 두 줄이 된 이름이 칸 사이 선에 닿지 않게 하는 자리다 (W4 슬라이스 B).
+    */
+    segOption: {
+      flex: 1,
+      minHeight: 44,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 6,
+      paddingHorizontal: 4,
+    },
     segDivider: { borderLeftWidth: 1, borderLeftColor: RULE },
     /* 고른 칸은 강조색 테 하나로만 표시한다 (「Classical」 의 `inset 0 0 0 1px`). */
     segOn: { borderWidth: 1, borderColor: palette.accent },
@@ -661,7 +808,13 @@ const settingsStyles = (palette: WorldPalette, isKorean: boolean) =>
       담지 못하는데, 그냥 두면 브라우저가 한국어를 글자 단위로 끊어 `아주 크 / 게` 가 된다.
       이 값이 있으면 띄어쓰기에서만 끊겨 `아주 / 크게` 가 된다 — 줄이 하나 늘 뿐 낱말은 산다.
     */
-    segLabel: { fontFamily: worldFontStack('body', isKorean), color: palette.ink, ...koWordBreak },
+    segLabel: {
+      fontFamily: worldFontStack('body', isKorean),
+      color: palette.ink,
+      // 두 줄이 되면 줄끼리 가운데로 맞춘다. 한 줄일 때는 아무 차이가 없다.
+      textAlign: 'center',
+      ...koWordBreak,
+    },
     segLabelOn: { color: palette.accentText },
 
     /* 토글 — 시안의 44×26. 켠 바탕은 글자가 아니므로 `accent` 를 그대로 쓴다. */

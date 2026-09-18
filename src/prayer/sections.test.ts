@@ -17,6 +17,10 @@ import {
   sectionsOf,
 } from './sections';
 import { buildDayQueue } from './steps';
+import { stringsFor } from '../i18n';
+
+/** 이 시험이 재는 것은 구간 나눔의 규칙이므로, 문구는 한국어 한 벌로 고정한다. */
+const ko = stringsFor('ko');
 
 const QUEUE = buildDayQueue(mysteryForFiftyfourDay(23));
 
@@ -26,9 +30,9 @@ describe('구간 나누기', () => {
   });
 
   it('구간 이름은 시작 기도와 제N단과 마침 기도다', () => {
-    expect(sectionLabel(0)).toBe('시작 기도');
-    expect(sectionLabel(3)).toBe('제3단');
-    expect(sectionLabel(CLOSING_SECTION)).toBe('마침 기도');
+    expect(sectionLabel(0, ko)).toBe('시작 기도');
+    expect(sectionLabel(3, ko)).toBe('제3단');
+    expect(sectionLabel(CLOSING_SECTION, ko)).toBe('마침 기도');
   });
 
   it('구간의 첫 단계는 시작 기도의 성호경과 각 단의 신비 선포, 마침 기도의 성모찬송이다', () => {
@@ -50,7 +54,7 @@ describe('앞 단·다음 단으로 옮길 곳', () => {
   it('시작 기도 어디에 서 있어도 다음은 제1단이고, 앞은 갈 데가 없다', () => {
     const firstDecl = sectionStart(QUEUE, 1);
     for (let at = 0; at < 9; at++) {
-      const moves = sectionMoves(QUEUE, at);
+      const moves = sectionMoves(QUEUE, at, ko);
       expect(moves.previous).toBeNull();
       expect(moves.next).toEqual({ section: 1, index: firstDecl, label: '제1단' });
     }
@@ -60,7 +64,7 @@ describe('앞 단·다음 단으로 옮길 곳', () => {
     const third = QUEUE.map((step, i) => (step.decade === 3 ? i : -1)).filter((i) => i >= 0);
     expect(third).toHaveLength(14);
     for (const at of third) {
-      const moves = sectionMoves(QUEUE, at);
+      const moves = sectionMoves(QUEUE, at, ko);
       expect(moves.previous?.label).toBe('제2단');
       expect(moves.next?.label).toBe('제4단');
       expect(QUEUE[moves.previous!.index]!.prayer).toBe('decl');
@@ -71,7 +75,7 @@ describe('앞 단·다음 단으로 옮길 곳', () => {
   it('제5단의 다음은 마침 기도다', () => {
     const fifth = QUEUE.map((step, i) => (step.decade === 5 ? i : -1)).filter((i) => i >= 0);
     for (const at of fifth) {
-      const moves = sectionMoves(QUEUE, at);
+      const moves = sectionMoves(QUEUE, at, ko);
       expect(moves.next?.label).toBe('마침 기도');
       expect(QUEUE[moves.next!.index]!.prayer).toBe('salve');
     }
@@ -79,7 +83,7 @@ describe('앞 단·다음 단으로 옮길 곳', () => {
 
   it('마침 기도에서는 다음이 없다 — 없는 구간으로 뛰거나 하루를 끝내지 않는다', () => {
     const last = QUEUE.length - 1;
-    const moves = sectionMoves(QUEUE, last);
+    const moves = sectionMoves(QUEUE, last, ko);
     expect(moves.next).toBeNull();
     expect(moves.previous?.label).toBe('제5단');
   });
@@ -88,7 +92,7 @@ describe('앞 단·다음 단으로 옮길 곳', () => {
     let at = 0;
     const visited: string[] = ['시작 기도'];
     for (;;) {
-      const next = sectionMoves(QUEUE, at).next;
+      const next = sectionMoves(QUEUE, at, ko).next;
       if (!next) break;
       at = next.index;
       visited.push(next.label);

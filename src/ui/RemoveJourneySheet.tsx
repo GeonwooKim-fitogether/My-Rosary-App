@@ -10,7 +10,9 @@
  * 혼자 바치는 여정의 문구 하나만 안다. 조가 생기면 여정의 종류를 보고 문구를 고르는 일이
  * 여기 들어온다.
  */
+import { stringsFor } from '../i18n';
 import { removeJourney } from '../state/appStore';
+import { useAppState } from '../state/useAppState';
 import { ConfirmSheet } from './Sheet';
 
 export function RemoveJourneySheet({
@@ -24,13 +26,15 @@ export function RemoveJourneySheet({
   onRemoved: () => void;
   onClose: () => void;
 }) {
+  const { settings } = useAppState();
+  const strings = stringsFor(settings.language);
   return (
     <ConfirmSheet
       visible={journeyId !== null}
-      label="이 기도 지우기"
-      message="이 기도를 지웁니다. 기록도 함께 지워집니다."
-      confirmLabel="지우기"
-      cancelLabel="두기"
+      label={strings.removeJourneyLabel}
+      message={strings.removeJourneyMessage}
+      confirmLabel={strings.removeJourneyYes}
+      cancelLabel={strings.removeJourneyNo}
       onConfirm={() => {
         if (journeyId !== null) removeJourney(journeyId);
         onRemoved();

@@ -28,7 +28,7 @@
  */
 import world from '../../spec/mysteries.world.json';
 import { MYSTERY_SETS } from '../domain/mysteries';
-import { monthDayKo } from '../journey/format';
+import { monthDayWeekday } from '../journey/format';
 import type { MysteryKey } from '../domain/types';
 import type { LanguageKey } from '../i18n';
 
@@ -91,15 +91,13 @@ export function shortSetName(fullName: string): string {
   return head.length > 1 && head.endsWith('의') ? head.slice(0, -1) : head;
 }
 
-/** 요일 이름. `Date#getDay()` 와 같은 차례로 0 이 일요일이다. */
-const WEEKDAY_KO = ['일', '월', '화', '수', '목', '금', '토'] as const;
-
 /**
- * `9월 5일 금요일` — 시안의 `todayLabel`(달·날·요일을 긴 이름으로)과 같은 모양이다.
+ * `9월 5일 금요일` · `Friday, September 5` — 시안의 `todayLabel`(달·날·요일을 긴 이름으로).
  *
  * 홈과 오늘의 신비 화면이 같은 날짜를 같은 모양으로 적어야 해서 여기 모았다.
- * 달과 날의 모양은 이 저장소가 이미 쓰는 `monthDayKo` 가 정한다.
+ * 언어에 따라 날짜를 만드는 방식이 갈리는 규칙은 `src/journey/format.ts` 의
+ * `monthDayWeekday` 가 갖는다.
  */
-export function todayLabelKo(today: Date): string {
-  return `${monthDayKo(today)} ${WEEKDAY_KO[today.getDay()]}요일`;
+export function todayLabel(today: Date, language: LanguageKey): string {
+  return monthDayWeekday(today, language);
 }

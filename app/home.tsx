@@ -69,12 +69,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { artSession } from '../src/art';
 import { plateByFile } from '../src/art/worldPlates';
 import { MYSTERY_SETS, mysteryForWeekday } from '../src/domain/mysteries';
-import { stringsFor } from '../src/i18n';
+import { fill, stringsFor, type LanguageKey, type Strings } from '../src/i18n';
 import { cardStatus, resumeLine, type CardStatus } from '../src/journey/card';
-import { relativeTimeKo } from '../src/journey/format';
+import { relativeTime } from '../src/journey/format';
 import { dayIndexOn, dayLabelOn, journeyLength, notStartedLabel } from '../src/journey/rules';
 import { mysteryOf, type Journey } from '../src/journey/session';
-import { todayLabelKo } from '../src/mystery/text';
+import { mysteryRows, todayLabel } from '../src/mystery/text';
 import { primeSpeech } from '../src/prayer/channels';
 import { buildDayQueue } from '../src/prayer/steps';
 import { useAppState } from '../src/state/useAppState';
@@ -293,7 +293,7 @@ export default function HomeScreen() {
           {ready ? (
             <View style={styles.todayBlock}>
               <Text style={styles.todayLabel} testID="home-today-label">
-                {`${strings.today} · ${todayLabelKo(today)}`}
+                {`${strings.today} · ${todayLabel(today, settings.language)}`}
               </Text>
               <Text
                 style={[
@@ -302,10 +302,10 @@ export default function HomeScreen() {
                 ]}
                 testID="home-today-set"
               >
-                {MYSTERY_SETS[todaySet].name}
+                {strings[todaySet]}
               </Text>
               <Text style={styles.todayFirst} testID="home-today-first">
-                {MYSTERY_SETS[todaySet].decades[0]}
+                {mysteryRows(todaySet, settings.language)[0]?.title}
               </Text>
               {/*
                 오늘 바칠 다섯 단을 다 펼쳐 보는 자리로 간다 (W2 슬라이스 B).
@@ -318,7 +318,7 @@ export default function HomeScreen() {
                 accessibilityRole="button"
                 testID="home-today-link"
               >
-                <Text style={styles.todayLinkLabel}>오늘의 신비 보기 →</Text>
+                <Text style={styles.todayLinkLabel}>{`${strings.todayLink} →`}</Text>
               </Pressable>
             </View>
           ) : null}
@@ -342,7 +342,7 @@ export default function HomeScreen() {
               <SessionRow
                 palette={palette}
                 position={position}
-                againLabel={strings.again}
+                strings={strings}
                 onAgain={() => setRestarting(true)}
               />
             ) : null}
@@ -365,17 +365,17 @@ export default function HomeScreen() {
               accessibilityRole="button"
               testID="home-new"
             >
-              <Text style={openable ? styles.secondaryLabel : styles.primaryLabel}>새 기도</Text>
+              <Text style={openable ? styles.secondaryLabel : styles.primaryLabel}>
+                {strings.newPrayer}
+              </Text>
             </Pressable>
           </View>
 
           {/* ── 4층 · 여정 목록 ─────────────────────────────────────────── */}
           {ready && journeys.length === 0 ? (
             <View style={styles.empty} testID="home-empty">
-              <Text style={styles.emptyTitle}>아직 바치는 기도가 없습니다.</Text>
-              <Text style={styles.emptyNote}>
-                바람 하나를 적고 시작해 보세요. 54일이든 하루든, 끊겨도 그 자리가 남습니다.
-              </Text>
+              <Text style={styles.emptyTitle}>{strings.homeEmptyTitle}</Text>
+              <Text style={styles.emptyNote}>{strings.homeEmptyNote}</Text>
             </View>
           ) : null}
 
@@ -389,6 +389,8 @@ export default function HomeScreen() {
                   journey={journey}
                   today={today}
                   position={position}
+                  strings={strings}
+                  language={settings.language}
                   index={index}
                   onOpen={() => openPrayer(journey.id)}
                   onLongPress={() => setRemoving(journey)}
@@ -446,12 +448,12 @@ export default function HomeScreen() {
 function SessionRow({
   palette,
   position,
-  againLabel,
+  strings,
   onAgain,
 }: {
   palette: WorldPalette;
   position: PrayerPosition;
-  againLabel: string;
+  strings: Strings;
   onAgain: () => void;
 }) {
   const styles = homeStyles(palette);
@@ -469,10 +471,10 @@ function SessionRow({
         <View style={[styles.sessionFill, { width: `${percent}%` }]} />
       </View>
       <Text style={styles.sessionWhere} numberOfLines={1} testID="home-session-where">
-        {resumeLine(position, stepName)}
+        {resumeLine(position, strings, stepName)}
       </Text>
       <Pressable onPress={onAgain} accessibilityRole="button" testID="home-again" hitSlop={10}>
-        <Text style={styles.sessionAgain}>{againLabel}</Text>
+        <Text style={styles.sessionAgain}>{strings.again}</Text>
       </Pressable>
     </View>
   );
@@ -495,6 +497,8 @@ function JourneyRow({
   journey,
   today,
   position,
+  strings,
+  language,
   index,
   onOpen,
   onLongPress,
@@ -503,6 +507,8 @@ function JourneyRow({
   journey: Journey;
   today: Date;
   position: PrayerPosition | null;
+  strings: Strings;
+  language: LanguageKey;
   index: number;
   onOpen: () => void;
   onLongPress: () => void;
@@ -527,7 +533,7 @@ function JourneyRow({
         onPress={open}
         onLongPress={onLongPress}
         accessibilityRole="button"
-        accessibilityHint="길게 누르면 이 기도를 지웁니다"
+        accessibilityHint={strings.removeHint}
         testID={`home-card-${index}`}
       >
         <Text style={styles.rowTitle} numberOfLines={1} testID={`home-card-title-${index}`}>
@@ -539,6 +545,8 @@ function JourneyRow({
           journey={journey}
           today={today}
           position={position}
+          strings={strings}
+          language={language}
           index={index}
         />
       </Pressable>
@@ -552,13 +560,13 @@ function JourneyRow({
         */
         onPress={() => router.push({ pathname: '/journey', params: { id: journey.id } })}
         accessibilityRole="button"
-        accessibilityLabel="여정 상세"
+        accessibilityLabel={strings.journeyDetail}
         testID={`home-ribbon-${index}`}
         style={styles.rowDayTap}
         hitSlop={8}
       >
         <Text style={styles.rowDay} testID={`home-card-meta-${index}`}>
-          {status === 'notStarted' ? '시작 전' : dayLabelOn(journey, dayIndex)}
+          {status === 'notStarted' ? strings.notStarted : dayLabelOn(journey, dayIndex, strings)}
         </Text>
       </Pressable>
     </View>
@@ -572,6 +580,8 @@ function RowStatus({
   journey,
   today,
   position,
+  strings,
+  language,
   index,
 }: {
   palette: WorldPalette;
@@ -579,26 +589,30 @@ function RowStatus({
   journey: Journey;
   today: Date;
   position: PrayerPosition | null;
+  strings: Strings;
+  language: LanguageKey;
   index: number;
 }) {
   const styles = homeStyles(palette);
 
   if (status === 'notStarted') {
-    return <Text style={styles.rowState}>{notStartedLabel(journey, today)}</Text>;
+    return (
+      <Text style={styles.rowState}>{notStartedLabel(journey, today, strings, language)}</Text>
+    );
   }
   if (status === 'ended') {
     const length = journeyLength(journey.format) ?? journey.days.length;
     const prayed = journey.days.filter((state) => state === 'prayed').length;
     return (
       <Text style={styles.rowState} testID={`home-card-status-${index}`}>
-        {length}일 중 {prayed}일을 바쳤습니다
+        {fill(strings.daysPrayedOf, { t: length, p: prayed })}
       </Text>
     );
   }
   if (status === 'prayedToday') {
     return (
       <Text style={styles.rowState} testID={`home-card-status-${index}`}>
-        오늘 바쳤습니다
+        {strings.prayedTodayDone}
       </Text>
     );
   }
@@ -608,19 +622,21 @@ function RowStatus({
     return (
       <>
         <Text style={styles.rowState} testID={`home-card-status-${index}`}>
-          {MYSTERY_SETS[position.mystery].name}
+          {strings[position.mystery]}
           {'\n'}
-          {resumeLine(position, name)}
+          {resumeLine(position, strings, name)}
         </Text>
-        <Text style={styles.rowWhen}>{relativeTimeKo(new Date(position.savedAt), today)}</Text>
+        <Text style={styles.rowWhen}>
+          {relativeTime(new Date(position.savedAt), today, strings)}
+        </Text>
       </>
     );
   }
   return (
     <Text style={styles.rowState} testID={`home-card-status-${index}`}>
-      {MYSTERY_SETS[mysteryOf(journey, today)].name}
+      {strings[mysteryOf(journey, today)]}
       {'\n'}
-      아직
+      {strings.notYetShort}
     </Text>
   );
 }

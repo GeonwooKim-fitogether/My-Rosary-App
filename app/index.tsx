@@ -16,14 +16,32 @@
  * M2 에서 홈이 서면서 그 임시 배선이 닫혔고, 목적지가 시안대로 홈이 됐다.
  */
 import { Image } from 'expo-image';
+import { useState } from 'react';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { artSession, SLOT_GEOMETRY } from '../src/art';
+import { stringsFor } from '../src/i18n';
+import { useAppState } from '../src/state/useAppState';
 import { metrics, type, useThemedStyles, type Theme } from '../src/theme';
 
 export default function LoginScreen() {
   // 이번 세션의 로그인 띠에 걸 성화. 초점 좌표는 v5 가 렌더해 보고 정한 값이다.
-  const plate = artSession.forKey('screen:login', ['login']);
+  const { settings } = useAppState();
+  const strings = stringsFor(settings.language);
+  /*
+    성화는 **이 화면이 처음 설 때 한 번만** 고른다 (`useState` 의 첫 값).
+
+    W4 슬라이스 E 에서 이 화면이 문구를 쓰려고 앱 상태를 구독하게 되면서, 상태가 바뀔 때마다
+    이 화면도 다시 그려지게 됐다. 그런데 성화 뽑기(`artSession`)는 **먼저 물어본 화면에게
+    먼저 그림을 나눠 주는** 방식이라, 다시 그릴 때마다 뽑기에 다시 물으면 그 사이에 새로
+    열린 뽑기(성화를 고정하면 다시 열린다)의 첫 그림을 이 화면이 가로챈다. 실제로 그 일이
+    일어났다 — 갤러리에서 고정한 그림이 홈이 아니라 아직 뒤에 서 있던 이 로그인 화면으로
+    갔고, 홈에는 그다음 그림이 걸렸다(e2e `gallery.spec.ts` 가 잡았다).
+
+    한 번만 고르는 것이 이 화면의 본뜻이기도 하다 — 머리글이 말하듯 "이번 세션의 로그인
+    띠에 걸 성화"이고, 언어가 바뀐다고 그림까지 바뀔 이유가 없다.
+  */
+  const [plate] = useState(() => artSession.forKey('screen:login', ['login']));
   const styles = useThemedStyles(loginStyles);
 
   return (
@@ -42,11 +60,9 @@ export default function LoginScreen() {
       )}
 
       <View style={styles.body}>
-        <Text style={styles.label}>54일 기도</Text>
-        <Text style={styles.title}>묵주</Text>
-        <Text style={styles.intro}>
-          하나의 지향을 쉰네 날 동안 바칩니다.{'\n'}오늘 어디까지 바쳤는지는 앱이 기억합니다.
-        </Text>
+        <Text style={styles.label}>{strings.fiftyFour}</Text>
+        <Text style={styles.title}>{strings.loginTitle}</Text>
+        <Text style={styles.intro}>{strings.loginBody}</Text>
 
         <View style={styles.spacer} />
 
@@ -56,7 +72,7 @@ export default function LoginScreen() {
           accessibilityRole="button"
           testID="login-google"
         >
-          <Text style={styles.primaryButtonText}>Google로 계속하기</Text>
+          <Text style={styles.primaryButtonText}>{strings.continueGoogle}</Text>
         </Pressable>
         <Pressable
           style={styles.secondaryButton}
@@ -64,16 +80,13 @@ export default function LoginScreen() {
           accessibilityRole="button"
           testID="login-apple"
         >
-          <Text style={styles.secondaryButtonText}>Apple로 계속하기</Text>
+          <Text style={styles.secondaryButtonText}>{strings.continueApple}</Text>
         </Pressable>
 
         {/* v5 의 `초대 코드로 들어가기` 줄이 있던 자리 (결정 1-1 · Q-13 으로 뺐다). */}
         <View style={styles.removedRowGap} />
 
-        <Text style={styles.footnote}>
-          계속하면 이용약관과 개인정보 처리방침에 동의합니다.{'\n'}바람 문구는 서버에서
-          암호화해 보관합니다.
-        </Text>
+        <Text style={styles.footnote}>{strings.loginTerms}</Text>
       </View>
     </View>
   );

@@ -162,13 +162,16 @@ export const FIXED_TODAY = new Date('2026-09-05T09:00:00');
  *   사진을 찍는 시험과, 그림이 바뀌는 것 자체를 재는 시험이 이것을 쓴다 — 뽑기가 난수인
  *   채로 두면 아무것도 고치지 않아도 사진이 달라지고, "지역이 바뀌어서 그림이 바뀐 것"과
  *   "그냥 다른 그림이 나온 것"을 가릴 수 없다.
+ * @param intro 소개 시트를 **아직 보지 않은 기기**로 열 것인가 (W4 슬라이스 C). 기본은
+ *   `false` — 이미 본 것으로 두고 연다. 까닭은 아래 `markIntroSeen` 이 적는다.
  */
 export async function openApp(
   page: Page,
-  options: { demo?: boolean; at?: Date; fontScale?: number; art?: number } = {},
+  options: { demo?: boolean; at?: Date; fontScale?: number; art?: number; intro?: boolean } = {},
 ): Promise<void> {
   await page.clock.install({ time: options.at ?? FIXED_TODAY });
   await installDeviceStubs(page);
+  if (options.intro !== true) await markIntroSeen(page);
   if (options.fontScale && options.fontScale !== 1) await installFontScale(page, options.fontScale);
   const query = new URLSearchParams();
   if (options.demo !== false) query.set('demo', '1');
@@ -199,6 +202,48 @@ export async function installFontScale(page: Page, fontScale: number): Promise<v
     new MutationObserver(apply).observe(document, { childList: true });
     document.addEventListener('DOMContentLoaded', apply);
   }, `${16 * fontScale}px`);
+}
+
+/**
+ * 소개 시트를 **이미 본 기기**로 만들어 둔다 (W4 슬라이스 C).
+ *
+ * `openApp` 이 기본으로 이것을 부른다. 왜 기본이 "이미 봤다" 인가. 소개는 앱을 **처음** 여는
+ * 사람에게 한 번 뜨는 것이고, 시험은 매번 빈 브라우저에서 시작하므로 그냥 두면 **모든 시험이
+ * 소개 시트에 막힌다.** 시험이 재려는 것은 기도와 여정과 설정이지 소개가 아니므로, 시험의
+ * 기본 상태를 "이 앱을 두 번째로 여는 사람" 으로 둔다 — 실제 사용자도 첫 열기 뒤로는 줄곧
+ * 그 상태다.
+ *
+ * 처음 여는 사람의 자리를 재는 시험은 `openApp(page, { intro: true })` 로 이것을 건너뛴다
+ * (`e2e/intro.spec.ts`).
+ */
+export async function markIntroSeen(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('myrosary.introSeen.v1', '1');
+  });
+}
+
+/**
+ * 기기에 이미 저장돼 있던 설정을 심어 둔다 (W4 슬라이스 B).
+ *
+ * **`openApp` 보다 먼저 부른다.** 화면이 뜬 뒤에 심으면 앱이 이미 옛 값을 읽은 뒤라서
+ * 아무 일도 일어나지 않는다.
+ *
+ * 왜 이런 손잡이가 필요한가. 재려는 것이 **지금 화면으로는 만들 수 없는 상태**이기 때문이다 —
+ * 언어 다섯이 꺼진 뒤로는 지역·언어 화면에서 그 다섯을 고를 수 없는데, 일곱이 모두 열려 있던
+ * 판(W0~W3)으로 앱을 쓰던 기기에는 그 값이 저장돼 있을 수 있다. 그 기기가 어떻게 열리는지를
+ * 재려면 저장된 값을 손으로 놓아 보는 수밖에 없다.
+ *
+ * 웹에서 앱의 저장소는 브라우저의 `localStorage` 다 — `@react-native-async-storage/async-storage`
+ * 가 웹에서 그것을 그대로 쓴다(`lib/module/createAsyncStorage.js` 의 `LegacyAsyncStorageWebImpl`).
+ * 그래서 앱의 저장 열쇠(`src/storage/settings.ts` 의 `SETTINGS_KEY`)에 값을 적어 두면 된다.
+ */
+export async function seedStoredSettings(
+  page: Page,
+  settings: Record<string, unknown>,
+): Promise<void> {
+  await page.addInitScript((raw: string) => {
+    window.localStorage.setItem('myrosary.settings.v1', raw);
+  }, JSON.stringify(settings));
 }
 
 /** 첫 화면의 단추를 눌러 홈으로 들어간다 (`decisions.md` Q-17 이 닫힌 배선). */

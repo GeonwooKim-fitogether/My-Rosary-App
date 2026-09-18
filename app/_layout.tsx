@@ -16,14 +16,19 @@
  * 어디서도 값을 얻지 못한다. 웹에서는 네 변이 모두 0 이라 시안과 같은 6px 이 되고, 노치가
  * 있는 기기에서만 그만큼 내려온다.
  */
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
+import { syncDocumentLanguage } from '../src/i18n/documentLanguage';
 import { openApp } from '../src/state/appStore';
+import { useAppState } from '../src/state/useAppState';
+import { createIntroSeenStore } from '../src/storage/introSeen';
 import { ThemeProvider, useTheme } from '../src/theme';
+import { AboutSheet } from '../src/ui/AboutSheet';
 
 // 글꼴이 준비되기 전에 화면이 먼저 뜨면 글자가 한 번 튀므로, 그때까지 가림막을 붙든다.
 void SplashScreen.preventAutoHideAsync();
@@ -92,9 +97,24 @@ export default function RootLayout() {
   );
 }
 
-/** 화면 껍데기. 벌에 따라 바탕색과 상태 표시줄의 밝기가 함께 바뀐다. */
+/**
+ * 화면 껍데기. 벌에 따라 바탕색과 상태 표시줄의 밝기가 함께 바뀐다.
+ *
+ * W4 에서 둘이 더해졌다. 첫째, **문서의 언어를 앱의 언어와 묶는다**(슬라이스 B) — 웹에서
+ * `<html lang>` 을 고쳐 쓰는 일이며, 까닭은 `src/i18n/documentLanguage.ts` 가 적는다.
+ * 화면 하나가 아니라 여기서 부르는 이유는, 언어가 어느 화면에서 바뀌든(지역·언어 화면 ·
+ * 기록 들여오기) 이 한 곳이 그것을 받기 때문이다. 둘째, **소개 시트가 처음 한 번 뜬다**
+ * (슬라이스 C) — 아래 `IntroGate`.
+ */
 function Shell() {
   const { colors, mode } = useTheme();
+  const { settings } = useAppState();
+
+  // 앱이 켜질 때 한 번, 그리고 언어가 바뀔 때마다.
+  useEffect(() => {
+    syncDocumentLanguage(settings.language);
+  }, [settings.language]);
+
   return (
     <>
       <StatusBar style={mode === 'night' ? 'light' : 'dark'} />
@@ -104,6 +124,58 @@ function Shell() {
           contentStyle: { backgroundColor: colors.background },
         }}
       />
+      <IntroGate />
     </>
+  );
+}
+
+/** 소개를 본 적이 있는지 적어 두는 자리. 모듈 하나만 만들어 두고 함께 쓴다. */
+const introSeenStore = createIntroSeenStore(AsyncStorage);
+
+/**
+ * 소개 시트(S7)를 **처음 여는 사람에게 한 번만** 띄운다 (W4 슬라이스 C).
+ *
+ * ── 왜 화면 안이 아니라 껍데기에 두나 ────────────────────────────────────────
+ *
+ * 처음 여는 사람이 어느 화면에 서 있을지를 이 부품이 알 필요가 없기 때문이다. 지금은 첫
+ * 화면이 로그인이지만 그 화면은 계정이 돌아오는 V1.5 에 바뀔 수 있고, 설치형 웹앱은 홈
+ * 화면에 놓인 아이콘이 어느 주소로 열릴지도 사람이 정한다. 껍데기에 두면 **어느 화면으로
+ * 들어오든 소개가 한 번 뜬다.**
+ *
+ * ── 언제 뜨고 언제 사라지나 ─────────────────────────────────────────────────
+ *
+ * 기기에 적힌 것을 한 번 읽어 보고(`introSeenStore.load`), 본 적이 없으면 띄운다. 읽는 동안은
+ * 아무것도 띄우지 않는다 — 값을 모르는 채로 띄웠다가 곧 걷으면 화면이 한 번 번쩍인다.
+ *
+ * **닫는 순간 본 것으로 적는다.** 머리의 `닫기` 를 누르든, 판 바깥의 어두운 자리를 누르든,
+ * 맨 아래 `시작하기` 를 누르든 같다. 읽지 않고 곧바로 닫아도 다시 뜨지 않으며, 그것이
+ * "건너뛸 수 있다" 의 뜻이다 — 기도하러 온 사람을 이 글로 막지 않는다. 다시 보고 싶은
+ * 사람은 설정의 `소개` 줄에서 언제든 같은 글을 연다.
+ */
+function IntroGate() {
+  // `null` 은 "아직 기기에서 읽어 오는 중" 이라는 뜻이다.
+  const [seen, setSeen] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    void introSeenStore.load().then((value) => {
+      if (alive) setSeen(value);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (seen !== false) return null;
+  return (
+    <AboutSheet
+      visible
+      firstRun
+      testID="sheet-intro"
+      onClose={() => {
+        setSeen(true);
+        void introSeenStore.markSeen();
+      }}
+    />
   );
 }
