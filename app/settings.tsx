@@ -53,12 +53,23 @@
  * "정말 하시겠습니까" 로 묻지 않고 **무엇을 몇 개 잃는지 수로** 말한다 — 사람이 판단할 수
  * 있어야 관문이지, 한 번 더 누르게 하는 것만으로는 관문이 아니기 때문이다.
  *
- * ── 시안에 있으나 아직 놓지 않은 줄 둘 ──────────────────────────────────────────
+ * ── `홈 화면에 추가` 가 2026-09-18 에 살아났다 (W4 슬라이스 A) ──────────────────
  *
- * `홈 화면에 추가`(설치형 웹앱)와 `진행 중인 기도 지우기`는 놓지 않았다. 앞의 것은 설치형
- * 웹앱을 세우는 **W4** 의 일이라 지금 놓으면 눌러도 아무 일이 없고, 뒤의 것은 이 앱에서
- * 이미 홈의 `다시 바치기` 가 하는 일이라(확인 시트까지 붙어 있다) 두 곳에서 같은 일을
- * 하게 된다. 둘 다 **없는 것이 아니라 아직 아닌 것**이므로 여기 적어 둔다.
+ * 그전까지 이 줄은 **놓지 않은 자리**였다. 까닭은 "설치형 웹앱을 세우는 W4 의 일이라 지금
+ * 놓으면 눌러도 아무 일이 없다" 였는데, W4 가 그 전제를 바꿨다 — `public/manifest.webmanifest`
+ * 와 `public/sw.js` 가 서고 `app/+html.tsx` 가 그 둘을 가리키게 되면서, 이제 이 줄은 누르면
+ * 실제로 무엇인가를 한다.
+ *
+ * **다만 무엇을 하는지는 브라우저마다 다르다.** 안드로이드 크롬 계열에서는 진짜 설치 창이
+ * 뜨고, iOS 에서는 애플이 그 창을 앱에게 내주지 않으므로 **어떻게 하는지 알려 주는 시트**가
+ * 뜬다. 스토어로 받은 앱에서는 홈 화면에 놓을 것이 없으므로 **줄 자체를 그리지 않는다.**
+ * 가름은 `src/install/homeScreen.ts` 가 맡고 이 화면은 그 답만 쓴다.
+ *
+ * ── 시안에 있으나 아직 놓지 않은 줄 하나 ────────────────────────────────────────
+ *
+ * `진행 중인 기도 지우기`는 놓지 않았다. 이 앱에서 이미 홈의 `다시 바치기` 가 하는 일이라
+ * (확인 시트까지 붙어 있다) 두 곳에서 같은 일을 하게 되기 때문이다. **없는 것이 아니라
+ * 아직 아닌 것**이므로 여기 적어 둔다.
  */
 import { useState } from 'react';
 import { router } from 'expo-router';
@@ -66,6 +77,11 @@ import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } fr
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LANGUAGES, stringsFor } from '../src/i18n';
+import {
+  installRowSupported,
+  promptHomeScreenInstall,
+  useHomeScreenInstall,
+} from '../src/install/homeScreen';
 import { countDays } from '../src/journey/rules';
 import type { PaceKey, RecitationMode } from '../src/domain/types';
 import { importBackup, updateSettings } from '../src/state/appStore';
@@ -100,7 +116,7 @@ import { RosarySheet } from '../src/prayer/RosarySheet';
 import { BottomSheet, ChoiceSheet, ConfirmSheet } from '../src/ui/Sheet';
 import { TAB_BAR_HEIGHT, WorldTabBar } from '../src/ui/WorldTabBar';
 
-type Sheet = 'none' | 'recitation' | 'pace' | 'rosary' | 'about';
+type Sheet = 'none' | 'recitation' | 'pace' | 'rosary' | 'about' | 'install';
 
 /** 시안의 괘선 — 화면마다 쓰는 `rgba(0,0,0,.14)` 하나다. */
 const RULE = 'rgba(0,0,0,.14)';
@@ -127,6 +143,8 @@ export default function SettingsScreen() {
   */
   const [pending, setPending] = useState<ParsedBackup | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  /* 「홈 화면에 추가」 줄이 지금 무엇을 할 수 있는가 (W4 슬라이스 A). */
+  const install = useHomeScreenInstall();
 
   const titleFontSize = guideTitleSizeFor(window.width) * TEXT_SCALE.font;
 
@@ -169,6 +187,18 @@ export default function SettingsScreen() {
       return;
     }
     setPending(read);
+  };
+
+  /**
+   * 「홈 화면에 추가」를 눌렀다 (W4 슬라이스 A).
+   *
+   * 브라우저가 설치 창을 내주는 곳에서는 그 창을 띄우고, 내주지 않는 곳(iOS 가 그렇다)에서는
+   * 방법을 알려 주는 시트를 연다. **어느 쪽이든 누르면 무엇인가가 일어난다** — 눌러도 아무
+   * 일이 없는 단추를 두지 않는다는 이 저장소의 규칙이 여기에도 그대로 선다.
+   */
+  const addToHomeScreen = async () => {
+    const outcome = await promptHomeScreenInstall();
+    if (outcome === 'unavailable') setSheet('install');
   };
 
   /** 확인 시트에서 눌렀다 — 여기서부터는 되돌릴 수 없다. */
@@ -391,6 +421,50 @@ export default function SettingsScreen() {
           </>
         ) : null}
 
+        {/*
+          ── 홈 화면에 추가 (W4 슬라이스 A) ──────────────────────────────────
+          시안은 이 줄을 완주 기록 **바로 다음**에 두고, 아래 작은 글로 `오프라인 사용 가능`
+          을 적고, 오른쪽에 단추 하나를 세운다. 이 화면에서는 완주 기록과 이 줄 사이에 기록
+          내보내기·들여오기 두 줄이 끼어 있는데, 그 둘은 완주 기록과 같은 "내 기록" 묶음이라
+          떼어 놓으면 오히려 읽기 어렵다. 그래서 **시안의 앞뒤 순서(기록 다음)는 지키되 그
+          묶음 뒤로 물렸다.**
+
+          오른쪽 단추를 따로 세우지 않고 **줄 전체를 누르게 했다.** 이 화면의 다른 줄들
+          (지역·언어 · 소개 · 기록 두 줄)이 모두 그렇고, 한 화면 안에서 어떤 줄은 줄이
+          눌리고 어떤 줄은 줄 안의 단추만 눌리면 손이 어디를 눌러야 할지 매번 다시 재야 한다.
+        */}
+        {installRowSupported ? (
+          <Pressable
+            style={styles.countRow}
+            onPress={() => {
+              void addToHomeScreen();
+            }}
+            accessibilityRole="button"
+            testID="settings-install"
+          >
+            <View style={styles.rowText}>
+              <Text style={styles.rowLabel}>{strings.install}</Text>
+              <Text style={styles.rowNote} testID="settings-install-note">
+                {install.installed
+                  ? '이미 홈 화면에서 열고 있습니다'
+                  : install.canPrompt
+                    ? `${strings.offline} · 눌러서 놓습니다`
+                    : `${strings.offline} · 놓는 방법을 알려 드립니다`}
+              </Text>
+            </View>
+            <Svg width={20} height={20} viewBox="0 0 24 24">
+              <Path
+                d="m9 18 6-6-6-6"
+                stroke={palette.ink}
+                strokeWidth={1.6}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </Svg>
+          </Pressable>
+        ) : null}
+
         {/* ── 소개 ────────────────────────────────────────────────────────── */}
         <Pressable
           style={styles.linkRow}
@@ -476,6 +550,40 @@ export default function SettingsScreen() {
         <Text style={styles.aboutBody}>
           함께 바치기와 계정 연결은 아직 붙지 않았습니다. 기도문은 임시 판본이고, 성화도
           검증 기간용입니다. 결제는 없습니다.
+        </Text>
+      </BottomSheet>
+
+      {/*
+        홈 화면에 추가 — 방법을 알려 주는 시트 (W4 슬라이스 A).
+
+        이 시트는 브라우저가 설치 창을 내주지 않을 때만 열린다. 내주는 곳에서는 줄을 누른
+        자리에서 진짜 설치 창이 뜨므로 이 시트를 볼 일이 없다.
+
+        **아래 두 번째 문단이 작업 지시서가 요구한 "오프라인에서 무엇이 되고 무엇이 안
+        되는지" 한 줄이다.** 되는 것만 적고 마는 것은 정직하지 않아, 되지 않는 둘(아직 한 번도
+        보지 않은 성화 · 기기에 목소리가 없을 때의 소리 내어 읽기)을 함께 적었다.
+
+        글은 한국어로만 적혀 있다. 이 화면의 다른 줄들(낭송 방식 · 받는 사이 · 기록 두 줄)이
+        이미 그러하며, 언어 표에 문구를 더하는 일은 언어를 둘로 좁히는 **슬라이스 B** 의 몫이다.
+      */}
+      <BottomSheet
+        visible={sheet === 'install'}
+        label={strings.install}
+        onClose={close}
+        testID="sheet-install"
+      >
+        <Text style={styles.aboutTitle}>
+          {install.guide === 'ios' ? '아이폰·아이패드에서' : '이 브라우저에서'}
+        </Text>
+        <Text style={styles.aboutBody}>
+          {install.guide === 'ios'
+            ? '화면 아래쪽 가운데의 공유 단추(위로 향한 화살표)를 누르고, 목록을 내려 «홈 화면에 추가»를 고르면 됩니다. 사파리가 아닌 브라우저에서는 이 항목이 보이지 않을 수 있습니다.'
+            : '브라우저의 차림표(⋮ 또는 ···)를 열고 «앱 설치» 또는 «홈 화면에 추가»를 고르면 됩니다. 항목이 보이지 않는 브라우저에서는 이 앱을 그대로 인터넷 주소로 쓰셔도 됩니다.'}
+        </Text>
+        <Text style={styles.aboutTitle}>놓고 나면</Text>
+        <Text style={styles.aboutBody}>
+          주소창 없이 앱처럼 열리고, 인터넷이 없어도 기도와 여정은 그대로 됩니다. 다만 성화는 한
+          번이라도 본 그림만 보이고, 소리 내어 읽기는 기기에 담긴 목소리일 때만 됩니다.
         </Text>
       </BottomSheet>
 

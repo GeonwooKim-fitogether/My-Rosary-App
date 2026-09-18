@@ -1,0 +1,27 @@
+{
+  "name": "MyRosary World",
+  "short_name": "묵주",
+  "description": "바람 하나를 정하고 54일 동안 날마다 묵주기도를 바칩니다.",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EDE7D8",
+  "theme_color": "#EDE7D8",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
