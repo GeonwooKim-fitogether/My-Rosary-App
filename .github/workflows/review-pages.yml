@@ -58,9 +58,10 @@ jobs:
           grep -q 'noindex' dist/index.html || { echo "noindex 표시가 없다"; exit 1; }
           echo "확인 통과 — $(du -sh dist | cut -f1)"
 
+      # Pages 를 처음 켜는 일은 이 워크플로의 자격으로 할 수 없다(실측: "Resource not
+      # accessible by integration"). 저장소 Settings → Pages → Source 를 GitHub Actions
+      # 로 한 번 바꿔 두어야 하며, 그 뒤로는 이 단계가 기존 설정을 읽기만 한다.
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
