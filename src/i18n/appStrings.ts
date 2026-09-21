@@ -95,6 +95,21 @@ const ko = {
   /* ── 신비 해설 (app/guide.tsx) ─────────────────────────────────────── */
   /** `{set}` 오늘의 신비 이름. */
   todayIsSet: '오늘 바치는 것은 {set}입니다.',
+  /*
+    긴 해설 세 칸의 작은 제목. 해설이 세 갈래로 나뉜다는 것을 읽는 사람이 알아야, 줄글
+    석 문단을 한 덩어리로 흘려 읽지 않는다 (`spec/mystery-commentary.ko.json`).
+  */
+  commentaryScene: '무슨 일이 있었나',
+  commentaryMeaning: '무엇을 묵상하나',
+  commentaryToday: '오늘 나에게',
+
+  /* ── 배우기 두 화면 (app/learn.tsx · app/background.tsx) ───────────── */
+  /** 설정에서 두 화면을 묶는 절의 제목. */
+  learnSection: '배우기',
+  learnBasics: '묵주기도 입문',
+  learnBasicsNote: '처음 바치는 분을 위한 설명서입니다.',
+  learnBackground: '배경 지식',
+  learnBackgroundNote: '이 기도가 어디서 왔고 왜 쉰네 날인지.',
 
   /* ── 기도 화면 (app/pray.tsx) ──────────────────────────────────────── */
   leavePrayer: '기도 나가기',
@@ -259,6 +274,15 @@ const en: AppStrings = {
     'No sacred art in your favorites yet. Tap the heart under an image and it will gather here.',
 
   todayIsSet: 'Today you pray the {set}.',
+  commentaryScene: 'What happened',
+  commentaryMeaning: 'What to consider',
+  commentaryToday: 'For today',
+
+  learnSection: 'Learn',
+  learnBasics: 'New to the Rosary',
+  learnBasicsNote: 'A guide for praying it the first time.',
+  learnBackground: 'Background',
+  learnBackgroundNote: 'Where this prayer came from, and why fifty-four days.',
 
   leavePrayer: 'Leave the Rosary',
   prevBead: 'Previous bead',

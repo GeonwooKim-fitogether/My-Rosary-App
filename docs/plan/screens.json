@@ -87,6 +87,11 @@
       "glob": "docs/plan/store-screenshots/*.png",
       "shot_by": "e2e/store-screenshots.spec.ts",
       "note": "스토어에 올릴 사진. 화면이 바뀌면 반드시 다시 찍어야 하는 자리라, 얼리지 않는다는 것이 그 폴더 README 에 이미 적혀 있다."
+    },
+    {
+      "glob": "docs/plan/learn-screens/*.png",
+      "shot_by": "e2e/screenshots.spec.ts",
+      "note": "배우기 두 화면(묵주기도 입문 · 배경 지식)과, 해설이 세 칸으로 길어진 신비 해설. 지금 앱의 화면들이므로 화면이 바뀌면 함께 바뀐다."
     }
   ],
   "frozen": [

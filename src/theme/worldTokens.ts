@@ -556,6 +556,19 @@ export const worldGuideType = scaleTypeScale(
     },
     /** 15px · 줄 높이 1.6. 해설 한 문단 (시안의 `m.note`). */
     rowNote: { fontFamily: fonts.sans, fontSize: 15, lineHeight: 15 * 1.6 },
+    /**
+     * 11px · 자간 .14em. 긴 해설 세 칸의 작은 제목 (`무슨 일이 있었나` 따위).
+     *
+     * 시안에는 이 자리가 없다 — 시안의 해설은 한 문단뿐이라 나눌 칸이 없었다. 값은 시안이
+     * **화면 머리의 작은 라벨**에 쓰는 것(12px · 자간 .14em)에서 한 급 내렸다. 화면 하나에
+     * 이 라벨이 열다섯 번 서므로, 머리의 라벨과 같은 크기면 머리보다 더 크게 읽힌다.
+     */
+    partLabel: {
+      fontFamily: fonts.sans,
+      fontSize: 11,
+      lineHeight: 11 * 1.25,
+      letterSpacing: 11 * 0.14,
+    },
     /** 17px 명조. 맨 아래 주 단추의 글자 (시안의 `t.prayThis`). */
     primary: { fontFamily: fonts.serif, fontSize: 17, lineHeight: 17 * 1.25 },
   },
@@ -566,6 +579,41 @@ export const worldGuideType = scaleTypeScale(
 export function guideTitleSizeFor(width: number): number {
   return Math.min(38, Math.max(30, width * 0.08));
 }
+
+/**
+ * 배우기 두 화면(묵주기도 입문 · 배경 지식)의 서체 (`app/learn.tsx` · `app/background.tsx`).
+ *
+ * **시안에는 이 두 화면이 없다.** 그래서 이 계단은 시안에서 옮겨 온 것이 아니라, 시안이
+ * 이미 쓰고 있는 값 가운데 성격이 같은 자리를 골라 모은 것이다 — 바텀 시트를 세울 때
+ * 쓴 방식과 같다(`src/theme/worldTokens.ts` 의 `worldSheetType` 머리글).
+ *
+ * | 칸 | 값 | 어디서 왔나 |
+ * |---|---|---|
+ * | `label` | 12px · 자간 .14em | 시안이 모든 화면 머리에 쓰는 작은 라벨 |
+ * | `lead` | 15px · 줄 높이 1.7 | 신비 해설의 해설 문단(15px)에서 줄 높이만 한 칸 넓혔다 — 머리말은 한 화면에 한 번뿐이라 더 느리게 읽혀도 된다 |
+ * | `heading` | 19px 명조 | 신비 해설의 단 제목(21px 명조)에서 한 급 내렸다. 그 화면의 제목은 스무 장면의 이름이라 무게가 크고, 이 화면의 제목은 글의 소제목이다 |
+ * | `body` | 15px · 줄 높이 1.7 | `lead` 와 같다. 본문이 길어 한 화면에 여러 문단이 이어지므로 줄 높이를 넓게 둔다 |
+ * | `term` | 15px 명조 | 항목 목록에서 이름만 명조로 세워 설명과 갈라 보이게 한다 |
+ * | `stepNumber` | 15px 명조 | 신비 해설의 단 번호(28px 명조)를 그대로 쓰면 아홉 줄이 번호 밭이 된다 |
+ * | `note` | 13px | 시안이 홈에서 작은 덧말에 쓰는 크기 |
+ */
+export const worldLearnType = scaleTypeScale(
+  {
+    label: {
+      fontFamily: fonts.sans,
+      fontSize: 12,
+      lineHeight: 12 * 1.25,
+      letterSpacing: 12 * 0.14,
+    },
+    lead: { fontFamily: fonts.sans, fontSize: 15, lineHeight: 15 * 1.7 },
+    heading: { fontFamily: fonts.serif, fontSize: 19, lineHeight: 19 * 1.35 },
+    body: { fontFamily: fonts.sans, fontSize: 15, lineHeight: 15 * 1.7 },
+    term: { fontFamily: fonts.serif, fontSize: 15, lineHeight: 15 * 1.5 },
+    stepNumber: { fontFamily: fonts.serif, fontSize: 15, lineHeight: 15 * 1.7 },
+    note: { fontFamily: fonts.sans, fontSize: 13, lineHeight: 13 * 1.6 },
+  },
+  TEXT_SCALE,
+);
 
 /**
  * 바텀 시트 일곱의 서체 (W2 §3 · `decisions.md` Q-56).
