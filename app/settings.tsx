@@ -505,6 +505,61 @@ export default function SettingsScreen() {
           </Pressable>
         ) : null}
 
+        {/*
+          ── 배우기 두 줄 ──────────────────────────────────────────────────
+
+          시안에 없는 줄이다. 묵주기도를 처음 바치는 사람을 위한 설명서와 배경 지식 두 편을
+          여기서 연다. 소개 바로 위에 둔 까닭은, 이 둘이 앱의 설정이 아니라 **앱에 대한
+          읽을거리**라 성격이 소개와 한 묶음이기 때문이다.
+
+          같은 두 화면으로 가는 길이 오늘의 신비 화면에도 있다. 두 길을 다 낸 것은 성격이
+          다르기 때문이다 — 오늘의 신비의 링크는 궁금해지는 자리에서 붙잡는 길이고,
+          설정의 이 줄은 나중에 다시 찾아올 때 언제나 같은 자리에 있는 길이다.
+        */}
+        <Pressable
+          style={styles.countRow}
+          onPress={() => router.push('/learn')}
+          accessibilityRole="button"
+          testID="settings-learn-basics"
+        >
+          <View style={styles.rowText}>
+            <Text style={styles.rowLabel}>{strings.learnBasics}</Text>
+            <Text style={styles.rowNote}>{strings.learnBasicsNote}</Text>
+          </View>
+          <Svg width={20} height={20} viewBox="0 0 24 24">
+            <Path
+              d="m9 18 6-6-6-6"
+              stroke={palette.ink}
+              strokeWidth={1.6}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </Svg>
+        </Pressable>
+
+        <Pressable
+          style={styles.countRow}
+          onPress={() => router.push('/background')}
+          accessibilityRole="button"
+          testID="settings-learn-background"
+        >
+          <View style={styles.rowText}>
+            <Text style={styles.rowLabel}>{strings.learnBackground}</Text>
+            <Text style={styles.rowNote}>{strings.learnBackgroundNote}</Text>
+          </View>
+          <Svg width={20} height={20} viewBox="0 0 24 24">
+            <Path
+              d="m9 18 6-6-6-6"
+              stroke={palette.ink}
+              strokeWidth={1.6}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </Svg>
+        </Pressable>
+
         {/* ── 소개 ────────────────────────────────────────────────────────── */}
         <Pressable
           style={styles.linkRow}

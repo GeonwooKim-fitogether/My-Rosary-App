@@ -14,10 +14,12 @@
  *    홈이 같은 두 갈래를 쓰므로 두 화면이 언제나 같은 신비를 말한다.
  * 2. **다섯 단의 제목이 시안의 글이 아니라 이 저장소의 정본이다.** 까닭과 출처는
  *    `src/mystery/text.ts` 의 머리에 표로 적어 두었다.
- * 3. **신비 해설로 가는 링크를 하나 두었다.** 시안에는 해설 화면(`Mysteries Guide`)이
- *    그려져 있는데 **어느 화면에서도 그리로 가는 길이 없다** — 시안 자신의 배선 누락이다.
- *    성격이 가장 가까운 이 화면에서 잇고, 링크의 값은 시안이 홈에서 같은 성격의 링크에
- *    쓰는 것을 그대로 가져왔다.
+ * 3. **더 읽을 거리로 가는 링크 셋을 두었다.** 첫째는 신비 해설이다 — 시안에는 그 화면
+ *    (`Mysteries Guide`)이 그려져 있는데 **어느 화면에서도 그리로 가는 길이 없어**, 성격이
+ *    가장 가까운 이 화면에서 잇는다. 나머지 둘(묵주기도 입문 · 배경 지식)은 시안에 아예
+ *    없던 화면이고, 처음 오는 사람이 `신비` 라는 말을 만나는 자리가 바로 여기라 같은
+ *    자리에 함께 세웠다. 링크의 값은 시안이 홈에서 같은 성격의 링크에 쓰는 것을 그대로
+ *    가져왔다.
  * 4. **아래 탭 바를 놓지 않았다.** 시안은 이 화면에도 탭 바를 세우지만(`navScreens`), 이
  *    앱의 화면은 쌓이는 구조(스택)이고 탭 바는 **홈 위에 한 장만 쌓인다**는 규칙 위에서만
  *    바르게 돈다(`src/ui/WorldTabBar.tsx`). 이 화면은 그 한 장 위에 또 한 장이므로 탭 바를
@@ -165,15 +167,41 @@ export default function MysteryScreen() {
           ))}
         </View>
 
-        {/* ── 신비 해설로 가는 길 (시안의 배선 누락을 여기서 잇는다) ─────── */}
-        <Pressable
-          style={styles.link}
-          onPress={() => router.push('/guide')}
-          accessibilityRole="button"
-          testID="mystery-guide-link"
-        >
-          <Text style={styles.linkLabel}>{`${strings.mysteryGuide} →`}</Text>
-        </Pressable>
+        {/*
+          ── 더 읽을 거리 셋 ──────────────────────────────────────────────
+
+          신비 해설은 시안의 배선 누락을 여기서 잇는 것이고(위 머리 3 번), 뒤의 둘은
+          시안에 아예 없던 화면이다. 세 링크를 같은 자리에 모은 까닭은 하나다 — 처음
+          온 사람이 `신비` 라는 말을 만나는 자리가 이 화면이고, 그 말이 무슨 뜻인지
+          묻고 싶어지는 자리도 여기이기 때문이다. 설정에도 같은 두 줄을 두었지만,
+          설정은 궁금할 때 찾아 들어가는 자리이지 궁금해지는 자리가 아니다.
+        */}
+        <View style={styles.links}>
+          <Pressable
+            style={styles.link}
+            onPress={() => router.push('/guide')}
+            accessibilityRole="button"
+            testID="mystery-guide-link"
+          >
+            <Text style={styles.linkLabel}>{`${strings.mysteryGuide} →`}</Text>
+          </Pressable>
+          <Pressable
+            style={styles.link}
+            onPress={() => router.push('/learn')}
+            accessibilityRole="button"
+            testID="mystery-learn-link"
+          >
+            <Text style={styles.linkLabel}>{`${strings.learnBasics} →`}</Text>
+          </Pressable>
+          <Pressable
+            style={styles.link}
+            onPress={() => router.push('/background')}
+            accessibilityRole="button"
+            testID="mystery-background-link"
+          >
+            <Text style={styles.linkLabel}>{`${strings.learnBackground} →`}</Text>
+          </Pressable>
+        </View>
 
         {/* ── 주 단추 — 홈의 것과 같은 일을 한다 ─────────────────────────── */}
         <Pressable
@@ -244,8 +272,9 @@ const mysteryStyles = (palette: WorldPalette) =>
     rowText: { flex: 1, minWidth: 0 },
     rowTitle: { ...worldMysteryType.rowTitle, color: palette.ink, ...koWordBreak },
     rowRef: { ...worldMysteryType.rowRef, color: palette.muted, marginTop: 3 },
+    /* 링크 셋을 묶는 칸. 좌우 여백을 여기서 한 번만 주고 줄마다 다시 주지 않는다. */
+    links: { marginHorizontal: 24, marginTop: 4 },
     link: {
-      marginHorizontal: 24,
       minHeight: 44,
       justifyContent: 'center',
     },

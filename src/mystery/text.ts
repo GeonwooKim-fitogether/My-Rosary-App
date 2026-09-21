@@ -25,7 +25,24 @@
  *
  * 세 벌 모두 `tools/w0/extract-world-data.mjs` 가 시안에서 기계로 뽑아 앉힌 것이며,
  * 손으로 옮겨 적은 글자는 하나도 없다.
+ *
+ * ── 넷째 칸: 한국어의 긴 해설 (2026-09-20 에 더했다) ─────────────────────────
+ *
+ * 위의 `meditations` 는 시안이 가진 해설인데, 한 단에 한 문장뿐이라 **그 장면을 처음 보는
+ * 사람에게는 설명이 되지 않는다.** 공방장이 "여기에 대해 모르는 사람들을 위해 안내하듯이"
+ * 라고 요청해, 한국어에 한해 `spec/mystery-commentary.ko.json` 의 긴 해설을 함께 싣는다.
+ * 그 파일은 한 단을 세 칸으로 나눈다 — 무슨 일이 있었나(`scene`) · 무엇을 묵상하나
+ * (`meaning`) · 오늘 나에게(`today`).
+ *
+ * 두 가지를 분명히 해 둔다.
+ *
+ * 1. **한국어에만 있다.** 영어를 비롯한 나머지 언어는 지금까지처럼 시안의 한 문장을 쓴다.
+ *    없는 언어의 해설을 지어내지 않는 것이 이 저장소의 규칙이고, 화면도 이 칸이 비어 있을
+ *    때는 옛 한 문장을 그대로 그린다.
+ * 2. **성경 구절 표기도 한국어를 따른다.** 시안의 표기는 `Lk 1:26-38` 인데 한국어 성경은
+ *    `루카 1,26-38` 로 적는다. 긴 해설이 있는 언어에서는 그 파일의 `verse` 가 이긴다.
  */
+import commentaryKo from '../../spec/mystery-commentary.ko.json';
 import world from '../../spec/mysteries.world.json';
 import { MYSTERY_SETS } from '../domain/mysteries';
 import { monthDayWeekday } from '../journey/format';
@@ -45,6 +62,23 @@ export interface MysteryRow {
   ref: string;
   /** 해설 한 문단. 그 언어에 없으면 영어, 영어에도 없으면 빈 글이다. */
   note: string;
+  /**
+   * 긴 해설 셋. 지금은 한국어에만 있고, 없는 언어에서는 `null` 이다.
+   * 화면은 이 칸이 있으면 이것을 그리고, 없으면 위의 `note` 한 문단을 그대로 그린다.
+   */
+  commentary: MysteryCommentary | null;
+}
+
+/** 한 단의 긴 해설 — 세 칸으로 나뉜다. */
+export interface MysteryCommentary {
+  /** 그 언어의 성경 구절 표기 (예: `루카 1,26-38`). */
+  verse: string;
+  /** 무슨 일이 있었나. 성경의 그 장면을 배경 지식 없이 읽을 수 있게 풀어 적은 글. */
+  scene: string;
+  /** 무엇을 묵상하나. 그 장면이 왜 이 자리에 놓였는지. */
+  meaning: string;
+  /** 오늘 나에게. 그 묵상을 내 하루로 가져오는 한두 문장. */
+  today: string;
 }
 
 type ByLanguage = Readonly<Record<string, Readonly<Record<string, readonly string[]>>>>;
@@ -65,13 +99,46 @@ function noteFor(set: MysteryKey, language: LanguageKey, index: number): string 
   return MEDITATIONS[language]?.[set]?.[index] ?? MEDITATIONS.en?.[set]?.[index] ?? '';
 }
 
+/**
+ * 긴 해설을 가진 언어의 표. 지금은 한국어 한 벌뿐이고, 다른 언어의 벌이 생기면
+ * 여기에 한 줄을 더하는 것으로 끝난다 — 화면은 이 표를 보지 않는다.
+ */
+const LONG_COMMENTARY: Partial<Record<LanguageKey, Record<string, readonly MysteryCommentary[]>>> = {
+  ko: commentaryKo.commentary as Record<string, readonly MysteryCommentary[]>,
+};
+
+/** 그 언어의 긴 해설. 없으면 `null` — 화면이 옛 한 문단으로 떨어진다. */
+function commentaryFor(
+  set: MysteryKey,
+  language: LanguageKey,
+  index: number,
+): MysteryCommentary | null {
+  return LONG_COMMENTARY[language]?.[set]?.[index] ?? null;
+}
+
+/**
+ * 그 언어의 성경 구절 표기.
+ *
+ * 긴 해설이 있는 언어는 그 파일의 `verse` 가 이긴다. 한국어 성경은 `루카 1,26-38` 로 적는데
+ * 시안의 표기는 영어 약칭(`Lk 1:26-38`)이라, 한국어 화면에 영어 약칭이 남으면 그 한 줄만
+ * 다른 나라 책에서 옮겨 온 것처럼 읽힌다.
+ */
+function refFor(set: MysteryKey, language: LanguageKey, index: number): string {
+  return (
+    LONG_COMMENTARY[language]?.[set]?.[index]?.verse ??
+    SCRIPTURE[set]?.[index] ??
+    ''
+  );
+}
+
 /** 신비 한 벌의 다섯 줄. */
 export function mysteryRows(set: MysteryKey, language: LanguageKey): MysteryRow[] {
   return MYSTERY_SETS[set].decades.map((_, index) => ({
     n: index + 1,
     title: titleFor(set, language, index),
-    ref: SCRIPTURE[set]?.[index] ?? '',
+    ref: refFor(set, language, index),
     note: noteFor(set, language, index),
+    commentary: commentaryFor(set, language, index),
   }));
 }
 

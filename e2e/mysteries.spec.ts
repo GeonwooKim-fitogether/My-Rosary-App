@@ -48,7 +48,10 @@ test('홈에서 눌러 오늘의 신비로 들어가고, 거기서 신비 해설
   await expect(page.getByTestId('mystery-row-1')).toContainText(
     '예수님께서 우리를 위하여 피땀 흘리심',
   );
-  await expect(page.getByTestId('mystery-row-1')).toContainText('Lk 22:39-46');
+  // 한국어 화면의 성경 구절은 한국어 표기다 — 2026-09-20 에 긴 해설이 들어오면서
+  // 구절 표기도 그 파일의 것(`루카 22,39-46`)이 이기게 됐다 (`src/mystery/text.ts`).
+  await expect(page.getByTestId('mystery-row-1')).toContainText('루카 22,39-46');
+  await expect(page.getByTestId('mystery-row-1')).not.toContainText('Lk 22:39-46');
 
   // 첫 단은 홈이 한 줄로 보여 주던 바로 그 글이다 — 두 화면이 같은 말을 한다.
   await expect(page.getByTestId('mystery-row-1')).toContainText(
@@ -62,11 +65,21 @@ test('홈에서 눌러 오늘의 신비로 들어가고, 거기서 신비 해설
 
   // 아무것도 고르지 않았으면 오늘의 벌이 펼쳐져 있다.
   await expect(page.getByTestId('guide-set')).toHaveText(TODAY_SET);
-  await expect(page.getByTestId('guide-row-1')).toContainText('성경 · Lk 22:39-46');
-  // 해설 한 문단이 실제로 붙어 온다 (빈 줄이면 화면은 조용히 빈 채로 그린다).
-  await expect(page.getByTestId('guide-row-1')).toContainText(
-    '겟세마니에서 땀이 피처럼 떨어질 때까지 기도하십니다',
-  );
+  await expect(page.getByTestId('guide-row-1')).toContainText('성경 · 루카 22,39-46');
+
+  /*
+    한국어 해설은 세 칸으로 나뉜 긴 글이다 (2026-09-20). 세 칸의 작은 제목이 다 서는지,
+    그리고 각 칸에 실제로 글이 붙어 오는지를 함께 본다 — 칸만 서고 글이 비면 화면은
+    조용히 빈 채로 그리므로, 제목만 보면 통과해 버린다.
+  */
+  const commentary = page.getByTestId('guide-commentary-1');
+  await expect(commentary).toBeVisible();
+  await expect(commentary).toContainText('무슨 일이 있었나');
+  await expect(commentary).toContainText('무엇을 묵상하나');
+  await expect(commentary).toContainText('오늘 나에게');
+  await expect(commentary).toContainText('겟세마니');
+  // 시안의 한 문장짜리 옛 해설(영어)이 남아 있으면 안 된다.
+  await expect(page.getByTestId('guide-row-1')).not.toContainText('Jesus prays');
 
   // ── 뒤로 두 번이면 홈이다. ────────────────────────────────────────────────
   await page.getByTestId('guide-back').click();
@@ -94,7 +107,7 @@ test('신비 해설에서 네 벌을 갈아 끼우고, 오늘과 다른 벌을 �
   await page.getByTestId('guide-tab-joyful').click();
   await expect(page.getByTestId('guide-set')).toHaveText('환희의 신비');
   await expect(page.getByTestId('guide-row-1')).toContainText('마리아님께서 예수님을 잉태하심');
-  await expect(page.getByTestId('guide-row-1')).toContainText('성경 · Lk 1:26-38');
+  await expect(page.getByTestId('guide-row-1')).toContainText('성경 · 루카 1,26-38');
 
   /*
     이 한 줄이 이 시험의 핵심이다. 시안은 여정이 없는 앱이라 고른 벌을 그 자리에서 바치기

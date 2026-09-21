@@ -51,6 +51,42 @@ describe('신비 다섯 줄', () => {
     expect(italian.map((row) => row.note)).toEqual(english.map((row) => row.note));
   });
 
+  /*
+    ── 긴 해설 (2026-09-20) ────────────────────────────────────────────────
+
+    여기서 잰다는 것은 "스무 단이 다 있고 세 칸이 다 채워져 있는가" 이다. 글의 내용은
+    사람이 보아야 하는 것이지만(`docs/plan/mystery-commentary-audit.md`), 한 단이 통째로
+    빠지거나 세 칸 가운데 하나가 빈 것은 기계가 잡을 수 있고, 그 결함은 화면에서 조용히
+    빈 자리로만 보이므로 사람 눈으로는 오히려 놓치기 쉽다.
+  */
+  it('한국어는 스무 단이 다 긴 해설을 갖고, 세 칸이 다 채워져 있다', () => {
+    let counted = 0;
+    for (const set of MYSTERY_SET_ORDER) {
+      for (const row of mysteryRows(set, 'ko')) {
+        expect(row.commentary).not.toBeNull();
+        expect(row.commentary!.scene.length).toBeGreaterThan(30);
+        expect(row.commentary!.meaning.length).toBeGreaterThan(30);
+        expect(row.commentary!.today.length).toBeGreaterThan(10);
+        counted += 1;
+      }
+    }
+    expect(counted).toBe(20);
+  });
+
+  it('긴 해설이 없는 언어는 빈 칸으로 두고 옛 한 문단을 그대로 쓴다', () => {
+    for (const set of MYSTERY_SET_ORDER) {
+      for (const row of mysteryRows(set, 'en')) {
+        expect(row.commentary).toBeNull();
+        expect(row.note).not.toBe('');
+      }
+    }
+  });
+
+  it('한국어의 성경 구절은 한국어 표기이고, 영어는 시안의 약칭 그대로다', () => {
+    expect(mysteryRows('joyful', 'ko')[0]!.ref).toBe('루카 1,26-38');
+    expect(mysteryRows('joyful', 'en')[0]!.ref).toBe('Lk 1:26-38');
+  });
+
   it('탭에 적히는 짧은 이름은 첫 낱말만 남기고, 한국어는 관형격 조사까지 뗀다', () => {
     expect(shortSetName('환희의 신비')).toBe('환희');
     expect(shortSetName('Joyful Mysteries')).toBe('Joyful');

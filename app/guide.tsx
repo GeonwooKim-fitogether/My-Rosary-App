@@ -19,6 +19,11 @@
  *    들어가고, **고른 벌이 오늘의 벌과 다르면 그 사실을 단추 아래 한 줄로 밝힌다.**
  *    바칠 여정이 하나도 없으면 같은 자리가 `새 기도` 로 간다 — 여정이 없으면 기도도 없다.
  * 4. **아래 탭 바를 놓지 않았다.** 까닭은 `app/mystery.tsx` 의 머리 4 번과 같다.
+ * 5. **한국어의 해설이 시안보다 훨씬 길다.** 시안의 해설은 한 단에 한 문장이라, 그 장면을
+ *    처음 보는 사람에게는 설명이 되지 않았다. 한국어에 한해 세 칸으로 나뉜 긴 해설을
+ *    싣는다 — 무슨 일이 있었나 · 무엇을 묵상하나 · 오늘 나에게. 글의 출처와 아직 교회의
+ *    검토를 받지 않았다는 사실은 `spec/mystery-commentary.ko.json` 의 머리에 있다.
+ *    그 해설이 없는 언어는 지금까지처럼 시안의 한 문단을 그대로 그린다.
  */
 import { useState } from 'react';
 import { router } from 'expo-router';
@@ -151,7 +156,23 @@ export default function GuideScreen() {
                 <View style={styles.rowText}>
                   <Text style={styles.rowTitle}>{row.title}</Text>
                   <Text style={styles.rowRef}>{`${strings.scripture} · ${row.ref}`}</Text>
-                  <Text style={styles.rowNote}>{row.note}</Text>
+                  {row.commentary ? (
+                    /*
+                      긴 해설이 있는 언어(지금은 한국어)는 세 칸으로 나뉘어 선다. 나누지
+                      않고 석 문단을 붙여 놓으면 한 덩어리로 흘려 읽히므로, 칸마다 작은
+                      제목을 세워 무엇을 읽고 있는지 보이게 한다.
+                    */
+                    <View testID={`guide-commentary-${row.n}`}>
+                      <Text style={styles.partLabel}>{strings.commentaryScene}</Text>
+                      <Text style={styles.rowNote}>{row.commentary.scene}</Text>
+                      <Text style={styles.partLabel}>{strings.commentaryMeaning}</Text>
+                      <Text style={styles.rowNote}>{row.commentary.meaning}</Text>
+                      <Text style={styles.partLabel}>{strings.commentaryToday}</Text>
+                      <Text style={styles.rowNote}>{row.commentary.today}</Text>
+                    </View>
+                  ) : (
+                    <Text style={styles.rowNote}>{row.note}</Text>
+                  )}
                 </View>
               </View>
             ))}
@@ -253,6 +274,12 @@ const guideStyles = (palette: WorldPalette) =>
     rowRef: { ...worldGuideType.rowRef, color: palette.muted, marginTop: 4 },
     /* 시안의 해설은 `opacity:.85` 로 한 걸음 물러나 있다. */
     rowNote: { ...worldGuideType.rowNote, color: palette.ink, opacity: 0.85, marginTop: 8 },
+    /*
+      긴 해설 세 칸의 작은 제목. 위 여백(14)이 아래 여백(8, `rowNote` 가 가진다)보다 넓어
+      제목이 바로 아래 문단에 붙고 앞 문단에서 떨어진다 — 제목이 어느 쪽 것인지가 간격만
+      보고도 갈린다.
+    */
+    partLabel: { ...worldGuideType.partLabel, color: palette.accentText, marginTop: 14 },
     primary: {
       marginTop: 20,
       minHeight: 52,

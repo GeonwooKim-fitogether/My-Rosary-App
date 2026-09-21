@@ -49,6 +49,8 @@ const W2 = 'docs/plan/w2-screens';
 const W3 = 'docs/plan/w3-screens';
 /** 설치형 웹앱 (W4 슬라이스 A) 을 찍어 두는 자리. */
 const W4 = 'docs/plan/w4-screens';
+/** 배우기 두 화면과 길어진 신비 해설 (2026-09-20) 을 찍어 두는 자리. */
+const LEARN = 'docs/plan/learn-screens';
 
 
 test.use({ reducedMotion: 'reduce' });
@@ -737,4 +739,49 @@ test('W4 슬라이스 C · 처음 여는 자리의 소개 시트를 찍는다', 
   await expect(page.getByTestId('sheet-intro')).toBeVisible();
   await page.waitForTimeout(400); // 올라오는 움직임이 끝난 뒤에 찍는다
   await page.screenshot({ path: `${W4}/intro-sheet.png` });
+});
+
+/**
+ * 배우기 두 화면과, 길어진 신비 해설 (2026-09-20).
+ *
+ * 다섯 장을 찍는다. 두 글은 한 화면에 다 들어가지 않는 길이라 **한 장으로는 무엇을 담았는지
+ * 보이지 않으므로**, 글마다 머리 한 장과 본문 한 장씩을 찍는다. 본문 쪽에서 고른 자리는
+ * 각 글의 한가운데다 — 입문은 한 번 바치는 순서(번호 아홉 줄), 배경 지식은 쉰네 날의 짜임.
+ *
+ * 다섯째 장은 신비 해설을 아래로 내린 모습이다. 이 화면의 사진(`w2-screens/guide.png`)은
+ * 머리만 담고 있어, 해설이 세 칸으로 나뉘어 길어졌다는 사실이 그 장에는 보이지 않는다.
+ */
+test('배우기 두 화면과 길어진 신비 해설을 찍는다', async ({ page }) => {
+  await openApp(page, { art: ART_SEED });
+  await enterHome(page);
+  await page.getByTestId('home-today-link').click();
+
+  // ── 묵주기도 입문 ─────────────────────────────────────────────────────────
+  await page.getByTestId('mystery-learn-link').click();
+  await expect(page.getByTestId('learn-screen-title')).toBeVisible();
+  await page.screenshot({ path: `${LEARN}/learn-top.png` });
+
+  // 한 번 바치는 순서 — 이 글에서 가장 실용적인 자리다.
+  await page.getByTestId('learn-screen-section-3').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(150);
+  await page.screenshot({ path: `${LEARN}/learn-order.png` });
+  await page.getByTestId('learn-screen-back').click();
+
+  // ── 배경 지식 ─────────────────────────────────────────────────────────────
+  await page.getByTestId('mystery-background-link').click();
+  await expect(page.getByTestId('background-screen-title')).toBeVisible();
+  await page.screenshot({ path: `${LEARN}/background-top.png` });
+
+  // 쉰네 날 기도 — 이 앱의 기둥을 설명하는 자리다.
+  await page.getByTestId('background-screen-section-5').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(150);
+  await page.screenshot({ path: `${LEARN}/background-54.png` });
+  await page.getByTestId('background-screen-back').click();
+
+  // ── 신비 해설의 길어진 해설 ───────────────────────────────────────────────
+  await page.getByTestId('mystery-guide-link').click();
+  await expect(page.getByTestId('guide-commentary-1')).toBeAttached();
+  await page.getByTestId('guide-commentary-1').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(150);
+  await page.screenshot({ path: `${LEARN}/guide-commentary.png` });
 });
