@@ -63,7 +63,7 @@
 - **완료 어휘**: 작업완료(브랜치 푸시 + 검증 + 노출 증명) · 검토대기(PR) · 배포완료(main 머지 + 실환경 확인). 앱 화면이 생기면 "보는 법" 세 줄을 보고에 넣는다.
 - **전체 e2e 를 돌린 뒤 화면 사진이 바뀌어 있으면 되돌리지 않는다.** 그 사진들은 **살아 있는 사진**이고, 바뀐 것은 화면이 실제로 바뀌었다는 뜻이므로 그대로 커밋한다. 정말로 얼린 사진이라면 애초에 찍히지 않고 시험이 실패한다 — `docs/plan/screens.json` 과 `e2e/support/harness.ts` 의 감시가 그것을 맡는다. 되돌리는 습관이 세 번 연속으로 옳은 갱신을 버렸다(`decisions.md` Q-83).
 - **보고 끝에는 공방장이 바로 내려받을 수 있는 파일을 붙인다.** 경로만 알려 주고 "저장소의 여기 있습니다"로 끝내지 않는다 — 공방장은 폰에서 보시는 일이 많아 파일 트리를 열 수 없다. 검토하실 문서·그림·묶음이 있으면 **그 파일 자체를 채팅에 첨부**하고, 여러 개면 zip 하나로 묶는다. 붙일 파일이 없는 보고(질문 답변, 상태 한 줄)에는 억지로 만들지 않는다.
-- **PR 자동 검사**가 `.github/workflows/`에 있다 — pr-gate-check(창고 본체를 부르는 호출부 — 문서 갱신·배선 검사, 브랜치·PR 이름 검사, 겹침 알림, 머지 가능 여부를 한 잡 `gate / gate` 로 돈다), file-registry(등록부 없으면 no-op), asset-graph(자산 정합), integration-board(현황판 게시 — `.integration/` 설정을 이 프로젝트용으로 채워야 의미가 있다), sync-skills(창고 동기화). 창고 전용이던 readme-skills는 제거했다(decisions.md Q-12).
+- **PR 자동 검사**가 `.github/workflows/`에 있다 — pr-gate-check(창고 본체를 부르는 호출부 — 문서 갱신·배선 검사, 브랜치·PR 이름 검사, 겹침 알림, 머지 가능 여부를 한 잡 `gate / gate` 로 돈다), pr-gate-bot-ready(동기화 봇이 연 초안 PR 이 Ready 가 될 때만 같은 게이트를 돈다), file-registry(등록부 없으면 no-op), asset-graph(자산 정합), integration-board(현황판 게시 — `.integration/` 설정을 이 프로젝트용으로 채워야 의미가 있다), sync-skills(창고 동기화). 창고 전용이던 readme-skills는 제거했다(decisions.md Q-12).
 
 ## 팀
 
