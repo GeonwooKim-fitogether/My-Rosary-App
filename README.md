@@ -83,7 +83,7 @@ node tools/pack/pack-single-html.mjs      # dist-single/myrosary.html 이 나옵
 
 ## 이 저장소가 따르는 팀 규칙
 
-세션 시작 시 자동으로 읽히는 `.claude/rules/*.md` 여덟입니다. 원본은 창고이며 여기서는 고치지 않습니다.
+세션 시작 시 자동으로 읽히는 `.claude/rules/*.md` 열입니다. 원본은 창고이며 여기서는 고치지 않습니다.
 
 | 규칙 | 무엇을 정하나 |
 |---|---|
@@ -95,7 +95,9 @@ node tools/pack/pack-single-html.mjs      # dist-single/myrosary.html 이 나옵
 | `lessons-backport.md` | 체계의 결함을 `docs/lessons.md`에 3줄로 기록해 창고로 올린다 |
 | `db-write-permission.md` | 데이터베이스 쓰기는 사용자가 쿼리를 보고 승인한 뒤에만 (Supabase 연결 뒤 적용) |
 | `migration-naming.md` | 마이그레이션 파일명은 순번이 아니라 시각 |
+| `environment-separation.md` | 환경 분리 — local·development·staging·production 의 쓰기 권한을 나누고, 운영 변경은 사람 승인 뒤에만 |
+| `branch-pr-naming.md` | 브랜치·PR 규칙 — 세션 하나 = 브랜치 하나 = PR 하나, 이름은 `<종류>/<슬러그>` 와 `<종류>: <한 문장>` |
 
 ## 자동 검사 (`.github/workflows/`)
 
-앱 검사(`app-ci.yml` — 타입 검사·단위 테스트·웹 빌드) · PR 크로스컷 게이트(`pr-gate-check.yml`) · 파일 등록부(`file-registry.yml`, 등록부 없으면 no-op) · 브랜치 겹침 알림(`branch-overlap.yml`) · 자산 그래프 정합(`asset-graph.yml`) · 통합 현황판 게시(`integration-board.yml`) · 창고 동기화(`sync-skills.yml`). 창고 전용이던 README 스킬 표 검사는 제거했습니다(`decisions.md` Q-12).
+앱 검사(`app-ci.yml` — 타입 검사·단위 테스트·웹 빌드) · PR 검사(`pr-gate-check.yml` — 창고 본체를 부르는 호출부. 크로스컷 게이트·브랜치·PR 이름 검사·겹침 알림을 한 잡으로 돈다) · 파일 등록부(`file-registry.yml`, 등록부 없으면 no-op) · 자산 그래프 정합(`asset-graph.yml`) · 통합 현황판 게시(`integration-board.yml`) · 창고 동기화(`sync-skills.yml`). 창고 전용이던 README 스킬 표 검사는 제거했습니다(`decisions.md` Q-12).
