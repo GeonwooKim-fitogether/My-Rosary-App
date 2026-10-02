@@ -100,4 +100,4 @@ node tools/pack/pack-single-html.mjs      # dist-single/myrosary.html 이 나옵
 
 ## 자동 검사 (`.github/workflows/`)
 
-앱 검사(`app-ci.yml` — 타입 검사·단위 테스트·웹 빌드) · PR 검사(`pr-gate-check.yml` — 창고 본체를 부르는 호출부. 크로스컷 게이트·브랜치·PR 이름 검사·겹침 알림을 한 잡으로 돈다) · 봇 PR 검사(`pr-gate-bot-ready.yml` — 동기화 봇이 연 초안 PR 이 Ready 가 될 때만 같은 게이트를 돈다) · 파일 등록부(`file-registry.yml`, 등록부 없으면 no-op) · 자산 그래프 정합(`asset-graph.yml`) · 통합 현황판 게시(`integration-board.yml`) · 창고 동기화(`sync-skills.yml`). 창고 전용이던 README 스킬 표 검사는 제거했습니다(`decisions.md` Q-12).
+앱 검사(`app-ci.yml` — 타입 검사·단위 테스트·웹 빌드) · PR 검사(`pr-gate-check.yml` — 창고 본체를 부르는 호출부. 크로스컷 게이트·브랜치·PR 이름 검사·겹침 알림을 한 잡으로 돈다) · 봇 PR 검사(`pr-gate-bot-ready.yml` — 동기화 봇이 연 초안 PR 이 Ready 가 될 때만 같은 게이트를 돈다) · 브랜치 정리(`branch-pr-policy.yml` — PR 이 머지되면 그 브랜치를 지우고, 매주 월요일에 머지된 채 남은 브랜치를 지운다) · 파일 등록부(`file-registry.yml`, 등록부 없으면 no-op) · 자산 그래프 정합(`asset-graph.yml`) · 통합 현황판 게시(`integration-board.yml`) · 창고 동기화(`sync-skills.yml`). 창고 전용이던 README 스킬 표 검사는 제거했습니다(`decisions.md` Q-12).
