@@ -5,7 +5,13 @@
  * `9월 5일 · 스물세 번째 날` 인데, 그 "스물세 번째"를 만들어 내는 규칙이 여기 있다.
  * 숫자를 그대로 쓰지 않고 우리말 차례수로 적는 것은 이 앱의 어투에 관한 결정이다 —
  * `23번째 날` 과 `스물세 번째 날` 은 같은 뜻이지만 다른 온도다.
+ *
+ * 우리말 차례수·셈은 한국어에만 뜻이 있으므로 이름에 `Ko` 를 달아 두고, 언어에 따라 갈리는
+ * 날짜와 수는 아래의 `monthDay` · `monthDayWeekday` · `formatNumber` 가 맡는다. 부르는 쪽은
+ * 우리말 꼴과 숫자를 함께 문구 표에 넘기고, 각 언어의 틀이 자기에게 필요한 것만 집어 간다
+ * (`src/i18n/appStrings.ts` 머리글).
  */
+import { fill, localeOf, type LanguageKey, type Strings } from '../i18n';
 
 /** 한 자리 우리말 수. 0 은 쓰지 않으므로 빈 문자열이다. */
 const ONES = ['', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉'];
@@ -42,6 +48,43 @@ export function nativeCountKo(n: number): string {
 /** `9월 5일` 꼴로 적는다. */
 export function monthDayKo(date: Date): string {
   return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+}
+
+/**
+ * 날짜를 그 언어의 관습으로 적는다 — `9월 5일` · `September 5`.
+ *
+ * **날짜는 번역할 문장이 아니라 만드는 방식이 언어마다 다른 값이다.** 영어에서 `9월 5일` 을
+ * 글자만 바꿔 `9 month 5 day` 로 적을 수는 없다. 그래서 문구 표에 넣지 않고 여기서 가른다.
+ *
+ * 규칙은 시안이 이미 정해 두었다 — 시안의 `todayLabel` 이
+ * `toLocaleDateString(locale, { month: 'long', day: 'numeric', weekday: 'long' })` 를 쓴다
+ * (`docs/design/world/MyRosary World.dc.html` 526 행). 이 앱도 같은 규칙을 쓰되 **한국어만은
+ * 위의 손으로 쓴 꼴을 그대로 쓴다.** 까닭 둘이다. 첫째, 한국어 화면의 글자가 한 자도 달라지지
+ * 않아야 이번 일이 문구를 옮긴 일로 남는다. 둘째, 기기의 자바스크립트 엔진(Hermes)이 어느
+ * 언어의 날짜 자료를 갖고 있는지는 기기마다 다른데, 이 앱의 기본 언어가 그 불확실함 위에
+ * 서게 둘 이유가 없다. 영어는 어느 엔진에서도 있는 언어다.
+ */
+export function monthDay(date: Date, language: LanguageKey): string {
+  if (language === 'ko') return monthDayKo(date);
+  return date.toLocaleDateString(localeOf(language), { month: 'long', day: 'numeric' });
+}
+
+/** `9월 5일 토요일` · `Saturday, September 5` — 요일까지 붙는 꼴. */
+export function monthDayWeekday(date: Date, language: LanguageKey): string {
+  if (language === 'ko') return `${monthDayKo(date)} ${WEEKDAY_KO[date.getDay()]}요일`;
+  return date.toLocaleDateString(localeOf(language), {
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+  });
+}
+
+/** 요일 이름. `Date#getDay()` 와 같은 차례로 0 이 일요일이다. */
+const WEEKDAY_KO = ['일', '월', '화', '수', '목', '금', '토'] as const;
+
+/** 수를 그 언어의 관습으로 적는다 — 천 단위 쉼표가 언어마다 다르다. */
+export function formatNumber(value: number, language: LanguageKey): string {
+  return value.toLocaleString(localeOf(language));
 }
 
 /** 날짜에 며칠을 더한다. 시각은 자정으로 맞춰 서머타임에 흔들리지 않게 한다. */
@@ -86,6 +129,15 @@ function partOfDayKo(hour: number): string {
   return '밤';
 }
 
+/** 하루를 넷으로 나눈 이름의 열쇠 — 문구 표의 `partOfDay` 가 그 언어의 말을 갖고 있다. */
+function partOfDayKey(hour: number): 'night' | 'morning' | 'afternoon' | 'evening' {
+  if (hour < 5) return 'night';
+  if (hour < 11) return 'morning';
+  if (hour < 17) return 'afternoon';
+  if (hour < 22) return 'evening';
+  return 'night';
+}
+
 /**
  * 마지막으로 바친 때를 상대 표기로 — `방금` · `12분 전` · `어제 저녁` (06-screen-spec 화면 A).
  *
@@ -106,4 +158,25 @@ export function relativeTimeKo(savedAt: Date, now: Date): string {
   if (dayDiff <= 0) return `${Math.floor(diffMs / 3_600_000)}시간 전`;
   if (dayDiff === 1) return `어제 ${partOfDayKo(savedAt.getHours())}`;
   return `${dayDiff}일 전`;
+}
+
+/**
+ * 위와 같은 다섯 갈래를 그 언어의 말로 적는다. 한국어에서는 위와 글자 하나까지 같은 글이
+ * 나오며, 그것을 `format.test.ts` 가 나란히 놓고 잰다.
+ */
+export function relativeTime(savedAt: Date, now: Date, strings: Strings): string {
+  const diffMs = now.getTime() - savedAt.getTime();
+  if (diffMs < 60_000) return strings.justNow;
+  if (diffMs < 3_600_000) return fill(strings.minutesAgo, { n: Math.floor(diffMs / 60_000) });
+
+  const dayDiff = Math.round(
+    (new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() -
+      new Date(savedAt.getFullYear(), savedAt.getMonth(), savedAt.getDate()).getTime()) /
+      86_400_000,
+  );
+  if (dayDiff <= 0) return fill(strings.hoursAgo, { n: Math.floor(diffMs / 3_600_000) });
+  if (dayDiff === 1) {
+    return fill(strings.yesterdayAt, { part: strings.partOfDay[partOfDayKey(savedAt.getHours())] });
+  }
+  return fill(strings.daysAgo, { n: dayDiff });
 }

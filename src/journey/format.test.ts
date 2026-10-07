@@ -1,4 +1,16 @@
-import { addDays, countKo, monthDayKo, nativeCountKo, objectParticle, ordinalKo, relativeTimeKo } from './format';
+import {
+  addDays,
+  countKo,
+  monthDay,
+  monthDayKo,
+  monthDayWeekday,
+  nativeCountKo,
+  objectParticle,
+  ordinalKo,
+  relativeTime,
+  relativeTimeKo,
+} from './format';
+import { stringsFor } from '../i18n';
 
 describe('우리말 차례수', () => {
   it.each([
@@ -60,5 +72,49 @@ describe('세는 수와 상대 시각 (M2 가 더한 것)', () => {
     expect(relativeTimeKo(new Date(2026, 8, 8, 9, 30), now)).toBe('12시간 전');
     expect(relativeTimeKo(new Date(2026, 8, 7, 20, 0), now)).toBe('어제 저녁');
     expect(relativeTimeKo(new Date(2026, 8, 5, 20, 0), now)).toBe('3일 전');
+  });
+});
+
+/**
+ * 언어에 따라 갈리는 자리 — W4 슬라이스 E.
+ *
+ * 이 묶음이 재는 것은 둘이다. 첫째, **한국어가 한 글자도 달라지지 않았다** — 날짜와 상대
+ * 표기를 언어별로 가르면서 한국어 쪽이 옛 함수와 같은 글을 내는지 나란히 놓고 본다. 둘째,
+ * 영어가 그 언어의 관습으로 적힌다 — `9월 5일` 을 글자만 바꾼 말이 아니라 `September 5` 다.
+ */
+describe('언어에 따라 갈리는 날짜와 상대 표기', () => {
+  const DAY = new Date(2026, 8, 5);
+
+  it('한국어는 손으로 쓴 옛 꼴을 그대로 쓴다', () => {
+    expect(monthDay(DAY, 'ko')).toBe(monthDayKo(DAY));
+    expect(monthDay(DAY, 'ko')).toBe('9월 5일');
+    expect(monthDayWeekday(DAY, 'ko')).toBe('9월 5일 토요일');
+  });
+
+  it('영어는 그 언어의 날짜 관습을 따른다', () => {
+    expect(monthDay(DAY, 'en')).toBe('September 5');
+    expect(monthDayWeekday(DAY, 'en')).toBe('Saturday, September 5');
+  });
+
+  it('한국어 상대 표기는 옛 함수와 글자 하나까지 같다', () => {
+    const now = new Date(2026, 8, 8, 21, 30);
+    const ko = stringsFor('ko');
+    for (const saved of [
+      new Date(2026, 8, 8, 21, 29, 40),
+      new Date(2026, 8, 8, 21, 10),
+      new Date(2026, 8, 8, 9, 30),
+      new Date(2026, 8, 7, 20, 0),
+      new Date(2026, 8, 5, 20, 0),
+    ]) {
+      expect(relativeTime(saved, now, ko)).toBe(relativeTimeKo(saved, now));
+    }
+  });
+
+  it('영어 상대 표기에는 한글이 남지 않는다', () => {
+    const now = new Date(2026, 8, 8, 21, 30);
+    const en = stringsFor('en');
+    expect(relativeTime(new Date(2026, 8, 8, 21, 29, 40), now, en)).toBe('Just now');
+    expect(relativeTime(new Date(2026, 8, 7, 20, 0), now, en)).toBe('Yesterday evening');
+    expect(relativeTime(new Date(2026, 8, 5, 20, 0), now, en)).toBe('3 days ago');
   });
 });

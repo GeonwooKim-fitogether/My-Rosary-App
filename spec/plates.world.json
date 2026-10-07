@@ -1,0 +1,168 @@
+{
+  "$schema_note": "성화와 초점 좌표. focal 은 CSS background-position 과 같은 뜻이다. 12번 그림에는 작가 서명(워터마크)이 있어 정식 자산에서 교체한다 (decisions.md Q-50 · D-1).",
+  "source": "docs/design/world/data.js (Claude Design 인계본, 2026-09-16). 공식 기도서와 대조되지 않았다.",
+  "ids": [
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08"
+  ],
+  "images": {
+    "10": {
+      "src": "img/10-blue-mary.jpg",
+      "focal": "50% 40%",
+      "title": {
+        "ko": "푸른 옷의 성모",
+        "en": "Our Lady in Blue"
+      },
+      "tone": "light"
+    },
+    "11": {
+      "src": "img/11-prayer-rosary.jpg",
+      "focal": "45% 30%",
+      "title": {
+        "ko": "묵주를 든 기도",
+        "en": "Prayer with Rosary"
+      },
+      "tone": "light"
+    },
+    "12": {
+      "src": "img/12-mary-child-neutral.jpg",
+      "focal": "50% 30%",
+      "title": {
+        "ko": "성모와 아기",
+        "en": "Mother and Child"
+      },
+      "tone": "light"
+    },
+    "13": {
+      "src": "img/13.jpg",
+      "focal": "50% 30%",
+      "title": {
+        "ko": "물 위를 걸으시는 예수",
+        "en": "Christ Walking on Water"
+      },
+      "tone": "mid"
+    },
+    "14": {
+      "src": "img/14.jpg",
+      "focal": "50% 40%",
+      "title": {
+        "ko": "부활",
+        "en": "The Resurrection"
+      },
+      "tone": "mid"
+    },
+    "15": {
+      "src": "img/15.jpg",
+      "focal": "50% 55%",
+      "title": {
+        "ko": "빛을 향한 무리",
+        "en": "The Multitude Toward the Light"
+      },
+      "tone": "mid"
+    },
+    "16": {
+      "src": "img/16.jpg",
+      "focal": "50% 35%",
+      "title": {
+        "ko": "성령",
+        "en": "The Holy Spirit"
+      },
+      "tone": "light"
+    },
+    "17": {
+      "src": "img/17.jpg",
+      "focal": "40% 45%",
+      "title": {
+        "ko": "빈 무덤 앞의 마리아",
+        "en": "Mary at the Empty Tomb"
+      },
+      "tone": "dark"
+    },
+    "01": {
+      "src": "img/01-mary-single.jpg",
+      "focal": "50% 22%",
+      "title": {
+        "ko": "빛 가운데 서신 성모",
+        "en": "Our Lady in Light"
+      },
+      "tone": "light"
+    },
+    "02": {
+      "src": "img/02-mary-child.jpg",
+      "focal": "55% 30%",
+      "title": {
+        "ko": "성모와 아기 예수",
+        "en": "Mother and Child"
+      },
+      "tone": "light"
+    },
+    "03": {
+      "src": "img/03-praying-jesus.jpg",
+      "focal": "50% 30%",
+      "title": {
+        "ko": "기도하시는 예수",
+        "en": "Christ in Prayer"
+      },
+      "tone": "light"
+    },
+    "04": {
+      "src": "img/04-cross.jpg",
+      "focal": "50% 45%",
+      "title": {
+        "ko": "빈 무덤의 십자가",
+        "en": "The Cross at the Tomb"
+      },
+      "tone": "light"
+    },
+    "05": {
+      "src": "img/05-jesus-sheep.jpg",
+      "focal": "40% 35%",
+      "title": {
+        "ko": "착한 목자",
+        "en": "The Good Shepherd"
+      },
+      "tone": "light"
+    },
+    "06": {
+      "src": "img/06-side-jesus.jpg",
+      "focal": "60% 25%",
+      "title": {
+        "ko": "손을 내미시는 예수",
+        "en": "Christ Reaching Out"
+      },
+      "tone": "light"
+    },
+    "07": {
+      "src": "img/07-relief-holy-family.jpg",
+      "focal": "50% 45%",
+      "title": {
+        "ko": "성가정",
+        "en": "The Holy Family"
+      },
+      "tone": "light"
+    },
+    "08": {
+      "src": "img/08-mary-profile.jpg",
+      "focal": "50% 30%",
+      "title": {
+        "ko": "성모의 옆모습",
+        "en": "Our Lady in Profile"
+      },
+      "tone": "light"
+    }
+  }
+}

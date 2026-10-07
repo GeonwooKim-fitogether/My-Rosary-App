@@ -33,29 +33,104 @@ function guardMs(text: string): number {
   return estimateSpeechMs(text) * 2 + 2000;
 }
 
-/**
- * 이 기기에 한국어 음성이 있는가.
- *
- * 없으면 PRD §8 에 따라 읽지 않기로 진행한다. 목록을 얻는 데 시간이 걸리거나 아예
- * 돌아오지 않는 기기가 있어 정해진 시간만 기다리고 포기한다 — 기다리다 화면이 뜨지
- * 않는 것이 음성이 없는 것보다 나쁘다.
- */
-export async function hasKoreanVoice(timeoutMs = 1500): Promise<boolean> {
+/** 기기에 한국어 음성이 있는지에 대한 답. 셋인 것이 핵심이다. */
+export type VoiceStatus = 'yes' | 'no' | 'unknown';
+
+/** 음성 목록을 한 번 물어본다. 정해진 시간 안에 답이 없으면 null 이다. */
+async function voicesOnce(
+  waitMs: number,
+): Promise<Awaited<ReturnType<typeof Speech.getAvailableVoicesAsync>> | null> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
   try {
-    const voices = await Promise.race([
+    return await Promise.race([
       Speech.getAvailableVoicesAsync(),
-      new Promise<null>((resolve) => setTimeout(() => resolve(null), timeoutMs)),
+      new Promise<null>((resolve) => {
+        timer = setTimeout(() => resolve(null), waitMs);
+      }),
     ]);
-    if (!voices) return false;
-    return voices.some((voice) => /^ko/i.test(voice.language ?? ''));
-  } catch {
-    return false;
+  } finally {
+    // 먼저 답이 왔으면 기다림은 쓸모가 없다. 남겨 두면 타이머가 계속 살아 있는다.
+    if (timer !== undefined) clearTimeout(timer);
   }
+}
+
+/**
+ * 이 기기에 한국어 음성이 있는가 — **모르면 모른다고 답한다.**
+ *
+ * 예전에는 있다·없다 둘로만 답했는데, 그것이 웹에서 소리를 통째로 잠재우는 결함이었다.
+ * 브라우저는 음성 목록을 페이지가 열린 뒤에 뒤늦게 채우기 때문에 처음 물으면 **빈 목록**이
+ * 돌아오고, 특히 iOS 사파리가 그렇다. 빈 목록을 "음성이 없다"로 읽으면 앱은 멀쩡한
+ * 기기에서 스스로 읽지 않기로 낮추고, 쓰는 사람에게는 그냥 소리가 나지 않는 것으로 보인다.
+ *
+ * 그래서 답을 셋으로 나눈다. 목록을 받았고 그 안에 한국어가 있으면 `yes` 이고, 목록을
+ * 받았는데 한국어가 없으면 `no` 이며, **목록 자체를 끝내 받지 못했으면 `unknown`** 이다.
+ * 부르는 쪽은 `no` 일 때만 낮추고 `unknown` 이면 일단 읽어 본다 — 읽어 보고 실패하는
+ * 편이, 읽을 수 있는데 잠자코 있는 것보다 낫다.
+ *
+ * 빈 목록이 오면 곧바로 포기하지 않고 짧은 사이를 두고 몇 번 더 묻는다. 브라우저가
+ * 목록을 채우는 데 걸리는 시간이 그 정도이기 때문이다.
+ */
+export async function koreanVoiceStatus(timeoutMs = 2000): Promise<VoiceStatus> {
+  const deadline = Date.now() + timeoutMs;
+  try {
+    do {
+      const voices = await voicesOnce(Math.max(200, deadline - Date.now()));
+      if (voices && voices.length > 0) {
+        return voices.some((voice) => /^ko/i.test(voice.language ?? '')) ? 'yes' : 'no';
+      }
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    } while (Date.now() < deadline);
+    return 'unknown';
+  } catch {
+    return 'unknown';
+  }
+}
+
+/**
+ * 소리 엔진을 깨운다 — **사용자가 누르는 그 순간에** 불러야 한다.
+ *
+ * 브라우저는 사용자가 누른 조작에서 곧바로 이어진 소리만 내보낸다. 그런데 기도 화면은
+ * 뜬 뒤에 저장된 자리를 읽고 음성 목록을 묻느라 기다림이 두 번 끼고, 그 사이에 "사용자가
+ * 눌러서 난 소리"라는 자격이 끊긴다. 그러면 브라우저는 오류 한 줄 없이 소리를 삼킨다.
+ *
+ * 그래서 기도로 들어가는 단추를 누른 **그 자리에서** 들리지 않는 낭송 하나를 먼저 내보내
+ * 자격을 얻어 둔다. 한 번 얻으면 그 페이지가 살아 있는 동안 유지되므로, 그 뒤의 낭송은
+ * 기다림을 사이에 두고 일어나도 소리가 난다. 웹이 아닌 기기에는 이런 제약이 없으므로
+ * 아무 일도 하지 않는다.
+ */
+export function primeSpeech(): void {
+  if (Platform.OS !== 'web') return;
+  try {
+    // 빈 문자열은 브라우저가 무시하는 경우가 있어 공백 한 칸을 읽힌다. 들리지 않는다.
+    Speech.speak(' ', { language: SPEECH_LANGUAGE });
+  } catch {
+    // 음성을 지원하지 않는 브라우저 — 깨울 것이 없으면 그만이다.
+  }
+}
+
+/*
+ * ── 진동을 끄는 스위치 (W2 슬라이스 C · 설정의 `진동` 줄) ──────────────────────────
+ *
+ * 이 파일은 기기로 나가는 통로이고, 앱이 떨리는 자리는 아래 `vibrate` 하나뿐이다
+ * (기도 진행기와 기도 화면이 모두 이 함수를 부른다). 그래서 설정의 토글 하나를 지키는
+ * 가장 짧은 길은 **여기에 문을 하나 두는 것**이다.
+ *
+ * 설정을 여기서 직접 읽지 않고 밖에서 알려 주게 한 이유가 있다. 이 파일이 앱 상태를
+ * 읽어 오면 기기 통로가 상태 저장소에 매이게 되어, 통로만 시험하던 자리들이 저장소까지
+ * 끌고 들어와야 한다. 값이 바뀌는 자리는 하나뿐이므로(`appStore` 의 `updateSettings`)
+ * 그쪽에서 한 줄 알려 주는 편이 가볍다.
+ */
+let hapticEnabled = true;
+
+/** 진동을 켜고 끈다. 부르는 곳은 `src/state/appStore.ts` 하나다. */
+export function setHapticEnabled(enabled: boolean): void {
+  hapticEnabled = enabled;
 }
 
 /** 진동. 패턴은 `spec/journey-rules.md` §5 의 진동 사전에서 온다. */
 export function vibrate(pattern: readonly number[]): void {
   try {
+    if (!hapticEnabled) return;
     if (pattern.length === 0) return;
     if (pattern.length === 1) {
       Vibration.vibrate(pattern[0]!);

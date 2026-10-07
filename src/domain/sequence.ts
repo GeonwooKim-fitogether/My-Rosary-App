@@ -1,5 +1,5 @@
 /**
- * 한 번의 묵주기도 77단계 (PRD §1-3 · FR-10).
+ * 한 번의 묵주기도 81단계 (PRD §1-3 · FR-10, 2026-09-09 결정 7 로 개정).
  *
  * 값의 정본은 `spec/prayer-sequence.json` 이다. 이 파일은 그 JSON 을 복사하지 않고
  * import 해서 타입만 입힌다 — 두 벌이 생기면 기도 규칙이 바뀌었을 때 어느 쪽이
@@ -9,14 +9,17 @@ import sequenceJson from '../../spec/prayer-sequence.json';
 import prayersJson from '../../spec/prayers.ko.json';
 import type { PrayerKey, PrayerStep } from './types';
 
-/** 77단계 전체. 배열의 자리(0~76)가 곧 `index` 값이다. */
+/** 81단계 전체. 배열의 자리(0~80)가 곧 `index` 값이다. */
 export const STEPS: readonly PrayerStep[] = sequenceJson.steps as PrayerStep[];
 
-/** 한 번의 기도가 몇 단계인가 — 77. */
+/** 한 번의 기도가 몇 단계인가 — 81. */
 export const TOTAL_STEPS = sequenceJson.total;
 
-/** 시작 기도 구간의 길이 — 7단계. */
+/** 시작 기도 구간의 길이 — 9단계. */
 export const OPENING_STEPS = sequenceJson.opening_steps;
+
+/** 마침 기도 구간의 길이 — 2단계 (성모찬송과 성호경). */
+export const CLOSING_STEPS = sequenceJson.closing_steps;
 
 /** 한 단의 길이 — 14단계. */
 export const STEPS_PER_DECADE = sequenceJson.steps_per_decade;
@@ -37,7 +40,7 @@ export const PRAYERS: Readonly<Record<PrayerKey, PrayerText>> = prayersJson.pray
   PrayerText
 >;
 
-/** 자리(0~76)로 단계를 얻는다. 범위를 벗어나면 undefined. */
+/** 자리(0~80)로 단계를 얻는다. 범위를 벗어나면 undefined. */
 export function stepAt(index: number): PrayerStep | undefined {
   return STEPS[index];
 }

@@ -35,6 +35,7 @@ const SAMPLE: PrayerPosition = {
   savedAt: '2026-09-08T10:00:00.000Z',
   resumeCount: 1,
   elapsedMs: 620000,
+  visited: [0, 1, 2, 40],
 };
 
 describe('자리 저장과 읽기', () => {
@@ -77,5 +78,21 @@ describe('손상된 자리는 버린다 (PRD §8)', () => {
   it('빠진 곁가지 값은 기본값으로 채워 살린다', () => {
     const parsed = parsePosition('{"journeyId":"j","stepIndex":5,"mystery":"joyful"}');
     expect(parsed).toMatchObject({ stepIndex: 5, resumeCount: 0, elapsedMs: 0, decade: null });
+  });
+
+  /*
+   * 지나온 자리 목록은 2026-09-09 에 생긴 칸이다(`decisions.md` 결정 6). 옛 판으로 저장된
+   * 자리를 읽을 때 이 칸이 없으므로, 없을 때 이어가기가 깨지지 않는 것이 중요하다.
+   */
+  it('지나온 자리 목록이 없던 옛 자리도 그대로 이어간다', () => {
+    const parsed = parsePosition('{"journeyId":"j","stepIndex":5,"mystery":"joyful"}');
+    expect(parsed?.visited).toEqual([]);
+  });
+
+  it('지나온 자리 목록에 섞여 들어온 쓰레기 값은 버린다', () => {
+    const parsed = parsePosition(
+      '{"journeyId":"j","stepIndex":5,"mystery":"joyful","visited":[0,"둘",-3,7,null]}',
+    );
+    expect(parsed?.visited).toEqual([0, 7]);
   });
 });

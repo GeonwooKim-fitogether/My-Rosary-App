@@ -50,10 +50,22 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 },
     },
   ],
+  /*
+   * 서버는 **언제나 새로 띄운다.** 이미 떠 있는 것을 재사용하지 않는다.
+   *
+   * 원래는 `reuseExistingServer: !process.env.CI` 로 두어 지역에서는 재사용했는데, 그
+   * 편의가 2026-09-18 에 같은 함정으로 두 번 물었다. 한 번은 **낡은 `dist`** 를 내주는
+   * 서버가 남아 있어 고친 화면이 아니라 옛 화면을 시험했고, 한 번은 **낡은 서버 코드**가
+   * 남아 있어 이미 고친 결함(끊긴 응답에 서버가 죽는 것)이 계속 재현됐다. 두 경우 다
+   * 오류가 나지 않고 **시험 결과만 조용히 틀려서**, 원인을 찾는 데 오래 걸렸다.
+   *
+   * 재사용을 끄면 포트가 이미 쓰이고 있을 때 Playwright 가 **소리 내어 멈춘다.** 조용히
+   * 엉뚱한 것을 시험하는 것보다 그 편이 낫다.
+   */
   webServer: {
     command: `node tools/e2e/serve-dist.mjs ${PORT}`,
     url: `http://127.0.0.1:${PORT}/`,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 30_000,
   },
 });

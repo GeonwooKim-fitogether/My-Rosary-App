@@ -23,7 +23,8 @@
 import type { JourneyFormat, JourneyPhase } from '../domain/types';
 import { FIFTYFOUR_LENGTH, FIFTYFOUR_PETITION_DAYS } from '../domain/mysteries';
 import type { DayState, Journey } from './session';
-import { addDays, monthDayKo } from './format';
+import { fill, type LanguageKey, type Strings } from '../i18n';
+import { addDays, monthDay } from './format';
 
 /** 9일 기도의 길이. */
 export const NOVENA_LENGTH = 9;
@@ -152,9 +153,9 @@ export function phaseOn(journey: Journey, dayIndex: number): JourneyPhase | null
   return dayIndex <= FIFTYFOUR_PETITION_DAYS ? 'petition' : 'thanksgiving';
 }
 
-/** 국면의 우리말 이름. */
-export function phaseName(phase: JourneyPhase): string {
-  return phase === 'petition' ? '청원' : '감사';
+/** 국면의 이름 — 청원인가 감사인가. 말은 문구 표가 갖고 있다. */
+export function phaseName(phase: JourneyPhase, strings: Strings): string {
+  return phase === 'petition' ? strings.petition : strings.thanks;
 }
 
 /**
@@ -163,13 +164,20 @@ export function phaseName(phase: JourneyPhase): string {
  * 형식마다 뒤에 붙는 것이 다르다. 54일은 국면이 붙고, 9일과 날마다는 붙지 않는다
  * (`06-screen-spec.md` 화면 A 의 문구 표).
  */
-export function dayLabelOn(journey: Journey, dayIndex: number): string {
+export function dayLabelOn(journey: Journey, dayIndex: number, strings: Strings): string {
   const phase = phaseOn(journey, dayIndex);
-  return phase ? `${dayIndex}일째 · ${phaseName(phase)}` : `${dayIndex}일째`;
+  return phase
+    ? fill(strings.dayIndexWithPhase, { n: dayIndex, phase: phaseName(phase, strings) })
+    : fill(strings.dayIndexLabel, { n: dayIndex });
 }
 
 /** 시작 전 카드의 한 줄 — `{N}일 뒤에 시작합니다 · {시작일}` (06-e 결함 8). */
-export function notStartedLabel(journey: Journey, today: Date): string {
+export function notStartedLabel(
+  journey: Journey,
+  today: Date,
+  strings: Strings,
+  language: LanguageKey,
+): string {
   const days = 1 - dayIndexOn(journey.startDate, today);
-  return `${days}일 뒤에 시작합니다 · ${monthDayKo(journey.startDate)}`;
+  return fill(strings.startsInDays, { d: days, date: monthDay(journey.startDate, language) });
 }

@@ -1,5 +1,5 @@
 /**
- * 하루의 기도 큐 — 77단계에 실제 문구를 채워 넣은 것.
+ * 하루의 기도 큐 — 81단계에 실제 문구를 채워 넣은 것.
  *
  * `src/domain/sequence.ts` 가 "몇 번째에 무슨 기도가 오는가"를 갖고 있고
  * `spec/prayers.ko.json` 이 그 기도의 문구를 갖고 있다. 둘을 합쳐 화면이 그대로 읽어
@@ -28,13 +28,20 @@ export interface RunStep extends PrayerStep {
  * 구간 이름을 만든다.
  *
  * 형식은 v5 시안의 `head` 를 따랐다 — `시작 기도 · 성호경` · `제3단 · 성모송` 처럼
- * 구간과 기도문 이름을 가운뎃점으로 잇는다. 기도문 이름은 v5 의 줄임말(`묵상` ·
+ * 구간과 기도문 이름을 가운뎃점으로 잇는다. 마침 기도 구간이 2026-09-09 에 생기면서
+ * 구간이 셋이 됐다 — 시작 기도, 다섯 단, 그리고 마침 기도다. 기도문 이름은 v5 의 줄임말(`묵상` ·
  * `구원송`)이 아니라 `spec/prayers.ko.json` 의 이름(`신비 선포` · `구원을 비는 기도`)을
  * 쓴다. 화면의 형식은 시안이, 기도문의 이름은 도메인 데이터가 정본이기 때문이다.
  */
 function headFor(step: PrayerStep, prayerName: string): string {
-  const section = step.section === 'opening' ? '시작 기도' : `제${step.decade}단`;
-  return `${section} · ${prayerName}`;
+  return `${sectionName(step)} · ${prayerName}`;
+}
+
+/** 구간의 이름 — 시작 기도 · 제N단 · 마침 기도 셋 중 하나다. */
+function sectionName(step: PrayerStep): string {
+  if (step.section === 'decade') return `제${step.decade}단`;
+  if (step.section === 'closing') return '마침 기도';
+  return '시작 기도';
 }
 
 /** 신비 선포 문구를 그날 신비의 그 단 제목으로 채운다. */
@@ -58,7 +65,7 @@ function fill(step: PrayerStep, mystery: MysteryKey): RunStep {
 }
 
 /**
- * 하루 77단계 전부. 개인 기도의 하루다 (`spec/journey-rules.md` §2).
+ * 하루 81단계 전부. 개인 기도의 하루다 (`spec/journey-rules.md` §2).
  *
  * @param mystery 그날의 신비. `mysteryForDay()` 가 정한다.
  */
@@ -66,13 +73,34 @@ export function buildDayQueue(mystery: MysteryKey): RunStep[] {
   return STEPS.map((step) => fill(step, mystery));
 }
 
-/** 큐 안의 성모송 횟수. 하루 완주 화면의 통계에 쓴다. */
+/** 큐 안의 성모송 횟수 — 하루를 처음부터 끝까지 바쳤을 때의 수다. */
 export function hailCount(queue: readonly RunStep[]): number {
   return queue.filter((s) => s.prayer === 'hail').length;
 }
 
 /**
- * 하루에 바치는 성모송의 수 — 개인 기도의 하루(77단계)에 든 성모송이다.
+ * **실제로 지나온** 단계 중 성모송의 수.
+ *
+ * 단을 건너뛸 수 있게 되면서(`decisions.md` 결정 6) 하루 완주 화면의 "성모송 N번"이
+ * 큐를 세는 것으로는 참이 아니게 됐다. 제3단으로 뛰어들어 하루를 마친 사람에게 쉰셋을
+ * 보이면, 앱이 바치지 않은 기도를 바쳤다고 적어 주는 것이 된다. 그래서 진행기가 실제로
+ * 들른 자리만 센다.
+ *
+ * @param visited 지나온 단계의 자리들. 같은 자리를 여러 번 들렀어도 한 번으로 센다.
+ */
+export function hailCountAmong(queue: readonly RunStep[], visited: Iterable<number>): number {
+  let count = 0;
+  const counted = new Set<number>();
+  for (const at of visited) {
+    if (counted.has(at)) continue;
+    counted.add(at);
+    if (queue[at]?.prayer === 'hail') count++;
+  }
+  return count;
+}
+
+/**
+ * 하루에 바치는 성모송의 수 — 개인 기도의 하루(81단계)에 든 성모송이다.
  *
  * 시작 기도의 셋과 다섯 단의 쉰을 더해 쉰셋이다. v5 시안의 하루 완주 화면은 50 이라고
  * 적었는데 그것은 시작 기도의 셋을 세지 않은 값이고, `decisions.md` Q-19 가 **실제로

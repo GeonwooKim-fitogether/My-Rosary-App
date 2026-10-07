@@ -4,7 +4,7 @@
  * 시계를 세워 두고 시험한다. 시간이 흐르면 앱이 스스로도 알을 넘기므로 "무엇 때문에
  * 넘어갔는지"를 가릴 수 없기 때문이다. 시계가 서 있으면 알이 움직인 이유는 하나뿐이다.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './support/harness';
 import {
   collectConsoleErrors,
   enterHome,
@@ -29,9 +29,17 @@ test('이어폰의 다음·이전 단추가 알을 하나씩 옮긴다', async (
   const errors = collectConsoleErrors(page);
   await enterPrayer(page);
 
+  // 성호경 다음은 십자가에 입맞춤이고, 그다음이 사도신경이다 (표준 도해 2·3번).
+  await pressMediaButton(page, 'nexttrack');
+  await expect(page.getByTestId('pray-a')).toContainText('십자가에 입맞춥니다');
+  await expect(page.getByTestId('pray-step')).toHaveText('시작 기도 · 십자가에 입맞춤');
+
   await pressMediaButton(page, 'nexttrack');
   await expect(page.getByTestId('pray-a')).toContainText('전능하신 천주 성부');
   await expect(page.getByTestId('pray-step')).toHaveText('시작 기도 · 사도신경');
+
+  await pressMediaButton(page, 'previoustrack');
+  await expect(page.getByTestId('pray-step')).toHaveText('시작 기도 · 십자가에 입맞춤');
 
   await pressMediaButton(page, 'previoustrack');
   await expect(page.getByTestId('pray-a')).toContainText('성부와 성자와 성령의 이름으로');

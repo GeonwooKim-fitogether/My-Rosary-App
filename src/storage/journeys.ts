@@ -40,12 +40,31 @@ export function toDateKey(date: Date): string {
   return `${date.getFullYear()}-${month}-${day}`;
 }
 
-/** 날짜 문자열을 그 날 자정으로 되돌린다. 형식이 아니면 null. */
+/**
+ * 날짜 문자열을 그 날 자정으로 되돌린다. 형식이 아니거나 **없는 날짜면 null**.
+ *
+ * 없는 날짜를 따로 거르는 까닭을 적어 둔다. 자바스크립트의 `new Date(2026, 12, 45)` 는
+ * 오류를 내지 않고 **넘치는 만큼 다음 달로 굴려** 2027년 2월 14일을 만든다. 그래서
+ * `2026-13-45` 같은 글을 그냥 넘기면 여정이 엉뚱한 날 시작한 것으로 조용히 서고, 며칠째인지
+ * 세는 값이 통째로 어긋난다. 오류가 나지 않으므로 아무도 알아채지 못한다.
+ *
+ * 저장 자리에 적히는 값은 언제나 `toDateKey` 가 만들므로 이런 글이 실제 기기에 있을 수는
+ * 없었다. **W3 슬라이스 C 가 이 함수를 사람이 고칠 수 있는 파일(기록 들여오기)의 입구로
+ * 쓰면서** 그 전제가 깨졌고, 그래서 굴러간 날짜를 되돌려 대조하는 한 줄을 더했다.
+ */
 export function fromDateKey(value: string): Date | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
   if (!match) return null;
-  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
-  return Number.isNaN(date.getTime()) ? null : date;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(year, month - 1, day);
+  if (Number.isNaN(date.getTime())) return null;
+  // 굴러갔는지 본다 — 넣은 값이 그대로 나오지 않았으면 없는 날짜다.
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+    return null;
+  }
+  return date;
 }
 
 export function serializeJourney(journey: Journey): StoredJourney {

@@ -11,7 +11,7 @@
 | 관문 1 — 기획안 컨펌 | **닫힘** (2026-09-05, `decisions.md` 결정 1) |
 | 관문 2 — 시안 컨펌 | **닫힘** (2026-09-08, 결정 2 — 정본은 [`docs/design/v5/`](docs/design/v5/)) |
 | M0 — 프로젝트 바닥 | **작업완료** — Expo + TypeScript 골격, 기도 도메인 코어, 디자인 토큰, 성화 슬롯, 로그인 화면 한 장 |
-| M1 — 기도 루프 | **작업완료** — 기도 화면과 하루 완주 화면, 77단계 진행기, 한국어 낭송과 진동, 자리 저장과 이어가기, 손 없이 조작, 전례색. 사진은 [`docs/plan/m1-screens/`](docs/plan/m1-screens/). **실기기 확인은 아직입니다** |
+| M1 — 기도 루프 | **작업완료** — 기도 화면과 하루 완주 화면, 하루치 진행기(결정 7 뒤 81단계), 한국어 낭송과 진동, 자리 저장과 이어가기, 손 없이 조작, 전례색. 사진은 [`docs/plan/m1-screens/`](docs/plan/m1-screens/). **실기기 확인은 아직입니다** |
 | M2 — 여정과 홈 | **작업완료** — 홈·새 기도·여정 상세·여정 완주·설정·초대 코드 여섯 화면, 여정과 설정의 기기 저장, 여정 형식 셋, 바텀 시트 일곱, 밤 벌(쪽빛). 사진은 [`docs/plan/m2-screens/`](docs/plan/m2-screens/). **실기기 확인은 아직입니다** |
 | M3 — 계정과 조 | M2 뒤 — Supabase 로그인·동기화, 함께 바치기 배정 화면, 초대 코드 확인 |
 | M4 — TestFlight·내부 테스트 배포로 08 검증 진입 (4주 실사용) | M3 뒤 |
@@ -35,7 +35,7 @@ Node 22 와 npm 이 있으면 됩니다. 처음 한 번 `npm install` 로 의존
 
 **e2e 는 소스가 아니라 `dist/`(웹 빌드)를 봅니다.** 그래서 코드를 고친 뒤 빌드를 다시 하지 않으면 옛 화면을 시험하게 됩니다 — 실제로 한 번 겪어 `test:e2e:fresh` 를 두었습니다. 웹 빌드를 눈으로 확인하려면 빌드한 뒤 `dist/` 를 정적 서버로 열면 됩니다. 이 저장소에 딸린 작은 서버가 하나 있습니다 — `node tools/e2e/serve-dist.mjs` 를 띄우고 브라우저로 `http://127.0.0.1:8081` 을 엽니다. 같은 네 검사(`typecheck` · `test` · `build:web` · `test:e2e`)를 PR 마다 `.github/workflows/app-ci.yml` 이 다시 돌립니다.
 
-화면 e2e 는 웹 빌드를 실제 브라우저(390×844 크기)로 열어 **로그인에서 눌러 홈을 지나 기도 화면까지 닿는지, 77단계를 스스로 완주하는지, 새 기도로 만든 여정이 저장되고 홈 카드가 바뀌는지, 날짜를 쉰네 날째로 돌리면 여정 완주 화면이 뜨는지, 시트에서 고른 설정이 화면에 반영되고 다시 열어도 남는지, 이어폰 단추와 흔들기가 알을 넘기는지, 콘솔이 조용한지**를 확인하고 화면 사진 열두 장을 남깁니다(M1 둘 · M2 열).
+화면 e2e 는 웹 빌드를 실제 브라우저(390×844 크기)로 열어 **로그인에서 눌러 홈을 지나 기도 화면까지 닿는지, 하루치 81단계를 스스로 완주하는지, 새 기도로 만든 여정이 저장되고 홈 카드가 바뀌는지, 날짜를 쉰네 날째로 돌리면 여정 완주 화면이 뜨는지, 시트에서 고른 설정이 화면에 반영되고 다시 열어도 남는지, 이어폰 단추와 흔들기가 알을 넘기는지, 콘솔이 조용한지**를 확인하고 화면 사진 열두 장을 남깁니다(M1 둘 · M2 열).
 
 화면 사진과 눈 검수를 위해 **본보기 여정을 세우는 손잡이**가 하나 있습니다 — 웹에서 주소 뒤에 `?demo=1` 을 붙이면 v5 시안이 그린 여정(23일째)이 들어옵니다(`?demo=reset` 은 저장된 것을 버리고 다시 세웁니다). 실제 사용자는 이 주소를 지나가지 않으며, 처음 여는 앱의 정상 상태는 **여정이 하나도 없는 빈 홈**입니다. 소리와 진동은 이 컨테이너에서 실제로 나지 않으므로 **앱이 기기에 요청했는지**만 셉니다 — 실제로 들리고 떨리는지는 실기기에서 사람이 확인할 몫입니다.
 
@@ -71,7 +71,7 @@ node tools/pack/pack-single-html.mjs      # dist-single/myrosary.html 이 나옵
 | 폴더·파일 | 내용 |
 |---|---|
 | [`docs/product/`](docs/product/) | **제품 정본** — PRD 제3판(`06-prd.md`), 디자인 시스템, 서비스 설계, 화면 명세, 화면 지도, 프로토타입 핸드오프(`prototype/`). 이관 경위는 [`docs/product/README.md`](docs/product/README.md) |
-| [`spec/`](spec/) | 프레임워크와 무관한 기도 도메인 데이터 — 77단계 순서, 신비 4종, 54일 규칙, 기도문(판본 미확정) |
+| [`spec/`](spec/) | 프레임워크와 무관한 기도 도메인 데이터 — 하루의 81단계 순서, 신비 4종, 54일 규칙, 기도문(판본 미확정) |
 | [`docs/plan/m1-screens/`](docs/plan/m1-screens/) | M1 에서 찍은 화면 사진 두 장 (기도 · 하루 완주). v5 시안과 나란히 놓고 대조하는 용도 |
 | [`docs/plan/m2-screens/`](docs/plan/m2-screens/) | M2 에서 찍은 화면 사진 열 장 (홈 · 새 기도 · 여정 상세 · 여정 완주 · 설정 · 초대 코드 · 시트 하나 · 밤 벌 셋) |
 | [`docs/plan/development-plan.md`](docs/plan/development-plan.md) | 개발 계획 — 지금은 컨펌 대기 기획안. 정합 확인표, 마일스톤, 프레임워크 결정 카드, 디자인 과제, 스토어 체크리스트 |
@@ -83,7 +83,7 @@ node tools/pack/pack-single-html.mjs      # dist-single/myrosary.html 이 나옵
 
 ## 이 저장소가 따르는 팀 규칙
 
-세션 시작 시 자동으로 읽히는 `.claude/rules/*.md` 여덟입니다. 원본은 창고이며 여기서는 고치지 않습니다.
+세션 시작 시 자동으로 읽히는 `.claude/rules/*.md` 열입니다. 원본은 창고이며 여기서는 고치지 않습니다.
 
 | 규칙 | 무엇을 정하나 |
 |---|---|
@@ -95,7 +95,9 @@ node tools/pack/pack-single-html.mjs      # dist-single/myrosary.html 이 나옵
 | `lessons-backport.md` | 체계의 결함을 `docs/lessons.md`에 3줄로 기록해 창고로 올린다 |
 | `db-write-permission.md` | 데이터베이스 쓰기는 사용자가 쿼리를 보고 승인한 뒤에만 (Supabase 연결 뒤 적용) |
 | `migration-naming.md` | 마이그레이션 파일명은 순번이 아니라 시각 |
+| `environment-separation.md` | 환경 분리 — local·development·staging·production 의 쓰기 권한을 나누고, 운영 변경은 사람 승인 뒤에만 |
+| `branch-pr-naming.md` | 브랜치·PR 규칙 — 세션 하나 = 브랜치 하나 = PR 하나, 이름은 `<종류>/<슬러그>` 와 `<종류>: <한 문장>` |
 
 ## 자동 검사 (`.github/workflows/`)
 
-앱 검사(`app-ci.yml` — 타입 검사·단위 테스트·웹 빌드) · PR 크로스컷 게이트(`pr-gate-check.yml`) · 파일 등록부(`file-registry.yml`, 등록부 없으면 no-op) · 브랜치 겹침 알림(`branch-overlap.yml`) · 자산 그래프 정합(`asset-graph.yml`) · 통합 현황판 게시(`integration-board.yml`) · 창고 동기화(`sync-skills.yml`). 창고 전용이던 README 스킬 표 검사는 제거했습니다(`decisions.md` Q-12).
+앱 검사(`app-ci.yml` — 타입 검사·단위 테스트·웹 빌드) · PR 검사(`pr-gate-check.yml` — 창고 본체를 부르는 호출부. 크로스컷 게이트·브랜치·PR 이름 검사·겹침 알림을 한 잡으로 돈다) · 봇 PR 검사(`pr-gate-bot-ready.yml` — 동기화 봇이 연 초안 PR 이 Ready 가 될 때만 같은 게이트를 돈다) · 브랜치 정리(`branch-pr-policy.yml` — PR 이 머지되면 그 브랜치를 지우고, 매주 월요일에 머지된 채 남은 브랜치를 지운다) · 파일 등록부(`file-registry.yml`, 등록부 없으면 no-op) · 자산 그래프 정합(`asset-graph.yml`) · 통합 현황판 게시(`integration-board.yml`) · 창고 동기화(`sync-skills.yml`). 창고 전용이던 README 스킬 표 검사는 제거했습니다(`decisions.md` Q-12).
