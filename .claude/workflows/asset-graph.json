@@ -69,11 +69,28 @@
       ]
     },
     {
+      "name": "branch-guard",
+      "reason": "규칙만 내려가고 훅이 없으면 세션=브랜치=PR 이 강제되지 않는 글만 남는다 — v1 이 그랬다",
+      "members": [
+        ".claude/rules/branch-pr-naming.md",
+        ".claude/hooks/branch-guard.py",
+        ".claude/hooks/branch-guard.test.py"
+      ]
+    },
+    {
       "name": "environment-separation",
       "reason": "환경 분리 규칙과 상세 실행서가 함께 움직여야 규범과 실제 도입 절차가 갈라지지 않는다",
       "members": [
         ".claude/rules/environment-separation.md",
         ".claude/rules/reference/environment-separation-runbook.md"
+      ]
+    },
+    {
+      "name": "parallel-work",
+      "reason": "병렬 진행 규칙의 코어와 태어난 사고 부록이 함께 움직여야 규범과 근거가 갈라지지 않는다",
+      "members": [
+        ".claude/rules/parallel-work.md",
+        ".claude/rules/reference/parallel-work-history.md"
       ]
     }
   ],
@@ -127,6 +144,16 @@
     },
     {
       "from": ".claude/rules/past-decisions.md",
+      "to": ".claude/rules/escalation.md",
+      "optional": false
+    },
+    {
+      "from": ".claude/rules/parallel-work.md",
+      "to": ".claude/rules/stake-calibration.md",
+      "optional": false
+    },
+    {
+      "from": ".claude/rules/parallel-work.md",
       "to": ".claude/rules/escalation.md",
       "optional": false
     }
